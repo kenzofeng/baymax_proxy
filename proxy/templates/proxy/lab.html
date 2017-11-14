@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html ng-app="TestLabModule">
+<head>
+    {% load staticfiles %}
+    <link rel="stylesheet" type="text/css" href="{% static 'proxy/semantic/dist/semantic.min.css' %}">
+    <link rel="shortcut icon" href="{% static 'proxy/img/bitbug_favicon.ico' %}">
+    <title>Job</title>
+</head>
+<body ng-controller="testpCtrl">
+<div class="ui inverted dimmer" id="pageloader">
+    <div class="ui large text loader">Loading</div>
+</div>
+<div class="ui grid">
+    <div class="sixteen wide column">{% include 'proxy/nav.html'%}</div>
+    <div class="ui internally celled grid">
+        <div class="row">
+            <table class="ui compact selectable celled striped teal table">
+                <thead>
+                <tr>
+                    <th class="three wide">Project Job</th>
+                    <th>Test Automation</th>
+                    <th class="two wide">Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="tp in testproject">
+                    <td ng-bind="tp.name"></td>
+                    <td>
+                        <table class="ui small table very compact">
+                            <thead>
+                            <th class="four wide">Test</th>
+                            <th class="nine wide">URL</th>
+                            <th class="three wide">Robot Parameter</th>
+                            </thead>
+                            <tbody>
+                            <tr ng-repeat="test in tp.tests">
+                                <td ng-bind="test.name"></td>
+                                <td ng-bind="test.url"></td>
+                                <td ng-bind="test.parameter"></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                    <td>
+                        <button class="ui blue button" ng-click="tojob(tp)">Run</button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</div>
+<div class="ui modal">
+    <i class="close icon"></i>
+    <div class="header">
+        Project Name: {% templatetag openvariable %}tp.name{% templatetag closevariable %}
+    </div>
+    <div class="content">
+        <div class='ui message'>
+            Current Job
+            <table class="ui small table very compact">
+                <thead>
+                <th>Job Name</th>
+                <th>Status</th>
+                </thead>
+                <tbody>
+                <tr ng-repeat="job in jobs">
+                    <td ng-bind="job.name"></td>
+                    <td ng-bind="job.status"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div ng-bind='automation'></div>
+    </div>
+    <div class="actions">
+        <div class="ui red deny button">Cancel</div>
+        <div class="ui green approve button">Run</div>
+    </div>
+</div>
+</body>
+<script src="{% static 'proxy/js/jquery-3.0.0.min.js' %}"></script>
+<script src="{% static 'proxy/js/jquery.cookie.js' %}"></script>
+<script src="{% static 'proxy/js/jquery.form.js' %}"></script>
+<script src="{% static 'proxy/js/angular.min.js' %}"></script>
+<script src="{% static 'proxy/semantic/dist/semantic.min.js' %}"></script>
+<script type="text/javascript">
+        $(function(){
+            $('#testlab').addClass('active');
+        })
+
+</script>
+<script type="text/javascript">
+        var TestLabModule=angular.module('TestLabModule', []);
+        TestLabModule.controller('testpCtrl',['$scope','$http','$compile',
+            function($scope,$http,$compile){
+                $http.get('/lab/getall').success(function(result){
+
+                    $scope.testproject=result
+                });
+                $scope.tojob=function(tp){
+                $scope.tp = tp;
+                jboname = tp.name;
+                $.ajax({
+                    type:"GET",
+                    url:'/testjob/getall/5',
+                    success:function(result){
+                        $scope.jobs=result;
+                        $scope.$apply();
+                        $('.ui.modal').modal({
+                        onApprove : function() {
+                            $.ajax({
+                            type:"GET",
+                            url:"/"+jboname+"/start/",
+                            success:function(){
+                            }
+                            })
+                            location.href='/job';
+                        }
+                    }).modal('show');
+                        }
+                })}}
+            ]);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</script>
+</html>
