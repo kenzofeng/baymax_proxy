@@ -1,36 +1,38 @@
 import json
-from datetime import *
+import os
 
 from django.core.exceptions import ObjectDoesNotExist
 
-import utility
-
+from proxy import env
 from proxy.models import Job, Project, Job_Log
-
-logdir = datetime.utcnow().strftime('%Y%m%d')
+from robot_engine import utility
+from robot_engine.execute import Execute
 
 
 def start(request, project):
     try:
         p = Project.objects.get(pk=project)
-        utility.mklogdir(logdir)
-        job = Job(project=project, status='waiting', start_time=datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+        utility.mkdir(os.path.join(env.log, utility.gettoday()))
+        job = Job(project=project, status='waiting', start_time=utility.gettime(),
                   job_number="", email=p.email)
         job.save()
         log = Job_Log()
         log.job = job
-        log.path = "%s/project_%s_%s.log" % (logdir, p.name, datetime.now().strftime('%H%M%S'))
+        log.path = "%s/project_%s_%s.log" % (utility.gettoday(), p.name, utility.getnow())
         log.save()
         utility.logmsg(log.path, "")
-        # execute = Execute(job, request.get_host())
-        # execute.run()
+        execute = Execute(job, request.get_host(), request)
+        execute.run()
+        job.status = 'Done'
+        job.end_time = utility.gettime()
+        job.save()
         utility.save_log(job)
         return get_results(request, job)
     except ObjectDoesNotExist:
         raise Exception("%s doesn't exist,please config in Baymax System!" % (project))
     except Exception, e:
-        job.end_time = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
-        job.status = 'error'
+        job.end_time = utility.gettime()
+        job.status = 'Error'
         job.save()
         utility.logmsg(job.log.path, str(e))
         utility.save_log(job)
@@ -57,4 +59,4 @@ def get_results(request, job):
     else:
         result['result'] = 'FAIL'
     result['tests'] = tests
-    return json.dumps(result, encoding='utf-8')
+    return json.dumps(result)

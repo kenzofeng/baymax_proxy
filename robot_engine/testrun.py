@@ -1,20 +1,18 @@
-
-from robot.api import TestData,TestDataDirectory,TestCaseFile
-
+from robot.api import TestData, TestDataDirectory, TestCaseFile
 
 
 class TestRun(object):
-    def __init__(self,servercount=1,source=''):
+    def __init__(self, servercount=1, source=''):
         self.servercount = servercount
         self.RunCase = [[] for row in range(self.servercount)]
         self.alltests = []
-        self.TestSuit=TestData(source=source)
+        self.TestSuit = TestData(source=source)
         self.testdir = ''
         self.testcasefile = ''
         self.get_all_test(self.TestSuit)
         self.distribut_test()
 
-    def get_all_test(self,suite):
+    def get_all_test(self, suite):
         if type(suite) is TestDataDirectory:
             self.testdir = suite.name
         elif type(suite) is TestCaseFile:

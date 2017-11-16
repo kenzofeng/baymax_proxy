@@ -1,10 +1,13 @@
 import os
+import random
 import re
 import smtplib
+import zipfile
 import zlib
+from datetime import *
 from email.mime.text import MIMEText
 
-import pysvn
+import svn.local
 import tenjin
 from lxml import etree
 
@@ -47,8 +50,19 @@ def get_variable_value(arg):
         return arg
 
 
-def mklogdir(dirpath):
-    dirpath = os.path.join(env.log, dirpath)
+def gettoday():
+    return datetime.now().strftime('%Y%m%d')
+
+
+def getnow():
+    return datetime.now().strftime('%H%M%S')
+
+
+def gettime(format='%Y-%m-%d %H:%M:%S'):
+    return datetime.now().strftime(format)
+
+
+def mkdir(dirpath):
     if not os.path.exists(dirpath):
         os.mkdir(dirpath)
 
@@ -128,11 +142,11 @@ def set_email(test, host):
 def send_email(test, host):
     receiver = test.job.email
     if receiver != '':
-        sender = "Automation_Regression_System@derbygroupmail.com"
+        sender = env.SENDER
         subject = '%s_Regression_Test_%s' % (test.job.project, test.status)
-        smtpserver = 'mail.derbygroupmail.com'
-        username = "warrior@derbygroupmail.com"
-        password = 'oWpR7svZHm3rxapF'
+        smtpserver = env.SMPT
+        username = env.USERNAME
+        password = env.PWD
         msg = MIMEText(set_email(test, host), 'html')
         msg['Subject'] = subject
         smtp = smtplib.SMTP_SSL(smtpserver)
@@ -142,15 +156,42 @@ def send_email(test, host):
 
 
 def update_Doraemon():
-    if not mswindows:
-        client = pysvn.Client()
-        try:
-            client.update(env.Doraemon)
-        except Exception, e:
-            print e
+    D = svn.local.LocalClient(env.Doraemon)
+    D.update()
 
 
-def run_autobuild(test):
+def zip_file(sourcefile, targetfile):
+    filelist = []
+    if os.path.isfile(sourcefile):
+        filelist.append(sourcefile)
+    else:
+        for root, dirs, files in os.walk(sourcefile):
+            for name in files:
+                filelist.append(os.path.join(root, name))
+    zf = zipfile.ZipFile(targetfile, "w", zipfile.zlib.DEFLATED)
+    for tar in filelist:
+        arcname = tar[len(sourcefile):]
+        zf.write(tar, arcname)
+    zf.close()
+
+
+def extract_zip(source, target):
+    f = zipfile.ZipFile(source, 'r')
+    for ff in f.namelist():
+        f.extract(ff, target)
+    os.remove(source)
+
+
+def random_str(randomlength=8):
+    str = ''
+    chars = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz0123456789'
+    length = len(chars) - 1
+    for i in range(randomlength):
+        str += chars[random.randint(0, length)]
+    return str
+
+
+def run_autobuild(test, parameter):
     opath = os.getcwd()
     test_app_autobuid = os.path.join(env.test, test.name, 'app', 'autobuild.py')
     test_app_autobuild_autobuid = os.path.join(env.test, test.name, 'app', 'autobuild', 'autobuild.py')
@@ -178,26 +219,6 @@ def run_autobuild(test):
             return False
         if autobuild.poll() is not None:
             return True
-
-
-def delete_svn_unversioned(self, rootdir):
-    client = pysvn.Client()
-    for parent, dirnames, filenames in os.walk(rootdir):
-        if parent.find('.svn') == -1:
-            for dirname in dirnames:
-                if dirname.find('.svn') == -1:
-                    dirpath = os.path.join(parent, dirname)
-                    entry = client.info(dirpath)
-                    if entry is None:
-                        os.removedirs(dirpath)
-                        print dirpath
-
-            for filename in filenames:
-                filepath = os.path.join(parent, filename)
-                entry = client.info(filepath)
-                if entry is None:
-                    os.remove(filepath)
-                    print filepath
 
 
 def conver_To_Boolean(value):

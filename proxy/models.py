@@ -47,9 +47,7 @@ class Job(models.Model):
     status = models.CharField(max_length=20, choices=Run_Status)
     start_time = models.DateTimeField(blank=True, null=True)
     end_time = models.DateTimeField(blank=True, null=True)
-    build_command = models.CharField(max_length=250, blank=True, null=True)
     job_number = models.CharField(max_length=20, blank=True, null=True)
-    dev_revision_number = models.CharField(max_length=250, blank=True, null=True)
     email = models.CharField(max_length=100, blank=True, null=True)
 
     def __str__(self):
@@ -72,7 +70,7 @@ class Job_Test(models.Model):
     revision_number = models.CharField(max_length=50, blank=True, null=True, )
 
 
-class Job_Test_Reustl(models.Model):
+class Job_Test_Result(models.Model):
     job_test = models.OneToOneField(Job_Test)
     log = models.TextField(blank=True, null=True)
     log_path = models.CharField(max_length=250)
@@ -81,6 +79,7 @@ class Job_Test_Reustl(models.Model):
 
 class Job_Test_Distributed_Result(models.Model):
     job_test = models.ForeignKey(Job_Test)
+    script = models.CharField(max_length=250)
     log = models.TextField(blank=True, null=True)
     log_path = models.CharField(max_length=250)
     report = models.CharField(max_length=250, blank=True, null=True)

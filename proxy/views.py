@@ -2,18 +2,21 @@
 from __future__ import unicode_literals
 
 import json
+import time
 
 from django.core import serializers
 from django.shortcuts import render, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 
-from models import Project
+from handler import job as job_handler
 from handler import project as project_handler
+from models import Project, Job
 
 
-def job_start(request):
-    rs = {'status':'sccuess'}
+def job_start(request, project):
+    rs = job_handler.start(request, project)
     return HttpResponse(json.dumps(rs), content_type='application/json')
+
 
 def project(request):
     return render(request, 'proxy/project.html')
@@ -58,7 +61,27 @@ def job(request):
 
 
 def job_getall(request, number):
-    return HttpResponse(json.dumps({}), content_type='application/json')
+    list_job = Job.objects.all().order_by('-pk')[:number]
+    results = []
+    for job in list_job:
+        tests = []
+        start_time = ""
+        end_time = ''
+        if job.start_time is not None:
+            start_time = job.start_time.strftime('%Y-%m-%d %H:%M:%S')
+        if job.end_time is not None:
+            end_time = job.end_time.strftime('%Y-%m-%d %H:%M:%S')
+        myjob = {'name': job.project, 'status': job.status, 'start': start_time,
+                 'end': end_time, 'tests': tests}
+        for test in job.job_test_set.all():
+            tests.append(
+                {'name': test.name, 'parameter': test.robot_parameter, 'status': test.status,
+                 'log': test.job_test_result.id,
+                 'id': test.id})
+        if not tests:
+            continue
+        results.append(myjob)
+    return HttpResponse(json.dumps(results), content_type='application/json')
 
 
 def lab(request):
