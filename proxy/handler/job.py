@@ -34,7 +34,7 @@ def start(request, project):
         job.end_time = utility.gettime()
         job.status = 'Error'
         job.save()
-        utility.logmsg(job.log.path, str(e))
+        utility.logmsg(job.job_log.path, str(e))
         utility.save_log(job)
         raise Exception(e)
 
@@ -50,7 +50,7 @@ def get_results(request, job):
         testdict['name'] = t.name
         testdict['status'] = t.status
         testdict['report'] = "http://%s/regression/report/%s" % (request.get_host(), t.id)
-        testdict['runtime_log'] = "http://%s/regression/test/log/%s" % (request.get_host(), t.test_log.id)
+        testdict['runtime_log'] = "http://%s/regression/test/log/%s" % (request.get_host(), t.job_test_result.id)
         tests.append(testdict)
         if status == 'FAIL':
             status = False

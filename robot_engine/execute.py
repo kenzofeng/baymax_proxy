@@ -5,14 +5,15 @@ import os
 import sys
 import time
 from datetime import *
+import threading
 
-import manage
+import requests
+
 import testcase
-import testparameter
+import testresult
 import utility
 from proxy import env
-from proxy.models import Job, Node, Job_Test_Distributed_Result
-from testrun import TestRun
+from proxy.models import Job, Node
 
 mswindows = (sys.platform == "win32")
 
@@ -22,7 +23,7 @@ class Execute():
         self.ip = ip
         self.job = job
         self.parameter = parameter
-        self.nodes = Node.objects.all()
+        self.nodes = None
 
     def run(self):
         testcase.jot_test_init(self.job)
@@ -38,37 +39,73 @@ class Execute():
             except Exception:
                 break
             time.sleep(2)
-        self.job.status = 'running'
+        self.job.status = 'Running'
         self.job.save()
         job_tests = self.job.job_test_set.all()
         for test in job_tests:
             self.execute(test)
 
-    def distribute_test_script(self, test):
-        testpath = os.path.join(env.test, test.name)
-        testrun = TestRun(len(self.nodes), testpath)
-        for ts_case in testrun.RunCase:
-            test_ds_random_str = utility.random_str()
-            test_ds = Job_Test_Distributed_Result()
-            test_ds.job_test = test
-            test_ds.script = "%s_%s" % (test.name, test_ds_random_str)
-            test_ds.report = "%s/%s_%s" % (
-                utility.gettoday(), datetime.utcnow().strftime('%H%M%S'), test.name, test_ds_random_str)
-            test_ds.save()
-            testparameter.create_argfile(ts_case, testpath)
-            utility.zip_file(testpath, os.path.join(env.tmp, test_ds.script))
+    def rquest_test(self, test_ds, node):
+        try:
+            r = requests.post("http://%s/%s/%s/start" % (node.host, test_ds.job_test.name, test_ds.pk),
+                              data={"filename": "%s_%s.zip" % (test_ds.job_test.name, test_ds.pk)}, files={
+                    "script": open(os.path.join(env.tmp, "%s.zip" % test_ds.script), 'rb')})
+            download_zip = os.path.join(env.tmp, utility.gettoday(), "report_%s.zip" % r.headers["filename"])
+            open(download_zip, 'wb').write(r.content)
+            utility.extract_zip(download_zip, os.path.join(env.tmp, test_ds.report))
+        except Exception, e:
+            print e
+        finally:
+            node.status = "Done"
+            node.save()
+
+    def send_test(self, test):
+        request_threads = []
+        test_ds_all = test.job_test_distributed_result_set.all()
+        for test_ds, node in zip(test_ds_all, self.nodes):
+            node.status = 'Running'
+            node.save()
+            rt = threading.Thread(target=self.rquest_test, args=(test_ds, node))
+            rt.setDaemon(True)
+            rt.start()
+            request_threads.append(rt)
+        for rq in request_threads:
+            rq.join()
+
+    def merge_test_report(self, test):
+        test_report = os.path.join(env.report, test.job_test_result.report)
+        test_ds_reports = [os.path.join(env.tmp, test_ds.report) for test_ds in
+                           test.job_test_distributed_result_set.all() if
+                           os.path.exists(os.path.join(env.tmp, test_ds.report))]
+        for r in test_ds_reports:
+            utility.copytree(r, test_report)
+        test_ds_reports = tuple([os.path.join(ds_report, 'output.xml') for ds_report in test_ds_reports])
+        testresult.merge_report(test_report, *test_ds_reports)
+
+    def check_use_node_server(self):
+        nodes = Node.objects.filter(status='Done')
+        if len(nodes) == 0:
+            raise Exception("There is no node server to use")
+        self.nodes = nodes
 
     def execute(self, test):
         try:
-            test.status = 'running'
+            test.status = 'Running'
             test.save()
-            manage.test_checkout(test)
-            if utility.run_autobuild(test, self.parameter):
-                self.distribute_test_script()
+            self.check_use_node_server()
+            testcase.checkout_script(test)
+            if testcase.run_autobuild(test, self.parameter):
+                testcase.distribute_test_script(self.nodes, test)
+                self.send_test(test)
+                self.merge_test_report(test)
             else:
                 pass
+            test.status = 'Done'
+            test.save()
         except Exception, e:
             print e
+            test.status = 'Error'
+            test.save()
 
 
             # def execute(self, test):

@@ -1,9 +1,10 @@
-import sys
+import os
+
 from robot.api import ExecutionResult, ResultWriter
 
-result = ExecutionResult(r'C:\Users\DT161\Desktop\1\output.xml',r'C:\Users\DT161\Desktop\2\output.xml',merge=True)
-# result.save(r'C:\Users\DT161\Desktop\newoutput.xml')
 
-
-writer = ResultWriter(result)
-writer.write_results(log=r'C:\Users\DT161\Desktop\new\log',output=r'C:\Users\DT161\Desktop\new\output',report=r'C:\Users\DT161\Desktop\new\report')
+def merge_report(test_report_path, *report):
+    result = ExecutionResult(*report, merge=True)
+    writer = ResultWriter(result)
+    writer.write_results(log=os.path.join(test_report_path, 'log'), output=os.path.join(test_report_path, 'output'),
+                         report=os.path.join(test_report_path, 'report'))
