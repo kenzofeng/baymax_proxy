@@ -2,15 +2,18 @@
 from __future__ import unicode_literals
 
 import json
-import time
+import os
+import zlib
 
 from django.core import serializers
 from django.shortcuts import render, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 
+import env
 from handler import job as job_handler
 from handler import project as project_handler
-from models import Project, Job
+from models import Project, Job, Job_Test_Result, Job_Test
+import requests
 
 
 def job_start(request, project):
@@ -60,6 +63,69 @@ def job(request):
     return render(request, 'proxy/job.html')
 
 
+def test_run_log(request, logid):
+    job_test_result = Job_Test_Result.objects.get(pk=logid)
+    job_test = job_test_result.job_test
+    log = job_test_result.log
+    joblog = ''
+    if log is not None:
+        log = zlib.decompress(log.decode("base64"))
+        for l in log.split('\n'):
+            joblog = joblog + "<span>%s</span><br/>" % (l)
+        return HttpResponse(joblog, content_type='text/html')
+    else:
+        try:
+            logpath = os.path.join(env.log, job_test_result.log_path)
+            if os.path.exists(logpath):
+                f = open(logpath, 'r')
+                fst = f.read()
+                f.close()
+                for l in fst.split('\n'):
+                    joblog = joblog + "<span>%s</span><br/>" % (l)
+            test_ds_all = job_test.job_test_distributed_result_set.all()
+            for test_ds in test_ds_all:
+                try:
+                    r = requests.get("http://%s/test/log/%s" % (test_ds.host, test_ds.pk))
+                    joblog = joblog + r.content
+                except Exception, e:
+                    joblog = joblog + e
+        except Exception, e:
+            return HttpResponse(e)
+    return HttpResponse(joblog, content_type='text/html')
+
+
+def test_log(request, logid):
+    result = ""
+    test = Job_Test.objects.get(pk=logid)
+    path = os.path.join(env.report, test.job_test_result.report, env.log_html)
+    if os.path.exists(path):
+        f = open(path)
+        result = f.read()
+        f.close()
+    return HttpResponse(result, content_type='text/html')
+
+
+def test_report(request, logid):
+    test = Job_Test.objects.get(pk=logid)
+    path = os.path.join(env.report, test.job_test_result.report, env.report_html)
+    f = open(path)
+    return HttpResponse(f.read(), content_type='text/html')
+
+
+def test_compare(request, logid, cid):
+    test = Job_Test.objects.get(pk=logid)
+    path = os.path.join(env.report, test.job_test_result.report, cid)
+    f = open(path)
+    return HttpResponse(f.read(), content_type='text/html')
+
+
+def test_redfile(request, logid, redfile):
+    test = Job_Test.objects.get(pk=logid)
+    path = os.path.join(env.report, test.job_test_result.report, env.deps, redfile)
+    f = open(path)
+    return HttpResponse(f.read(), content_type='text/css')
+
+
 def job_getall(request, number):
     list_job = Job.objects.all().order_by('-pk')[:number]
     results = []
@@ -76,6 +142,7 @@ def job_getall(request, number):
         for test in job.job_test_set.all():
             tests.append(
                 {'name': test.name, 'parameter': test.robot_parameter, 'status': test.status,
+                 'version': test.revision_number,
                  'log': test.job_test_result.id,
                  'id': test.id})
         if not tests:

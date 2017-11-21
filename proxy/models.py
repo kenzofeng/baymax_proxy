@@ -79,6 +79,7 @@ class Job_Test_Result(models.Model):
 
 class Job_Test_Distributed_Result(models.Model):
     job_test = models.ForeignKey(Job_Test)
+    host = models.CharField(max_length=250)
     script = models.CharField(max_length=250)
     log = models.TextField(blank=True, null=True)
     log_path = models.CharField(max_length=250)

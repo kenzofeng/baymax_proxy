@@ -25,3 +25,5 @@ from robot_engine import utility
 # shutil.copytree(r'D:\workspace\Baymax_Proxy\project\tmp\20171118\report_channel_Tuniu_endpoint_67',
 #                 r'D:\workspace\Baymax_Proxy\project\report\tuniu', ignore=True)
 # utility.copytree(r'D:\workspace\Baymax_Proxy\project\tmp\20171118\report_channel_Tuniu_endpoint_67',r'D:\workspace\Baymax_Proxy\project\report\tuniu')
+# r= requests.get("http://%s/test/log/%s" % ("10.200.152.27:8888",17))
+# print r.content

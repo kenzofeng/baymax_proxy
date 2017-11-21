@@ -34,6 +34,7 @@
                         <table class="ui small table very compact">
                             <thead>
                             <th class="three wide">Test</th>
+                            <th class="one wide">Version</th>
                             <th>Robot Parameter</th>
                             <th class="one wide">Status</th>
                             <th class="two wide">runtime log</th>
@@ -42,17 +43,18 @@
                             <tbody>
                             <tr ng-repeat="test in tj.tests">
                                 <td class="collapsing" ng-bind="test.name"></td>
+                                <td class="collapsing" ng-bind="test.version"></td>
                                 <td class="collapsing" ng-bind="test.parameter"></td>
                                 <td class="collapsing" ng-bind="test.status"></td>
                                 <td class="collapsing">
                                     <a target='_blank'
-                                       href='/proxy/test/log/{% templatetag openvariable %} test.log {% templatetag closevariable %}'>
+                                       href='/test/log/{% templatetag openvariable %} test.log {% templatetag closevariable %}'>
                                         <i class='large file text outline icon'></i>
                                     </a>
                                 </td>
                                 <td class="collapsing">
                                     <a target='_blank'
-                                       href='/proxy/report/{% templatetag openvariable %} test.id {% templatetag closevariable %}'>
+                                       href='/report/{% templatetag openvariable %} test.id {% templatetag closevariable %}'>
                                         <i class='large file text outline icon'></i>
                                     </a>
                                 </td>
@@ -77,6 +79,7 @@
         $(function(){
             $('#testjob').addClass('active');
         })
+
 </script>
 <script type="text/javascript">
         var TestJobModule=angular.module('TestJobModule', []);
@@ -87,5 +90,6 @@
                 });
                ;}
             ]);
+
 </script>
 </html>

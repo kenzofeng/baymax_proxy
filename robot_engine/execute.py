@@ -65,6 +65,8 @@ class Execute():
         for test_ds, node in zip(test_ds_all, self.nodes):
             node.status = 'Running'
             node.save()
+            test_ds.host = node.host
+            test_ds.save()
             rt = threading.Thread(target=self.rquest_test, args=(test_ds, node))
             rt.setDaemon(True)
             rt.start()
@@ -79,7 +81,7 @@ class Execute():
                            os.path.exists(os.path.join(env.tmp, test_ds.report))]
         for r in test_ds_reports:
             utility.copytree(r, test_report)
-        test_ds_reports = tuple([os.path.join(ds_report, 'output.xml') for ds_report in test_ds_reports])
+        test_ds_reports = tuple([os.path.join(ds_report, env.output_xml) for ds_report in test_ds_reports])
         testresult.merge_report(test_report, *test_ds_reports)
 
     def check_use_node_server(self):
@@ -98,56 +100,17 @@ class Execute():
                 testcase.distribute_test_script(self.nodes, test)
                 self.send_test(test)
                 self.merge_test_report(test)
+                test.status = utility.get_result_fromxml(os.path.join(env.report, test.job_test_result.report),
+                                                         env.output_xml)
+                test.save()
             else:
-                pass
-            test.status = 'Done'
-            test.save()
+                test.status = 'Error'
+                test.save()
+            utility.send_email(test, self.ip)
         except Exception, e:
-            print e
             test.status = 'Error'
             test.save()
-
-
-            # def execute(self, test):
-            #     try:
-            #         robot = None
-            #         opath = os.getcwd()
-            #         test.status = 'running'
-            #         test.save()
-            #         manage.test_checkout(test)
-            #         utility.update_Doraemon()
-            #         if utility.run_autobuild(test):
-            #             testpath = os.path.join(env.test, test.name)
-            #             reportpath = os.path.join(env.report, test.report)
-            #             os.chdir(testpath)
-            #             if mswindows:
-            #                 command = "pybot.bat  %s --outputdir %s  %s" % (test.robot_parameter, reportpath, testpath)
-            #                 utility.logmsg(test.test_log.path, command)
-            #                 robot = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
-            #             else:
-            #                 command = "pybot  %s --outputdir %s  %s" % (test.robot_parameter, reportpath, testpath)
-            #                 utility.logmsg(test.test_log.path, command)
-            #                 robot = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
-            #             test.pid = robot.pid
-            #             test.save()
-            #             while True:
-            #                 log = robot.stdout.readline()
-            #                 utility.logmsgs(test.test_log.path, log.replace('\r\n', ''))
-            #                 if robot.poll() is not None:
-            #                     break
-            #             test.status = utility.get_result_fromxml(os.path.join(reportpath, env.output_xml))
-            #             test.save()
-            #         else:
-            #             test.status = 'error'
-            #             test.save()
-            #         utility.send_email(test, self.ip)
-            #     except Exception, e:
-            #         test.status = 'error'
-            #         test.save()
-            #         utility.send_email(test, self.ip)
-            #         utility.logmsg(test.test_log.path, e)
-            #     finally:
-            #         utility.save_test_log(test)
-            #         if robot is not None:
-            #             robot.terminate()
-            #         os.chdir(opath)
+            utility.logmsg(test.job_test_result.log_path, e)
+        finally:
+            # utility.save_test_log(test)
+            pass

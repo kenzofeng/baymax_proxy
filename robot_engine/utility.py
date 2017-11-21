@@ -101,14 +101,15 @@ def get_result_fromxml(outputpath):
 
 
 def remove_file(fpath):
-    try:
-        os.remove(fpath)
-    except Exception:
-        pass
-    if mswindows:
-        os.system('rd /S/Q %s' % fpath)
-    else:
-        os.system('rm -rf %s' % fpath)
+    if os.path.exists(fpath):
+        try:
+            os.remove(fpath)
+        except Exception:
+            pass
+        if mswindows:
+            os.system('rd /S/Q %s' % fpath)
+        else:
+            os.system('rm -rf %s' % fpath)
 
 
 def save_test_log(test):
@@ -209,8 +210,8 @@ def random_str(randomlength=15):
 def kill(pid):
     try:
         os.kill(pid, signal.SIGTERM)
-    except Exception, e:
-        print e
+    except Exception:
+        pass
 
 
 def copytree(src, dst, symlinks=False):
@@ -246,6 +247,7 @@ def copytree(src, dst, symlinks=False):
         errors.extend((src, dst, str(why)))
     if errors:
         raise Exception(errors)
+
 
 def conver_To_Boolean(value):
     if value.lower() == "true":

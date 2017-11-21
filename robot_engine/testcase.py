@@ -56,7 +56,6 @@ def run_autobuild(test, parameter):
     status = False
     test_app_autobuid = os.path.join(env.test, test.name, 'app', 'autobuild.py')
     test_app_autobuild_autobuid = os.path.join(env.test, test.name, 'app', 'autobuild', 'autobuild.py')
-    autobuild = None
     pid = 0
     if os.path.exists(test_app_autobuid):
         command = "python %s run" % (test_app_autobuid)
