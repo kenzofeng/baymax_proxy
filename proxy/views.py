@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 
 import json
 import os
@@ -85,10 +83,10 @@ def test_run_log(request, logid):
             test_ds_all = job_test.job_test_distributed_result_set.all()
             for test_ds in test_ds_all:
                 try:
-                    r = requests.get("http://%s/test/log/%s" % (test_ds.host, test_ds.pk))
+                    r = requests.get("http://%s/test/log/%s" % (test_ds.host, test_ds.pk),timeout=5)
                     joblog = joblog + r.content
                 except Exception, e:
-                    joblog = joblog + e
+                    joblog = joblog + str(e)
         except Exception, e:
             return HttpResponse(e)
     return HttpResponse(joblog, content_type='text/html')

@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 
 import os
 import subprocess
@@ -52,54 +50,61 @@ def distribute_test_script(nodes, test):
 
 
 def run_autobuild(test, parameter):
-    opath = os.getcwd()
-    status = False
-    test_app_autobuid = os.path.join(env.test, test.name, 'app', 'autobuild.py')
-    test_app_autobuild_autobuid = os.path.join(env.test, test.name, 'app', 'autobuild', 'autobuild.py')
-    pid = 0
-    if os.path.exists(test_app_autobuid):
-        command = "python %s run" % (test_app_autobuid)
-        utility.logmsg(test.job_test_result.log_path, command)
-        os.chdir(os.path.join(env.test, test.name, 'app'))
-        autobuild = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-        pid = autobuild.pid
-    elif os.path.exists(test_app_autobuild_autobuid):
-        command = "python %s run" % (test_app_autobuild_autobuid)
-        utility.logmsg(test.job_test_result.log_path, command)
-        os.chdir(os.path.join(env.test, test.name, 'app', 'autobuild'))
-        autobuild = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
-        pid = autobuild.pid
-    else:
-        utility.logmsg(test.job_test_result.log_path, "not found autobuild.py to build your app")
-        os.chdir(opath)
-        return True
-    while True:
-        log = autobuild.stdout.readline()
-        utility.logmsgs(test.job_test_result.log_path, log.replace('\r\n', ''))
-        if 'ERROR' in log:
-            status = False
-            break
-        if 'FileNotFoundException' in log:
-            status = False
-            break
-        if autobuild.poll() is not None:
+    try:
+        log = None
+        opath = os.getcwd()
+        status = False
+        test_app_autobuid = os.path.join(env.test, test.name, 'app', 'autobuild.py')
+        test_app_autobuild_autobuid = os.path.join(env.test, test.name, 'app', 'autobuild', 'autobuild.py')
+        pid = 0
+        if os.path.exists(test_app_autobuid):
+            command = "python %s run" % (test_app_autobuid)
+            utility.logmsg(test.job_test_result.log_path, command)
+            os.chdir(os.path.join(env.test, test.name, 'app'))
+            autobuild = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            pid = autobuild.pid
+        elif os.path.exists(test_app_autobuild_autobuid):
+            command = "python %s run" % (test_app_autobuild_autobuid)
+            utility.logmsg(test.job_test_result.log_path, command)
+            os.chdir(os.path.join(env.test, test.name, 'app', 'autobuild'))
+            autobuild = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
+            pid = autobuild.pid
+        else:
+            utility.logmsg(test.job_test_result.log_path, "not found autobuild.py to build your app")
+            os.chdir(opath)
             status = True
-            break
-    os.chdir(opath)
-    utility.kill(pid)
-    return status
+        while True:
+            log = autobuild.stdout.readline()
+            utility.logmsgs(test.job_test_result.log_path, log.replace('\r\n', ''))
+            if '|-ERROR' in log:
+                status = False
+                break
+            if 'File is not exists' in log:
+                status = False
+                break
+            if autobuild.poll() is not None:
+                status = True
+                break
+        os.chdir(opath)
+        utility.kill(pid)
+        return status
+    except Exception, e:
+        raise Exception("Autobuild Error:%s" % e)
 
 
 def checkout_script(test):
-    utility.logmsg(test.job_test_result.log_path, "checkout test automation from svn")
-    testpath = os.path.join(env.test, test.name)
-    if os.path.exists(testpath):
-        utility.remove_file(testpath)
-        utility.remove_file(testpath)
-        utility.remove_file(testpath)
-    os.mkdir(testpath)
-    r = svn.remote.RemoteClient(test.testurl)
-    r.checkout(testpath)
-    l = svn.local.LocalClient(testpath)
-    test.revision_number = l.info()['commit#revision']
-    test.save()
+    try:
+        utility.logmsg(test.job_test_result.log_path, "checkout test automation from svn")
+        testpath = os.path.join(env.test, test.name)
+        if os.path.exists(testpath):
+            utility.remove_file(testpath)
+            utility.remove_file(testpath)
+            utility.remove_file(testpath)
+        os.mkdir(testpath)
+        r = svn.remote.RemoteClient(test.testurl)
+        r.checkout(testpath)
+        l = svn.local.LocalClient(testpath)
+        test.revision_number = l.info()['commit#revision']
+        test.save()
+    except Exception, e:
+        raise Exception("Checkout Automation Script Error:%s" % e)

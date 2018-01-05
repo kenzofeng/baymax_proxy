@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 
 import os
 import sys
@@ -100,8 +98,8 @@ class Execute():
                 testcase.distribute_test_script(self.nodes, test)
                 self.send_test(test)
                 self.merge_test_report(test)
-                test.status = utility.get_result_fromxml(os.path.join(env.report, test.job_test_result.report),
-                                                         env.output_xml)
+                test.status = utility.get_result_fromxml(
+                    os.path.join(env.report, test.job_test_result.report, env.output_xml))
                 test.save()
             else:
                 test.status = 'Error'
@@ -110,6 +108,7 @@ class Execute():
         except Exception, e:
             test.status = 'Error'
             test.save()
+            print e
             utility.logmsg(test.job_test_result.log_path, e)
         finally:
             # utility.save_test_log(test)
