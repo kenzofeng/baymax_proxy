@@ -1,4 +1,3 @@
-
 import os
 import subprocess
 
@@ -47,6 +46,17 @@ def distribute_test_script(nodes, test):
             utility.mkdir(os.path.join(env.report, utility.gettoday()))
             testparameter.create_argfile(ts_case, testpath)
             utility.zip_file(testpath, os.path.join(env.tmp, "%s.zip" % test_ds.script))
+
+
+def delete_distribute_test_script(test):
+    testpath = os.path.join(env.test, test.name)
+    for test_ds in test.job_test_distributed_result_set.all():
+        utility.remove_file(testpath, os.path.join(env.tmp, "%s.zip" % test_ds.script))
+
+
+def delete_distribute_test_report(*reports):
+    for reprot in reports:
+        utility.remove_dir(reprot)
 
 
 def run_autobuild(test, parameter):

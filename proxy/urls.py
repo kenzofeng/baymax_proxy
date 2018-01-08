@@ -6,6 +6,7 @@ from proxy import views
 urlpatterns = [
                   url(r'(?P<project>.*)/start', views.job_start),
                   url(r'^$', views.project, name='project'),
+                  url(r'^status$', views.status),
                   url(r'^project/getall$', views.project_getall),
                   url(r'^project/getdetail$', views.project_getdetail),
                   url(r'^project/add$', views.project_add),

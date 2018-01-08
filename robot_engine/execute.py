@@ -81,6 +81,7 @@ class Execute():
             utility.copytree(r, test_report)
         test_ds_reports = tuple([os.path.join(ds_report, env.output_xml) for ds_report in test_ds_reports])
         testresult.merge_report(test_report, *test_ds_reports)
+        # testcase.delete_distribute_test_report(*test_ds_reports)
 
     def check_use_node_server(self):
         nodes = Node.objects.filter(status='Done')
