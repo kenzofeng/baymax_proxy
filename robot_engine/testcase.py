@@ -51,13 +51,16 @@ def distribute_test_script(nodes, test):
 def delete_distribute_test_script(test):
     testpath = os.path.join(env.test, test.name)
     for test_ds in test.job_test_distributed_result_set.all():
-        utility.remove_file(testpath, os.path.join(env.tmp, "%s.zip" % test_ds.script))
+        utility.remove_file(os.path.join(env.tmp, "%s.zip" % test_ds.script))
 
 
-def delete_distribute_test_report(*reports):
-    for reprot in reports:
-        utility.remove_dir(reprot)
-
+def delete_distribute_test_report(test):
+    test_ds_reports = [os.path.join(env.tmp, test_ds.report) for test_ds in
+                       test.job_test_distributed_result_set.all() if
+                       os.path.exists(os.path.join(env.tmp, test_ds.report))]
+    for reprot in test_ds_reports:
+        utility.remove_file("%s.zip" % reprot)
+        utility.remove_file(reprot)
 
 def run_autobuild(test, parameter):
     try:

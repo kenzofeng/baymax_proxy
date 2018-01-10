@@ -72,6 +72,7 @@ class Execute():
         for rq in request_threads:
             rq.join()
 
+
     def merge_test_report(self, test):
         test_report = os.path.join(env.report, test.job_test_result.report)
         test_ds_reports = [os.path.join(env.tmp, test_ds.report) for test_ds in
@@ -81,7 +82,7 @@ class Execute():
             utility.copytree(r, test_report)
         test_ds_reports = tuple([os.path.join(ds_report, env.output_xml) for ds_report in test_ds_reports])
         testresult.merge_report(test_report, *test_ds_reports)
-        # testcase.delete_distribute_test_report(*test_ds_reports)
+
 
     def check_use_node_server(self):
         nodes = Node.objects.filter(status='Done')
@@ -112,5 +113,7 @@ class Execute():
             print e
             utility.logmsg(test.job_test_result.log_path, e)
         finally:
-            # utility.save_test_log(test)
+            testcase.delete_distribute_test_script(test)
+            testcase.delete_distribute_test_report(test)
+            utility.save_test_log(test)
             pass

@@ -119,7 +119,7 @@ def remove_dir(path):
         os.system('rm -rf %s' % path)
 
 def save_test_log(test):
-    log_path = os.path.join(env.log, test.job_test_result.path)
+    log_path = os.path.join(env.log, test.job_test_result.log_path)
     f = open(log_path, 'rb')
     fstr = f.read()
     f.close()
