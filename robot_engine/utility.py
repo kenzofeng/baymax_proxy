@@ -147,10 +147,10 @@ def set_email(test, host):
         #                "job_number":test.job.job_number,
         "project": test.job.project,
         "Automation": test.name,
-        'log': 'http://%s/regression/test/log/%s' % (host, test.job_test_result.id),
+        'log': 'http://%s/test/log/%s' % (host, test.job_test_result.id),
         'test_version': test.revision_number,
         'result': test.status,
-        'reportlink': 'http://%s/regression/report/%s' % (host, test.id)}
+        'reportlink': 'http://%s/report/%s' % (host, test.id)}
     path = '\\'.join((emailfile.split('\\'))[:-1])
     engine = tenjin.Engine(path=[path], cache=tenjin.MemoryCacheStorage())
     emailstring = engine.render(emailfile, context)

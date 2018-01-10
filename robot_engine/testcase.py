@@ -82,7 +82,7 @@ def run_autobuild(test, parameter):
         else:
             utility.logmsg(test.job_test_result.log_path, "not found autobuild.py to build your app")
             os.chdir(opath)
-            status = True
+            return True
         while True:
             log = autobuild.stdout.readline()
             utility.logmsgs(test.job_test_result.log_path, log.replace('\r\n', ''))
