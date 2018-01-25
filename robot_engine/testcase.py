@@ -1,9 +1,9 @@
 import os
 import subprocess
-
+import logging
 import svn.local
 import svn.remote
-
+import autobuild
 import utility
 from proxy import env
 from proxy.models import Test_Map, Job_Test, Job_Test_Result, Job_Test_Distributed_Result
@@ -28,6 +28,7 @@ def jot_test_init(job):
         result.job_test = job_test
         result.log_path = "%s/Test_%s_%s.log" % (utility.gettoday(), m.test, utility.getnow())
         result.report = "%s/%s_%s" % (utility.gettoday(), utility.getnow(), m.test)
+        utility.newlogger(job_test.name, result.log_path)
         result.save()
 
 
@@ -62,52 +63,79 @@ def delete_distribute_test_report(test):
         utility.remove_file("%s.zip" % reprot)
         utility.remove_file(reprot)
 
+
 def run_autobuild(test, parameter):
+    oldpath = os.getcwd()
+    status = False
     try:
-        log = None
-        opath = os.getcwd()
-        status = False
-        test_app_autobuid = os.path.join(env.test, test.name, 'app', 'autobuild.py')
-        test_app_autobuild_autobuid = os.path.join(env.test, test.name, 'app', 'autobuild', 'autobuild.py')
-        pid = 0
-        if os.path.exists(test_app_autobuid):
-            command = "python %s run" % (test_app_autobuid)
-            utility.logmsg(test.job_test_result.log_path, command)
-            os.chdir(os.path.join(env.test, test.name, 'app'))
-            autobuild = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-            pid = autobuild.pid
+        autobuild.logname = test.name
+        test_app_autobuid = os.path.join(env.test, test.name, 'app', 'config.ini')
+        test_app_autobuild_autobuid = os.path.join(env.test, test.name, 'app', 'autobuild', 'config.ini')
+        if os.path.exists(test_app_autobuid, ):
+            sha, branch = autobuild.build(test_app_autobuid, **parameter)
+            status = True
         elif os.path.exists(test_app_autobuild_autobuid):
-            command = "python %s run" % (test_app_autobuild_autobuid)
-            utility.logmsg(test.job_test_result.log_path, command)
-            os.chdir(os.path.join(env.test, test.name, 'app', 'autobuild'))
-            autobuild = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
-            pid = autobuild.pid
+            sha, branch = autobuild.build(test_app_autobuild_autobuid, **parameter)
+            status = True
         else:
-            utility.logmsg(test.job_test_result.log_path, "not found autobuild.py to build your app")
-            os.chdir(opath)
+            utility.job_test_log(test.name, "Can't found autobuild config.ini to build your app")
             return True
-        while True:
-            log = autobuild.stdout.readline()
-            utility.logmsgs(test.job_test_result.log_path, log.replace('\r\n', ''))
-            if '|-ERROR' in log:
-                status = False
-                break
-            if 'File is not exists' in log:
-                status = False
-                break
-            if autobuild.poll() is not None:
-                status = True
-                break
-        os.chdir(opath)
-        utility.kill(pid)
+        test.project_sha = sha
+        test.project_branch = branch
+        test.save()
         return status
     except Exception, e:
         raise Exception("Autobuild Error:%s" % e)
+    finally:
+        os.chdir(oldpath)
+
+
+# def run_autobuild(test, parameter):
+#     try:
+#         log = None
+#         opath = os.getcwd()
+#         status = False
+#         test_app_autobuid = os.path.join(env.test, test.name, 'app', 'autobuild.py')
+#         test_app_autobuild_autobuid = os.path.join(env.test, test.name, 'app', 'autobuild', 'autobuild.py')
+#         pid = 0
+#         if os.path.exists(test_app_autobuid):
+#             command = "python %s run" % (test_app_autobuid)
+#             utility.logmsg(test.job_test_result.log_path, command)
+#             os.chdir(os.path.join(env.test, test.name, 'app'))
+#             autobuild = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+#             pid = autobuild.pid
+#         elif os.path.exists(test_app_autobuild_autobuid):
+#             command = "python %s run" % (test_app_autobuild_autobuid)
+#             utility.logmsg(test.job_test_result.log_path, command)
+#             os.chdir(os.path.join(env.test, test.name, 'app', 'autobuild'))
+#             autobuild = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
+#             pid = autobuild.pid
+#         else:
+#             utility.logmsg(test.job_test_result.log_path, "not found autobuild.py to build your app")
+#             os.chdir(opath)
+#             return True
+#         while True:
+#             log = autobuild.stdout.readline()
+#             utility.logmsgs(test.job_test_result.log_path, log.replace('\r\n', ''))
+#             if '|-ERROR' in log:
+#                 status = False
+#                 break
+#             if 'File is not exists' in log:
+#                 status = False
+#                 break
+#             if autobuild.poll() is not None:
+#                 status = True
+#                 break
+#         os.chdir(opath)
+#         utility.kill(pid)
+#         return status
+#     except Exception, e:
+#         raise Exception("Autobuild Error:%s" % e)
 
 
 def checkout_script(test):
     try:
-        utility.logmsg(test.job_test_result.log_path, "checkout test automation from svn")
+        utility.job_test_log(test.name, "checkout test automation from svn")
         testpath = os.path.join(env.test, test.name)
         if os.path.exists(testpath):
             utility.remove_file(testpath)

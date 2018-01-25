@@ -17,10 +17,10 @@ mswindows = (sys.platform == "win32")
 
 
 class Execute():
-    def __init__(self, job, ip, parameter):
+    def __init__(self, job, ip, request):
         self.ip = ip
         self.job = job
-        self.parameter = parameter
+        self.parameter = request.GET
         self.nodes = None
 
     def run(self):
@@ -107,13 +107,13 @@ class Execute():
                 test.status = 'Error'
                 test.save()
             utility.send_email(test, self.ip)
+            testcase.delete_distribute_test_report(test)
         except Exception, e:
             test.status = 'Error'
             test.save()
             print e
-            utility.logmsg(test.job_test_result.log_path, e)
+            utility.job_test_log(test.name,e)
         finally:
             testcase.delete_distribute_test_script(test)
-            testcase.delete_distribute_test_report(test)
             utility.save_test_log(test)
             pass

@@ -62,6 +62,8 @@ class Job_Log(models.Model):
 
 class Job_Test(models.Model):
     job = models.ForeignKey(Job)
+    project_sha = models.CharField(max_length=60)
+    project_branch = models.CharField(max_length=60)
     testurl = models.CharField(max_length=250)
     robot_parameter = models.CharField(max_length=250, blank=True, null=True, default='')
     name = models.CharField(max_length=50, blank=True, null=True, default='')

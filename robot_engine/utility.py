@@ -7,9 +7,9 @@ import zipfile
 import zlib
 from datetime import *
 from email.mime.text import MIMEText
-
+import logging
 import shutil
-import svn.local
+import requests
 import tenjin
 from lxml import etree
 
@@ -20,6 +20,18 @@ from tenjin.helpers import *
 import sys
 
 mswindows = (sys.platform == "win32")
+
+
+def newlogger(name, logfilename):
+    handler = logging.FileHandler(os.path.join(env.log, logfilename))
+    logger = logging.getLogger(name)
+    logger.setLevel(logging.INFO)
+    logger.addHandler(handler)
+
+
+def job_test_log(name, log):
+    logger = logging.getLogger(name)
+    logger.info(log)
 
 
 def rendestring(string):
@@ -111,22 +123,34 @@ def remove_file(fpath):
         else:
             os.system('rm -rf %s' % fpath)
 
+
 def remove_dir(path):
-    shutil.rmtree(path,True)
+    shutil.rmtree(path, True)
     if mswindows:
         os.system('rd /S/Q %s' % path)
     else:
         os.system('rm -rf %s' % path)
 
+
 def save_test_log(test):
-    log_path = os.path.join(env.log, test.job_test_result.log_path)
-    f = open(log_path, 'rb')
-    fstr = f.read()
-    f.close()
-    gzipstr = zlib.compress(fstr)
-    test.test_log.text = gzipstr.encode("base64")
-    test.test_log.save()
-    remove_file(log_path)
+    try:
+        log_path = os.path.join(env.log, test.job_test_result.log_path)
+        f = open(log_path, 'rb')
+        fstr = f.read()
+        f.close()
+        test_ds_all = test.job_test_distributed_result_set.all()
+        for test_ds in test_ds_all:
+            try:
+                r = requests.get("http://%s/test/log/%s" % (test_ds.host, test_ds.pk), timeout=5)
+                fstr = fstr + r.content
+            except Exception, e:
+                fstr = fstr + str(e)
+        gzipstr = zlib.compress(fstr)
+        test.job_test_result.log = gzipstr.encode("base64")
+        test.job_test_result.save()
+        remove_file(log_path)
+    except Exception, e:
+        print e
 
 
 def save_log(job):
@@ -146,6 +170,8 @@ def set_email(test, host):
         "run_time": str(test.job.start_time),
         #                "job_number":test.job.job_number,
         "project": test.job.project,
+        "project_branch": test.project_branch,
+        "project_sha": test.project_sha,
         "Automation": test.name,
         'log': 'http://%s/test/log/%s' % (host, test.job_test_result.id),
         'test_version': test.revision_number,
@@ -171,11 +197,6 @@ def send_email(test, host):
         smtp.login(username, password)
         smtp.sendmail(sender, receiver, msg.as_string())
         smtp.quit()
-
-
-def update_Doraemon():
-    D = svn.local.LocalClient(env.Doraemon)
-    D.update()
 
 
 def zip_file(sourcefile, targetfile):
