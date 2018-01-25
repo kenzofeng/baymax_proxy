@@ -1,4 +1,3 @@
-
 import json
 import os
 import zlib
@@ -83,7 +82,7 @@ def test_run_log(request, logid):
             test_ds_all = job_test.job_test_distributed_result_set.all()
             for test_ds in test_ds_all:
                 try:
-                    r = requests.get("http://%s/test/log/%s" % (test_ds.host, test_ds.pk),timeout=5)
+                    r = requests.get("http://%s/test/log/%s" % (test_ds.host, test_ds.pk), timeout=5)
                     joblog = joblog + r.content
                 except Exception, e:
                     joblog = joblog + str(e)
@@ -109,22 +108,24 @@ def test_report(request, logid):
     f = open(path)
     return HttpResponse(f.read(), content_type='text/html')
 
+
 def test_cache(request, logid, cid):
     test = Job_Test.objects.get(pk=logid)
-    path = os.path.join(env.report, test.job_test_result.report,'cache',cid)
+    path = os.path.join(env.report, test.job_test_result.report, 'cache', cid)
     f = open(path)
     return HttpResponse(f.read(), content_type='text')
 
+
 def test_compare(request, logid, cid):
     test = Job_Test.objects.get(pk=logid)
-    path = os.path.join(env.report, test.job_test_result.report,'compare',cid)
+    path = os.path.join(env.report, test.job_test_result.report, 'compare', cid)
     f = open(path)
     return HttpResponse(f.read(), content_type='text/html')
 
 
 def test_redfile(request, logid, redfile):
     test = Job_Test.objects.get(pk=logid)
-    path = os.path.join(env.report, test.job_test_result.report,'compare', env.deps, redfile)
+    path = os.path.join(env.report, test.job_test_result.report, 'compare', env.deps, redfile)
     f = open(path)
     return HttpResponse(f.read(), content_type='text/css')
 
@@ -145,6 +146,34 @@ def job_getall(request, number):
         for test in job.job_test_set.all():
             tests.append(
                 {'name': test.name, 'parameter': test.robot_parameter, 'status': test.status,
+                 'project_branch': test.project_branch, 'project_sha': test.project_sha,
+                 'version': test.revision_number,
+                 'log': test.job_test_result.id,
+                 'id': test.id})
+        if not tests:
+            continue
+        results.append(myjob)
+    return HttpResponse(json.dumps(results), content_type='application/json')
+
+
+@csrf_exempt
+def job_search(request):
+    list_job = Job.objects.filter(project=request.POST['pj[pk]'])
+    results = []
+    for job in list_job:
+        tests = []
+        start_time = ""
+        end_time = ''
+        if job.start_time is not None:
+            start_time = job.start_time.strftime('%Y-%m-%d %H:%M:%S')
+        if job.end_time is not None:
+            end_time = job.end_time.strftime('%Y-%m-%d %H:%M:%S')
+        myjob = {'name': job.project, 'status': job.status, 'start': start_time,
+                 'end': end_time, 'tests': tests}
+        for test in job.job_test_set.all():
+            tests.append(
+                {'name': test.name, 'parameter': test.robot_parameter, 'status': test.status,
+                 'project_branch': test.project_branch, 'project_sha': test.project_sha,
                  'version': test.revision_number,
                  'log': test.job_test_result.id,
                  'id': test.id})

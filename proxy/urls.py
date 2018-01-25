@@ -14,6 +14,7 @@ urlpatterns = [
                   url(r'^test/log/(?P<logid>\d+)/$', views.test_run_log),
                   url(r'^job$', views.job, name='job'),
                   url(r'^job/getall/(?P<number>\d+)$', views.job_getall),
+                  url(r'^job/search/$', views.job_search),
                   url(r'^lab$', views.lab, name='lab'),
                   url(r'^lab/getall$', views.lab_getall),
                   url(r'^report/(?P<logid>\d+)/$', views.test_log),

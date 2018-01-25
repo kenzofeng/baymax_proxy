@@ -14,13 +14,30 @@
     <div class="sixteen wide column">{% include 'proxy/nav.html'%}</div>
     <div class="ui internally celled grid">
         <div class="row">
+            <div class="sixteen wide column">
+                <form class="ui form" id="tform" method="post">
+                    <div class="fields">
+                        <div class="three wide field">
+                            <select name="project" class="ui search dropdown"
+                                    data-ng-options="pj.pk for pj in testprojects" ng-model="pj">
+                                <option value="">Project</option>
+                            </select>
+                        </div>
+                        <div class="field">
+                            <div class="ui green right submit small button" ng-click="search()">Search</div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="row">
             <table class="ui compact selectable celled striped teal table">
                 <thead>
                 <tr>
-                    <th class="two wide">Project Job</th>
+                    <th class="one wide">Project Job</th>
                     <th class="one wide">Job Status</th>
-                    <th class="two wide">Start Date</th>
-                    <th class="two wide">End Date</th>
+                    <th class="one wide">Start Date</th>
+                    <th class="one wide">End Date</th>
                     <th>Test Automation</th>
                 </tr>
                 </thead>
@@ -33,7 +50,9 @@
                     <td>
                         <table class="ui small table very compact">
                             <thead>
-                            <th class="three wide">Test</th>
+                            <th class="two wide">Test</th>
+                            <th class="one wide">Project Branch</th>
+                            <th class="two wide">Project SHA</th>
                             <th class="one wide">Version</th>
                             <th>Robot Parameter</th>
                             <th class="one wide">Status</th>
@@ -43,6 +62,8 @@
                             <tbody>
                             <tr ng-repeat="test in tj.tests">
                                 <td class="collapsing" ng-bind="test.name"></td>
+                                <td class="collapsing" ng-bind="test.project_branch"></td>
+                                <td class="collapsing" ng-bind="test.project_sha"></td>
                                 <td class="collapsing" ng-bind="test.version"></td>
                                 <td class="collapsing" ng-bind="test.parameter"></td>
                                 <td class="collapsing" ng-bind="test.status"></td>
@@ -78,7 +99,30 @@
 <script type="text/javascript">
         $(function(){
             $('#testjob').addClass('active');
+            var
+            $menuItem = $('.menu .item'),
+            $dropdown = $('.dropdown'),
+            // alias
+            handler = {
+              activate: function() {
+                if(!$(this).hasClass('dropdown')) {
+                  $(this)
+                  .addClass('active')
+                  .closest('.ui.menu')
+                  .find('.item')
+                  .not($(this))
+                  .removeClass('active')
+                  ;
+                }
+              }
+
+            };
+            $menuItem.on('click', handler.activate);
+            $dropdown.dropdown('save defaults');
         })
+
+
+
 
 </script>
 <script type="text/javascript">
@@ -88,8 +132,27 @@
                 $http.get('/job/getall/30').success(function(result){
                     $scope.testjobs=result
                 });
+                $http.get('/project/getall').success(function(result){
+                    $scope.testprojects=result
+                });
+                $scope.search=function(){
+            		 $('#tform').ajaxSubmit({
+            		 	 data:{pj:$scope.pj},
+                         url:'/job/search/',
+                         success:function(result){
+                        	 $scope.testjobs= result;
+                        	 $scope.$apply();
+                         }
+                         })
+            	};
                ;}
             ]);
+
+
+
+
+
+
 
 </script>
 </html>
