@@ -9,6 +9,12 @@ from robot_engine import utility
 from robot_engine.execute import Execute
 
 
+class Myrequest:
+    def __init__(self, request):
+        self.host = request.get_host()
+        self.GET = request.GET
+
+
 def start(request, project):
     try:
         p = Project.objects.get(pk=project)
@@ -21,7 +27,7 @@ def start(request, project):
         log.path = "%s/project_%s_%s.log" % (utility.gettoday(), p.name, utility.getnow())
         log.save()
         utility.logmsg(log.path, "")
-        execute = Execute(job, request.get_host(), request)
+        execute = Execute(job, request.host, request)
         execute.run()
         job.status = 'Done'
         job.end_time = utility.gettime()
@@ -49,8 +55,8 @@ def get_results(request, job):
         status = t.status
         testdict['name'] = t.name
         testdict['status'] = t.status
-        testdict['report'] = "http://%s/regression/report/%s" % (request.get_host(), t.id)
-        testdict['runtime_log'] = "http://%s/regression/test/log/%s" % (request.get_host(), t.job_test_result.id)
+        testdict['report'] = "http://%s/regression/report/%s" % (request.host, t.id)
+        testdict['runtime_log'] = "http://%s/regression/test/log/%s" % (request.host, t.job_test_result.id)
         tests.append(testdict)
         if status == 'FAIL':
             status = False

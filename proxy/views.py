@@ -11,11 +11,15 @@ from handler import job as job_handler
 from handler import project as project_handler
 from models import Project, Job, Job_Test_Result, Job_Test
 import requests
+from Baymax_Proxy.jobs import scheduler
+import datetime
 
 
 def job_start(request, project):
-    rs = job_handler.start(request, project)
-    return HttpResponse(json.dumps(rs), content_type='application/json')
+    myrequest = job_handler.Myrequest(request)
+    scheduler.add_job(job_handler.start, 'date', run_date=datetime.datetime.now() + datetime.timedelta(seconds=2),
+                      args=[myrequest, project])
+    return HttpResponse({"status": "true"}, content_type='application/json')
 
 
 def project(request):
