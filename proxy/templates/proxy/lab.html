@@ -51,7 +51,7 @@
     </div>
 </div>
 </div>
-<div class="ui modal">
+<div class="ui first modal">
     <i class="close icon"></i>
     <div class="header">
         Project Name: {% templatetag openvariable %}tp.name{% templatetag closevariable %}
@@ -79,6 +79,21 @@
         <div class="ui green approve button">Run</div>
     </div>
 </div>
+<div class="ui second modal">
+    <i class="close icon"></i>
+    <div class="header">
+        Status
+    </div>
+    <div class="content">
+        <div class='ui message'>
+            Job added successfully
+        </div>
+        <div ng-bind='automation'></div>
+    </div>
+    <div class="actions">
+        <div class="ui green approve button">OK</div>
+    </div>
+</div>
 </body>
 <script src="{% static 'proxy/js/jquery-3.0.0.min.js' %}"></script>
 <script src="{% static 'proxy/js/jquery.cookie.js' %}"></script>
@@ -89,6 +104,9 @@
         $(function(){
             $('#testlab').addClass('active');
         })
+
+
+
 
 </script>
 <script type="text/javascript">
@@ -108,20 +126,30 @@
                     success:function(result){
                         $scope.jobs=result;
                         $scope.$apply();
-                        $('.ui.modal').modal({
+                        $('.ui.first.modal').modal({
                         onApprove : function() {
                             $.ajax({
                             type:"GET",
                             url:"/"+jboname+"/start/",
-                            success:function(){
+                            success:function(result){
                             }
                             })
-                            location.href='/job';
+                            $('.ui.second.modal').modal({
+                            onApprove : function() {
+                                location.href='/job';
+                            }
+                            }).modal('show');
                         }
                     }).modal('show');
                         }
                 })}}
             ]);
+
+
+
+
+
+
 
 
 

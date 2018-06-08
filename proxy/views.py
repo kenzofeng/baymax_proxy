@@ -162,7 +162,7 @@ def job_getall(request, number):
 
 @csrf_exempt
 def job_search(request):
-    list_job = Job.objects.filter(project=request.POST['pj[pk]'])
+    list_job = Job.objects.filter(project=request.POST['pj[pk]']).order_by('-start_time')
     results = []
     for job in list_job:
         tests = []
