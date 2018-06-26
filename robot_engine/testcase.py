@@ -45,7 +45,10 @@ def distribute_test_script(nodes, test):
             test_ds.save()
             utility.mkdir(os.path.join(env.tmp, utility.gettoday()))
             utility.mkdir(os.path.join(env.report, utility.gettoday()))
-            testparameter.create_argfile(ts_case, testpath)
+            if test.robot_parameter != "":
+                testparameter.create_argfile_parameter(testpath, test.robot_parameter)
+            else:
+                testparameter.create_argfile(testpath, ts_case)
             utility.zip_file(testpath, os.path.join(env.tmp, "%s.zip" % test_ds.script))
 
 
@@ -64,7 +67,7 @@ def delete_distribute_test_report(test):
         utility.remove_file(reprot)
 
 
-def run_autobuild(test, parameter):
+def run_autobuild(test, **parameter):
     oldpath = os.getcwd()
     status = False
     try:
@@ -88,49 +91,6 @@ def run_autobuild(test, parameter):
         raise Exception("Autobuild Error:%s" % e)
     finally:
         os.chdir(oldpath)
-
-
-# def run_autobuild(test, parameter):
-#     try:
-#         log = None
-#         opath = os.getcwd()
-#         status = False
-#         test_app_autobuid = os.path.join(env.test, test.name, 'app', 'autobuild.py')
-#         test_app_autobuild_autobuid = os.path.join(env.test, test.name, 'app', 'autobuild', 'autobuild.py')
-#         pid = 0
-#         if os.path.exists(test_app_autobuid):
-#             command = "python %s run" % (test_app_autobuid)
-#             utility.logmsg(test.job_test_result.log_path, command)
-#             os.chdir(os.path.join(env.test, test.name, 'app'))
-#             autobuild = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-#             pid = autobuild.pid
-#         elif os.path.exists(test_app_autobuild_autobuid):
-#             command = "python %s run" % (test_app_autobuild_autobuid)
-#             utility.logmsg(test.job_test_result.log_path, command)
-#             os.chdir(os.path.join(env.test, test.name, 'app', 'autobuild'))
-#             autobuild = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
-#             pid = autobuild.pid
-#         else:
-#             utility.logmsg(test.job_test_result.log_path, "not found autobuild.py to build your app")
-#             os.chdir(opath)
-#             return True
-#         while True:
-#             log = autobuild.stdout.readline()
-#             utility.logmsgs(test.job_test_result.log_path, log.replace('\r\n', ''))
-#             if '|-ERROR' in log:
-#                 status = False
-#                 break
-#             if 'File is not exists' in log:
-#                 status = False
-#                 break
-#             if autobuild.poll() is not None:
-#                 status = True
-#                 break
-#         os.chdir(opath)
-#         utility.kill(pid)
-#         return status
-#     except Exception, e:
-#         raise Exception("Autobuild Error:%s" % e)
 
 
 def checkout_script(test):

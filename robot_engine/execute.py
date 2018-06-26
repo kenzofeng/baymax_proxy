@@ -1,4 +1,3 @@
-
 import os
 import sys
 import time
@@ -20,7 +19,7 @@ class Execute():
     def __init__(self, job, ip, request):
         self.ip = ip
         self.job = job
-        self.parameter = request.GET
+        self.GET = request.GET
         self.nodes = None
 
     def run(self):
@@ -72,7 +71,6 @@ class Execute():
         for rq in request_threads:
             rq.join()
 
-
     def merge_test_report(self, test):
         test_report = os.path.join(env.report, test.job_test_result.report)
         test_ds_reports = [os.path.join(env.tmp, test_ds.report) for test_ds in
@@ -82,7 +80,6 @@ class Execute():
             utility.copytree(r, test_report)
         test_ds_reports = tuple([os.path.join(ds_report, env.output_xml) for ds_report in test_ds_reports])
         testresult.merge_report(test_report, *test_ds_reports)
-
 
     def check_use_node_server(self):
         nodes = Node.objects.filter(status='Done')
@@ -96,7 +93,7 @@ class Execute():
             test.save()
             self.check_use_node_server()
             testcase.checkout_script(test)
-            if testcase.run_autobuild(test, self.parameter):
+            if testcase.run_autobuild(test):
                 testcase.distribute_test_script(self.nodes, test)
                 self.send_test(test)
                 self.merge_test_report(test)
@@ -112,7 +109,7 @@ class Execute():
             test.status = 'Error'
             test.save()
             print e
-            utility.job_test_log(test.name,e)
+            utility.job_test_log(test.name, e)
         finally:
             testcase.delete_distribute_test_script(test)
             utility.save_test_log(test)
