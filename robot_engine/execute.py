@@ -1,7 +1,7 @@
 import os
 import sys
 import threading
-
+import time
 import requests
 
 import testcase
@@ -79,6 +79,7 @@ class Execute():
             status = all([True if node.status == 'Done' else False for node in self.nodes])
             if status:
                 break
+            time.sleep(2)
         self.job.status = 'Running'
         self.job.save()
 
