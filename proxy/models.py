@@ -22,9 +22,15 @@ class Project(models.Model):
     name = models.CharField(max_length=50, primary_key=True)
     email = models.CharField(max_length=250)
 
+    def __unicode__(self):
+        return self.name
+
 
 class Node(models.Model):
-    host = models.CharField(max_length=50, primary_key=True)
+    name = models.CharField(max_length=100, primary_key=True)
+    projects = models.ManyToManyField(Project, blank=True)
+    aws_instance_id = models.CharField(max_length=100, blank=True, null=True)
+    host = models.CharField(max_length=50, blank=True, null=True)
     status = models.CharField(max_length=20, choices=Run_Status)
 
 

@@ -3,14 +3,16 @@ from __future__ import unicode_literals
 
 from django.contrib import admin
 
-from .models import Svn, Project, Job, Job_Test,Node
+from .models import Svn, Project, Job, Job_Test, Node
 
 
 class SvnAdmin(admin.ModelAdmin):
     list_display = ['name']
 
+
 class NodeAdmin(admin.ModelAdmin):
-    list_display = ['host','status']
+    list_display = ['name', 'host', 'status']
+
 
 class ProjectAdmin(admin.ModelAdmin):
     list_display = ['name', 'email']
@@ -29,8 +31,9 @@ class JobAdmin(admin.ModelAdmin):
     list_display = ['project', 'status', 'start_time', 'end_time']
     inlines = [job_test_Inline]
 
+
 admin.site.register(Svn, SvnAdmin)
 admin.site.register(Project, ProjectAdmin)
 admin.site.register(Job, JobAdmin)
 admin.site.register(Job_Test, JobTestsAdmin)
-admin.site.register(Node,NodeAdmin)
+admin.site.register(Node, NodeAdmin)

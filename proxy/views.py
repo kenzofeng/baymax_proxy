@@ -3,7 +3,9 @@ import os
 import zlib
 
 from django.core import serializers
+from serializers import ProjectSerializer
 from django.shortcuts import render, HttpResponse
+from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
 import env
@@ -34,8 +36,7 @@ def project_getall(request):
 def project_getdetail(request):
     tid = request.GET['tid']
     p = Project.objects.get(pk=tid)
-    json_rs = project_handler.to_json(p)
-    return HttpResponse(json_rs, content_type='application/json')
+    return JsonResponse(ProjectSerializer(p).data, safe=False)
 
 
 @csrf_exempt

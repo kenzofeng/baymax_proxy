@@ -1,7 +1,5 @@
 import os
 import sys
-import time
-from datetime import *
 import threading
 
 import requests
@@ -10,7 +8,7 @@ import testcase
 import testresult
 import utility
 from proxy import env
-from proxy.models import Job, Node
+from proxy.models import Project
 
 mswindows = (sys.platform == "win32")
 
@@ -27,17 +25,7 @@ class Execute():
         self.do_job()
 
     def do_job(self):
-        preid = int(self.job.id) - 1
-        while True:
-            try:
-                prejob = Job.objects.get(pk=preid)
-                if prejob.status == 'Done' or prejob.status == 'Error':
-                    break
-            except Exception:
-                break
-            time.sleep(2)
-        self.job.status = 'Running'
-        self.job.save()
+        self.check_use_node_server()
         job_tests = self.job.job_test_set.all()
         for test in job_tests:
             self.execute(test)
@@ -82,35 +70,42 @@ class Execute():
         testresult.merge_report(test_report, *test_ds_reports)
 
     def check_use_node_server(self):
-        nodes = Node.objects.filter(status='Done')
+        p = Project.objects.get(name=self.job.project)
+        nodes = p.node_set.all()
         if len(nodes) == 0:
             raise Exception("There is no node server to use")
         self.nodes = nodes
+        while True:
+            status = all([True if node.status == 'Done' else False for node in self.nodes])
+            if status:
+                break
+        self.job.status = 'Running'
+        self.job.save()
 
-    def execute(self, test):
-        try:
-            test.status = 'Running'
+
+def execute(self, test):
+    try:
+        test.status = 'Running'
+        test.save()
+        testcase.checkout_script(test)
+        if testcase.run_autobuild(test):
+            testcase.distribute_test_script(self.nodes, test)
+            self.send_test(test)
+            self.merge_test_report(test)
+            test.status = utility.get_result_fromxml(
+                os.path.join(env.report, test.job_test_result.report, env.output_xml))
             test.save()
-            self.check_use_node_server()
-            testcase.checkout_script(test)
-            if testcase.run_autobuild(test):
-                testcase.distribute_test_script(self.nodes, test)
-                self.send_test(test)
-                self.merge_test_report(test)
-                test.status = utility.get_result_fromxml(
-                    os.path.join(env.report, test.job_test_result.report, env.output_xml))
-                test.save()
-            else:
-                test.status = 'Error'
-                test.save()
-            utility.send_email(test, self.ip)
-            testcase.delete_distribute_test_report(test)
-        except Exception, e:
+        else:
             test.status = 'Error'
             test.save()
-            print e
-            utility.job_test_log(test.name, e)
-        finally:
-            testcase.delete_distribute_test_script(test)
-            utility.save_test_log(test)
-            pass
+        utility.send_email(test, self.ip)
+        testcase.delete_distribute_test_report(test)
+    except Exception, e:
+        test.status = 'Error'
+        test.save()
+        print e
+        utility.job_test_log(test.name, e)
+    finally:
+        testcase.delete_distribute_test_script(test)
+        utility.save_test_log(test)
+        pass

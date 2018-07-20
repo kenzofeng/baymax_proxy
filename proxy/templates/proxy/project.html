@@ -34,20 +34,34 @@
                 </div>
                 <form class="ui form" id="tform" method="post" enctype="multipart/form-data">
                     <h4 class="ui teal dividing header">Information</h4>
-                    <input type="text" name="pk" ng-model="pk" style="display:none">
+                    <input type="text" name="pk" ng-model="project.pk" style="display:none">
                     <div class="two fields">
                         <div class="required field">
                             <label>Name:</label>
-                            <input type="text" name="name" ng-model="name"></div>
+                            <input type="text" name="name" ng-model="project.name"></div>
                         <div class="field">
                             <label>Email:</label>
-                            <input type="text" name="email" ng-model="email"
+                            <input type="text" name="email" ng-model="project.email"
                                    placeholder="aaa@derbysoft.com;bbb@derbysoft.com"></div>
+                    </div>
+                    <h4 class="ui teal dividing header">Servers</h4>
+                    <div class="fields">
+                        <div id="server_drop" class="ui fluid multiple search selection dropdown">
+                            <input type="hidden" name="servers">
+                            <i class="dropdown icon"></i>
+                            <div class="text"></div>
+                            <div class="menu">
+                                <div class="item" ng-repeat="nodes in project.allnodes"
+                                     data-value="{% templatetag openvariable %}nodes.name{% templatetag closevariable %}">
+                                    {% templatetag openvariable %} nodes.name {% templatetag closevariable %}
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <h4 class="ui teal header">Test Automation</h4>
                     <div id='maps'>
                         <div id="map-{% templatetag openvariable %}map.pk{% templatetag closevariable %}"
-                             ng-repeat="map in maps">
+                             ng-repeat="map in project.maps">
                             <h4 class="ui teal dividing header"></h4>
                             <div class="two fields">
                                 <div class="required field">
@@ -59,14 +73,14 @@
                                     <label>Automation URL:</label>
                                     <input type="text"
                                            name="map-url-{% templatetag openvariable %}map.pk{% templatetag closevariable %}"
-                                           ng-model="map.url"></div>
+                                           ng-model="map.testurl"></div>
                             </div>
                             <div class="two fields">
                                 <div class="field">
                                     <label>Robot Parameters:</label>
                                     <input type="text"
                                            name="map-robot-{% templatetag openvariable %}map.pk{% templatetag closevariable %}"
-                                           ng-model="map.robot"></div>
+                                           ng-model="map.robot_parameter"></div>
                                 <div class="field">
                                     <label>Enable</label>
                                     <div class="ui toggle checkbox">
@@ -81,7 +95,7 @@
 
                         </div>
                     </div>
-                    <input type="text" name="mapcount" ng-model="maps[maps.length-1].pk" style="display:none">
+                    <input type="text" name="mapcount" ng-model="project.maps[maps.length-1].pk" style="display:none">
                     <h4 class="ui teal dividing header"></h4>
                     <div id="ttladd" class="ui blue small labeled icon button" ng-click="ttladd()">
                         <i class="plus icon"></i>
@@ -136,178 +150,5 @@
 <script src="{% static 'proxy/js/jquery.form.js' %}"></script>
 <script src="{% static 'proxy/js/angular.min.js' %}"></script>
 <script src="{% static 'proxy/semantic/dist/semantic.min.js' %}"></script>
-<script type="text/javascript">
-        function addtest(id){
-            var str = "<div id='map-"+id+"' >"
-                    +"<h4 class='ui teal dividing header'></h4>"
-                    +"<div class='two fields'>"
-                    +"<div class='required field'>"
-                    +"<label>Test Name:</label>"
-                    +"<input type='text' name='map-test-"+id+"'></div>"
-                    +"<div class='required field'>"
-                    +"<label>Automation URL:</label>"
-                    +"<input type='text' name='map-url-"+id+"'></div>"
-                    +"</div>"
-                    +"<div class='two fields'>"
-                    +"<div class='field'>"
-                    +"<label>Robot Parameters:</label>"
-                    +"<input type='text' name='map-robot-"+id+"'></div>"
-                    +"<div class='field'>"
-                    +"<label>Enable:</label>"
-                    +"<div class='ui toggle checkbox'><input type='checkbox' checked='true' name='map-use-"+id+"'><label></label></div></div>"
-                    +"</div>"
-                    +"<button  class='ui red button'>Delete</button >"
-                    +"</div>"
-            return str
-        };
-
-
-
-
-
-</script>
-<script type="text/javascript">
-        $(function(){
-            $('#testproject').addClass('active');
-            var
-            $menuItem = $('.menu .item'),
-            $dropdown = $('.dropdown'),
-        // alias
-            handler = {
-                activate: function() {
-                    if(!$(this).hasClass('dropdown')) {
-                        $(this)
-                                .addClass('active')
-                                .closest('.ui.menu')
-                                .find('.item')
-                                .not($(this))
-                                .removeClass('active')
-                        ;
-                    }
-                }
-
-            }
-            ;
-        $menuItem.on('click', handler.activate);
-        $dropdown.dropdown('save defaults');
-            $('#maps').on('click','.red.button',function(){
-            $(this).parent().remove();
-            });
-            $('#addf').click(function(){
-            $('#newtform').find('input').val('');
-            $('#newtform').find('.field').removeClass('error');
-            $('#newtestproject')
-                    .modal({
-                        closable:false,
-                        onApprove : function() {
-                           $("#pageloader").addClass('active');
-                                $('#newtform').ajaxSubmit({
-                                  url:'/project/add',
-                                  success:function(result){
-                                    location.href='/';
-                                    }
-                                })
-                        }
-                    })
-                    .modal('show');
-            });
-        })
-
-
-
-
-
-</script>
-<script type="text/javascript">
-        var TestProjectModule=angular.module('TestProjectModule', []);
-        TestProjectModule.controller('testpCtrl',['$scope','$http','$compile',
-            function($scope,$http,$compile){
-                $http.get('/project/getall').success(function(result){
-                    $scope.testprojects=result
-                });
-                $scope.getproject=function(target){
-                $('#loader').dimmer("show");
-                $('#maps').find(':not(.ng-sope)').remove()
-                $('.thirteen.wide.column').css('display','table-cell')
-                var $t = angular.element(target);
-                $t.siblings().removeClass('active')
-                $t.addClass('active blue')
-                if ($t.hasClass("header")){
-                    id = $t.parent().parent().attr('id')
-                    }
-                else if ($t[0].tagName=='SPAN')
-                    {
-                    id = $t.parent().parent().parent().attr('id')
-                    }
-                else{
-                    id = $t.attr('id')
-                    }
-                testfactory = id
-                $.ajax({
-                    type:"GET",
-                    url:'/project/getdetail',
-                    data:{tid:id},
-                    success:function(result){
-                        $scope.pk=result.pk
-                        $scope.name=result.name
-                        $scope.email=result.email
-                        $scope.maps=result.maps
-                        $scope.$apply();
-                        $('.dropdown.scm').dropdown('set text',result.scm);
-                        $('.dropdown.scm').dropdown('set value',result.scm);
-                        $('#loader').dimmer("hide");
-                    }
-                });
-            };
-                $scope.ttladd =function(){
-                var mapcount = $('input[name=mapcount]');
-                id = mapcount.val();
-                if (!id)
-                {id=0}
-                newmap = addtest(parseInt(id)+1);
-                $('#maps').append($compile(newmap)($scope));
-                mapcount.val(parseInt(id)+1);
-                $scope.$apply();
-                };
-                $scope.update=function(){
-                            $('#loader').dimmer("show");
-                            $('#tform').ajaxSubmit({
-                              url:'/project/update',
-                              success:function(result){
-                                $('#loader').dimmer("hide");
-                               if (result.status == 'scuess')
-                                {  
-                                    $('#updatemessage .content').html('Update Successful');
-                                    $('#updatemessage').modal('show');
-                                }
-                                else{
-                                    $('#updatemessage .content').text(result.status);
-                                    $('#updatemessage').modal('show');
-                                }
-                              }
-                              })
-               };
-               $scope.delete=function(){
-                            $('#loader').dimmer("show");
-                            $('#tform').ajaxSubmit({
-                              url:'/project/delete',
-                              success:function(result){
-                                $('#loader').dimmer("hide");
-                                $('#deletemessage').modal({
-                                  closable:false,
-                                  onApprove : function() {
-                                    location.href='/';
-                                  }
-                                  }).modal('show');
-                                }
-                                })
-               };
-            }
-            ]);
-
-
-
-
-
-</script>
+<script src="{% static 'proxy/js/project.js' %}"></script>
 </html>

@@ -1,15 +1,5 @@
-from proxy.models import Test_Map, Project
+from proxy.models import Test_Map, Project, Node
 import json
-
-
-def to_json(Project):
-    mlist = []
-    maps = Test_Map.objects.filter(project=Project.name)
-    for m in maps:
-        mdatas = {'pk': m.pk, 'test': m.test, 'url': m.testurl, 'robot': m.robot_parameter, 'use': m.use}
-        mlist.append(mdatas)
-    data = {'pk': Project.name, 'name': Project.name, 'email': Project.email, 'maps': mlist}
-    return json.dumps(data)
 
 
 def update(request):
@@ -33,10 +23,16 @@ def update(request):
             else:
                 m.use = False
             m.save()
+    # servers= request.POST['servers'].split(',')
     p = Project.objects.get(pk=request.POST['pk'])
     p.name = request.POST['name']
     p.email = request.POST['email']
+    p.node_set.clear()
     p.save()
+    for nodename in request.POST['servers'].split(','):
+        n = Node.objects.get(name=nodename)
+        n.projects.add(p)
+        n.save()
 
 
 def delete(request):
