@@ -83,30 +83,29 @@ class Execute():
         self.job.status = 'Running'
         self.job.save()
 
-
-def execute(self, test):
-    try:
-        test.status = 'Running'
-        test.save()
-        testcase.checkout_script(test)
-        if testcase.run_autobuild(test):
-            testcase.distribute_test_script(self.nodes, test)
-            self.send_test(test)
-            self.merge_test_report(test)
-            test.status = utility.get_result_fromxml(
-                os.path.join(env.report, test.job_test_result.report, env.output_xml))
+    def execute(self, test):
+        try:
+            test.status = 'Running'
             test.save()
-        else:
+            testcase.checkout_script(test)
+            if testcase.run_autobuild(test):
+                testcase.distribute_test_script(self.nodes, test)
+                self.send_test(test)
+                self.merge_test_report(test)
+                test.status = utility.get_result_fromxml(
+                    os.path.join(env.report, test.job_test_result.report, env.output_xml))
+                test.save()
+            else:
+                test.status = 'Error'
+                test.save()
+            utility.send_email(test, self.ip)
+            testcase.delete_distribute_test_report(test)
+        except Exception, e:
             test.status = 'Error'
             test.save()
-        utility.send_email(test, self.ip)
-        testcase.delete_distribute_test_report(test)
-    except Exception, e:
-        test.status = 'Error'
-        test.save()
-        print e
-        utility.job_test_log(test.name, e)
-    finally:
-        testcase.delete_distribute_test_script(test)
-        utility.save_test_log(test)
-        pass
+            print e
+            utility.job_test_log(test.name, e)
+        finally:
+            testcase.delete_distribute_test_script(test)
+            utility.save_test_log(test)
+            pass
