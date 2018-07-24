@@ -63,4 +63,4 @@ class TestMapSerializer(serializers.ModelSerializer):
 class NodeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Node
-        fields = ("host", 'name')
+        fields = ("host", 'name','status')

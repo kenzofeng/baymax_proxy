@@ -8,6 +8,7 @@ urlpatterns = [
                   url(r'^$', views.project, name='project'),
                   url(r'^project/getall$', views.project_getall),
                   url(r'^project/getdetail$', views.project_getdetail),
+                  url(r'^getdetail/(?P<project>[\w-]*)/$', views.getdetail),
                   url(r'^project/add$', views.project_add),
                   url(r'^project/update$', views.project_update),
                   url(r'^project/delete$', views.project_delete),

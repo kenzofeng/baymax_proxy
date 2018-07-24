@@ -64,20 +64,19 @@
 <div class="ui first modal">
     <i class="close icon"></i>
     <div class="header">
-        Project Name: {% templatetag openvariable %}tp.name{% templatetag closevariable %}
+        Current Server Status
     </div>
     <div class="content">
         <div class='ui message'>
-            Current Job
-            <table class="ui small table very compact">
+            <table class="ui small celled table very compact">
                 <thead>
-                <th>Job Name</th>
-                <th>Status</th>
+                <th>Server Name</th>
+                <th>Server Status</th>
                 </thead>
                 <tbody>
-                <tr ng-repeat="job in jobs">
-                    <td ng-bind="job.project"></td>
-                    <td ng-bind="job.status"></td>
+                <tr ng-repeat="node in project.nodes">
+                    <td ng-bind="node.name"></td>
+                    <td ng-bind="node.status"></td>
                 </tr>
                 </tbody>
             </table>
@@ -114,6 +113,7 @@
         $(function(){
             $('#testlab').addClass('active');
         })
+
 </script>
 <script type="text/javascript">
         var TestLabModule=angular.module('TestLabModule', []);
@@ -128,9 +128,9 @@
                 jboname = tp.name;
                 $.ajax({
                     type:"GET",
-                    url:'/job/search/'+tp.name+'/5/',
+                    url:'/getdetail/'+tp.name+'/',
                     success:function(result){
-                        $scope.jobs=result;
+                        $scope.project=result;
                         $scope.$apply();
                         $('.ui.first.modal').modal({
                         onApprove : function() {
@@ -150,6 +150,7 @@
                         }
                 })}}
             ]);
+
 
 
 

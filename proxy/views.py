@@ -39,6 +39,9 @@ def project_getdetail(request):
     p = Project.objects.get(pk=tid)
     return JsonResponse(ProjectSerializer(p).data, safe=False)
 
+def getdetail(request,project):
+    p = Project.objects.get(pk=project)
+    return JsonResponse(ProjectSerializer(p).data, safe=False)
 
 @csrf_exempt
 def project_add(request):
