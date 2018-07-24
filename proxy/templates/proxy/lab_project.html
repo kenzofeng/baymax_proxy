@@ -76,7 +76,7 @@
                 </thead>
                 <tbody>
                 <tr ng-repeat="job in jobs">
-                    <td ng-bind="job.name"></td>
+                    <td ng-bind="job.project"></td>
                     <td ng-bind="job.status"></td>
                 </tr>
                 </tbody>
@@ -128,7 +128,7 @@
                 jboname = tp.name;
                 $.ajax({
                     type:"GET",
-                    url:'/job/getall/5',
+                    url:'/job/search/'+tp.name+'/5/',
                     success:function(result){
                         $scope.jobs=result;
                         $scope.$apply();

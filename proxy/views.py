@@ -150,7 +150,7 @@ def job_search(request, project):
     return JsonResponse(JobSerializer(jobs, many=True).data, safe=False)
 
 
-def job_search_number(request, number):
+def job_search_number(request, project,number):
     jobs = Job.objects.filter(project=project).order_by('-start_time')[:number]
     return JsonResponse(JobSerializer(jobs, many=True).data, safe=False)
 
