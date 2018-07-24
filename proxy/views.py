@@ -196,10 +196,15 @@ def lab(request):
     return render(request, 'proxy/lab.html')
 
 
-def lab_project(request):
-    return render(request, 'proxy/lab_project.html')
+def lab_project(request, project):
+    return render(request, 'proxy/lab_project.html', {'project': project})
+
+
+def lab_getproject(request, project):
+    p = Project.objects.get(pk=project)
+    return JsonResponse(ProjectSerializer(p).data, safe=False)
 
 
 def lab_getall(request):
-    json_rs = project_handler.get_all()
-    return HttpResponse(json_rs, content_type='application/json')
+    p = Project.objects.all()
+    return JsonResponse(ProjectSerializer(p, many=True).data, safe=False)

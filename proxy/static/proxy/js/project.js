@@ -73,8 +73,6 @@ var TestProjectModule=angular.module('TestProjectModule', []);
                 });
                 $scope.getproject=function(target){
                 $('#server_drop').dropdown('clear');
-                $('#server_drop').dropdown('set text', "");
-                $('#server_drop').dropdown('set value',"");
                 $('#loader').dimmer("show");
                 $('#maps').find(':not(.ng-sope)').remove()
                 $('.thirteen.wide.column').css('display','table-cell')
@@ -99,11 +97,11 @@ var TestProjectModule=angular.module('TestProjectModule', []);
                     success:function(result){
                         $scope.project = result
                         $scope.$apply();
+                        $('.dropdown').dropdown();
                         allnode="";
                         for(var node in result.nodes) {
                             $('#server_drop').dropdown('set selected', result.nodes[node].name);
                         }
-                        $('.dropdown').dropdown();
                         $('#loader').dimmer("hide");
                     }
                 });

@@ -24,12 +24,12 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr ng-repeat="tp in testproject">
-                    <td ng-bind="tp.name"></td>
+                <tr>
+                    <td ng-bind="testproject.name"></td>
                     <td>
                         <table class="ui small table very compact">
                             <tbody>
-                            <tr ng-repeat="node in tp.nodes">
+                            <tr ng-repeat="node in testproject.nodes">
                                 <td ng-bind="node.name"></td>
                             </tr>
                             </tbody>
@@ -43,7 +43,7 @@
                             <th class="three wide">Robot Parameter</th>
                             </thead>
                             <tbody>
-                            <tr ng-repeat="map in tp.maps">
+                            <tr ng-repeat="map in testproject.maps">
                                 <td ng-bind="map.test"></td>
                                 <td ng-bind="map.testurl"></td>
                                 <td ng-bind="map.robot_parameter"></td>
@@ -52,7 +52,7 @@
                         </table>
                     </td>
                     <td>
-                        <button class="ui blue button" ng-click="tojob(tp)">Run</button>
+                        <button class="ui blue button" ng-click="tojob(testproject)">Run</button>
                     </td>
                 </tr>
                 </tbody>
@@ -114,18 +114,12 @@
         $(function(){
             $('#testlab').addClass('active');
         })
-
-
-
-
-
-
 </script>
 <script type="text/javascript">
         var TestLabModule=angular.module('TestLabModule', []);
         TestLabModule.controller('testpCtrl',['$scope','$http','$compile',
             function($scope,$http,$compile){
-                $http.get('/lab/getall').success(function(result){
+                $http.get('/lab/get/{{project}}/').success(function(result){
 
                     $scope.testproject=result
                 });
@@ -156,6 +150,7 @@
                         }
                 })}}
             ]);
+
 
 
 

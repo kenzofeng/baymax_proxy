@@ -18,6 +18,8 @@ urlpatterns = [
                   url(r'^job/search/(?P<project>[\w-]*)/$', views.job_search),
                   url(r'^lab$', views.lab, name='lab'),
                   url(r'^lab/getall$', views.lab_getall),
+                  url(r'^lab/(?P<project>[\w-]*)/$', views.lab_project),
+                  url(r'^lab/get/(?P<project>[\w-]*)/$', views.lab_getproject),
                   url(r'^report/(?P<logid>\d+)/$', views.test_log),
                   url(r'^report/(?P<logid>\d+)/log.html$', views.test_log),
                   url(r'^report/(?P<logid>\d+)/report.html$', views.test_report),
