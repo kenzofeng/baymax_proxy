@@ -15,10 +15,12 @@ class JobSerializer(serializers.ModelSerializer):
         fields = ('project', 'start', 'end', 'status', 'tests')
 
     def get_start(self, obj):
-        return obj.start_time.astimezone(sh).strftime("%Y-%m-%d %H:%M:%S")
+        # return obj.start_time.astimezone(sh).strftime("%Y-%m-%d %H:%M:%S")
+        return obj.start_time.strftime("%Y-%m-%d %H:%M:%S")
 
     def get_end(self, obj):
-        return obj.end_time.astimezone(sh).strftime("%Y-%m-%d %H:%M:%S")
+        # return obj.end_time.astimezone(sh).strftime("%Y-%m-%d %H:%M:%S")
+        return obj.end_time.strftime("%Y-%m-%d %H:%M:%S")
 
     def get_tests(self, obj):
         return JobTestSerializer(obj.job_test_set.all(), many=True).data
