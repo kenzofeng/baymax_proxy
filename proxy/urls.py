@@ -16,6 +16,7 @@ urlpatterns = [
                   url(r'^job/(?P<project>[\w-]*)/$', views.job_project),
                   url(r'^job/getall/(?P<number>\d+)$', views.job_getall),
                   url(r'^job/search/(?P<project>[\w-]*)/$', views.job_search),
+                  url(r'^job/search/(?P<project>[\w-]*)/(?P<number>\d+)/$', views.job_search_number),
                   url(r'^lab$', views.lab, name='lab'),
                   url(r'^lab/getall$', views.lab_getall),
                   url(r'^lab/(?P<project>[\w-]*)/$', views.lab_project),

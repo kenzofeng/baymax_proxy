@@ -149,5 +149,8 @@ var TestProjectModule=angular.module('TestProjectModule', []);
                                 }
                                 })
                };
+               $scope.gotolab=function(pk){
+                            location.href='/lab/'+pk+'/';
+               };
             }
             ]);

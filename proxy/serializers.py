@@ -1,5 +1,38 @@
-from models import Project, Test_Map, Node
+from models import Project, Test_Map, Node, Job, Job_Test
 from rest_framework import serializers
+import pytz
+
+sh = pytz.timezone('Asia/Shanghai')
+
+
+class JobSerializer(serializers.ModelSerializer):
+    start = serializers.SerializerMethodField()
+    end = serializers.SerializerMethodField()
+    tests = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Job
+        fields = ('project', 'start', 'end', 'status', 'tests')
+
+    def get_start(self, obj):
+        return obj.start_time.astimezone(sh).strftime("%Y-%m-%d %H:%M:%S")
+
+    def get_end(self, obj):
+        return obj.end_time.astimezone(sh).strftime("%Y-%m-%d %H:%M:%S")
+
+    def get_tests(self, obj):
+        return JobTestSerializer(obj.job_test_set.all(), many=True).data
+
+
+class JobTestSerializer(serializers.ModelSerializer):
+    log = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Job_Test
+        fields = ('id', 'log', 'name', 'robot_parameter', 'project_branch', 'project_sha', 'status', 'revision_number')
+
+    def get_log(self, obj):
+        return obj.job_test_result.id
 
 
 class ProjectSerializer(serializers.ModelSerializer):

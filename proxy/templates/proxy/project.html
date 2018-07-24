@@ -33,6 +33,7 @@
                     <div class="ui text loader">Loading</div>
                 </div>
                 <form class="ui form" id="tform" method="post" enctype="multipart/form-data">
+                    <div class="ui top attached blue button" tabindex="0" ng-click="gotolab(project.pk)">Test Lab</div>
                     <h4 class="ui teal dividing header">Information</h4>
                     <input type="text" name="pk" ng-model="project.pk" style="display:none">
                     <div class="two fields">
@@ -107,6 +108,7 @@
                         <div class="or"></div>
                         <button class="ui teal button" ng-click="update()">Save</button>
                     </div>
+
                 </form>
             </div>
         </div>

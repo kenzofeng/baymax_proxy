@@ -3,7 +3,7 @@ import os
 import zlib
 
 from django.core import serializers
-from serializers import ProjectSerializer
+from serializers import ProjectSerializer, JobSerializer
 from django.shortcuts import render, HttpResponse
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -141,55 +141,18 @@ def test_redfile(request, logid, redfile):
 
 
 def job_getall(request, number):
-    list_job = Job.objects.all().order_by('-pk')[:number]
-    results = []
-    for job in list_job:
-        tests = []
-        start_time = ""
-        end_time = ''
-        if job.start_time is not None:
-            start_time = job.start_time.strftime('%Y-%m-%d %H:%M:%S')
-        if job.end_time is not None:
-            end_time = job.end_time.strftime('%Y-%m-%d %H:%M:%S')
-        myjob = {'name': job.project, 'status': job.status, 'start': start_time,
-                 'end': end_time, 'tests': tests}
-        for test in job.job_test_set.all():
-            tests.append(
-                {'name': test.name, 'parameter': test.robot_parameter, 'status': test.status,
-                 'project_branch': test.project_branch, 'project_sha': test.project_sha,
-                 'version': test.revision_number,
-                 'log': test.job_test_result.id,
-                 'id': test.id})
-        if not tests:
-            continue
-        results.append(myjob)
-    return HttpResponse(json.dumps(results), content_type='application/json')
+    jobs = Job.objects.all().order_by('-pk')[:number]
+    return JsonResponse(JobSerializer(jobs, many=True).data, safe=False)
 
 
 def job_search(request, project):
-    list_job = Job.objects.filter(project=project).order_by('-start_time')
-    results = []
-    for job in list_job:
-        tests = []
-        start_time = ""
-        end_time = ''
-        if job.start_time is not None:
-            start_time = job.start_time.strftime('%Y-%m-%d %H:%M:%S')
-        if job.end_time is not None:
-            end_time = job.end_time.strftime('%Y-%m-%d %H:%M:%S')
-        myjob = {'name': job.project, 'status': job.status, 'start': start_time,
-                 'end': end_time, 'tests': tests}
-        for test in job.job_test_set.all():
-            tests.append(
-                {'name': test.name, 'parameter': test.robot_parameter, 'status': test.status,
-                 'project_branch': test.project_branch, 'project_sha': test.project_sha,
-                 'version': test.revision_number,
-                 'log': test.job_test_result.id,
-                 'id': test.id})
-        if not tests:
-            continue
-        results.append(myjob)
-    return HttpResponse(json.dumps(results), content_type='application/json')
+    jobs = Job.objects.filter(project=project).order_by('-start_time')
+    return JsonResponse(JobSerializer(jobs, many=True).data, safe=False)
+
+
+def job_search_number(request, number):
+    jobs = Job.objects.filter(project=project).order_by('-start_time')[:number]
+    return JsonResponse(JobSerializer(jobs, many=True).data, safe=False)
 
 
 def lab(request):

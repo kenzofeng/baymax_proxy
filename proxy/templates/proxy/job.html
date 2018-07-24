@@ -42,9 +42,12 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr ng-repeat="tj in testjobs">
-                    <td ng-bind="tj.name"></td>
-                    <td ng-bind="tj.status"></td>
+                <tr ng-repeat="tj in testjobs" ng-class="{Done:'positive',Error :'error'}[tj.status]">
+                    <td ng-bind="tj.project"></td>
+                    <td >
+                        <i class='icon'
+                                   ng-class="{Done:'green checkmark',Error :'red close'}[tj.status]" ng-bind="tj.status"></i>
+                    </td>
                     <td ng-bind="tj.start"></td>
                     <td ng-bind="tj.end"></td>
                     <td>
@@ -64,9 +67,9 @@
                                 <td class="collapsing" ng-bind="test.name"></td>
                                 <td class="collapsing" ng-bind="test.project_branch"></td>
                                 <td class="collapsing" ng-bind="test.project_sha"></td>
-                                <td class="collapsing" ng-bind="test.version"></td>
-                                <td class="collapsing" ng-bind="test.parameter"></td>
-                                <td class="collapsing" ng-bind="test.status"></td>
+                                <td class="collapsing" ng-bind="test.revision_number"></td>
+                                <td class="collapsing" ng-bind="test.robot_parameter"></td>
+                                <td class="collapsing" ng-class="{PASS:'positive',FAIL :'error'}[test.status]" ng-bind="test.status"></td>
                                 <td class="collapsing">
                                     <a target='_blank'
                                        href='/test/log/{% templatetag openvariable %} test.log {% templatetag closevariable %}'>
