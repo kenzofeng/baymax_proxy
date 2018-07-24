@@ -17,13 +17,15 @@
             <table class="ui compact selectable celled striped teal table">
                 <thead>
                 <tr>
-                    <th class="three wide">Project Job</th>
+                    <th class="two wide">Project Job</th>
+                    <th class="one wide">Project Servers</th>
                     <th>Test Automation</th>
                     <th class="two wide">Action</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr ng-repeat="tp in testproject">
+                    <td ng-bind="tp.name"></td>
                     <td ng-bind="tp.name"></td>
                     <td>
                         <table class="ui small table very compact">
@@ -108,6 +110,8 @@
 
 
 
+
+
 </script>
 <script type="text/javascript">
         var TestLabModule=angular.module('TestLabModule', []);
@@ -136,7 +140,7 @@
                             })
                             $('.ui.second.modal').modal({
                             onApprove : function() {
-                                location.href='/job';
+                                location.href='/job/'+jboname+'/';
                             }
                             }).modal('show');
                         }
@@ -144,6 +148,8 @@
                         }
                 })}}
             ]);
+
+
 
 
 

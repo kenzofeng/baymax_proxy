@@ -14,23 +14,6 @@
     <div class="sixteen wide column">{% include 'proxy/nav.html'%}</div>
     <div class="ui internally celled grid">
         <div class="row">
-            <div class="sixteen wide column">
-                <form class="ui form" id="tform" method="post">
-                    <div class="fields">
-                        <div class="three wide field">
-                            <select name="project" class="ui search dropdown"
-                                    data-ng-options="pj.pk for pj in testprojects" ng-model="pj">
-                                <option value="">Project</option>
-                            </select>
-                        </div>
-                        <div class="field">
-                            <div class="ui green right submit small button" ng-click="search()">Search</div>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-        <div class="row">
             <table class="ui compact selectable celled striped teal table">
                 <thead>
                 <tr>
@@ -120,35 +103,17 @@
             $menuItem.on('click', handler.activate);
             $dropdown.dropdown('save defaults');
         })
+
 </script>
 <script type="text/javascript">
         var TestJobModule=angular.module('TestJobModule', []);
         TestJobModule.controller('testpCtrl',['$scope','$http','$compile',
             function($scope,$http,$compile){
-                $http.get('/job/getall/30').success(function(result){
+                $http.get('/job/search/{{project}}/').success(function(result){
                     $scope.testjobs=result
                 });
-                $http.get('/project/getall').success(function(result){
-                    $scope.testprojects=result
-                });
-                $scope.search=function(){
-            		 $.ajax({
-            		     method:'get',
-                         url:'/job/search/$scope.pj/',
-                         success:function(result){
-                        	 $scope.testjobs= result;
-                        	 $scope.$apply();
-                         }
-                         })
-            	};
-               ;}
+                }
             ]);
-
-
-
-
-
-
 
 </script>
 </html>

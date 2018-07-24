@@ -21,6 +21,7 @@ def job_start(request, project):
     myrequest = job_handler.Myrequest(request)
     scheduler.add_job(job_handler.start, 'date', run_date=datetime.datetime.now() + datetime.timedelta(seconds=2),
                       args=[myrequest, project])
+    # rs = job_handler.start(myrequest, project)
     return HttpResponse({"status": "true"}, content_type='application/json')
 
 
@@ -63,6 +64,10 @@ def project_delete(request):
 
 def job(request):
     return render(request, 'proxy/job.html')
+
+
+def job_project(request, project):
+    return render(request, 'proxy/job_project.html', {"project": project})
 
 
 def test_run_log(request, logid):
@@ -161,9 +166,8 @@ def job_getall(request, number):
     return HttpResponse(json.dumps(results), content_type='application/json')
 
 
-@csrf_exempt
-def job_search(request):
-    list_job = Job.objects.filter(project=request.POST['pj[pk]']).order_by('-start_time')
+def job_search(request, project):
+    list_job = Job.objects.filter(project=project).order_by('-start_time')
     results = []
     for job in list_job:
         tests = []
@@ -190,6 +194,10 @@ def job_search(request):
 
 def lab(request):
     return render(request, 'proxy/lab.html')
+
+
+def lab_project(request):
+    return render(request, 'proxy/lab_project.html')
 
 
 def lab_getall(request):
