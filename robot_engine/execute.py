@@ -76,7 +76,9 @@ class Execute():
             raise Exception("There is no node server to use")
         self.nodes = nodes
         while True:
-            status = all([True if node.status == 'Done' else False for node in self.nodes])
+            p = Project.objects.get(name=self.job.project)
+            nodes = p.node_set.all()
+            status = all([True if node.status == 'Done' else False for node in nodes])
             if status:
                 break
             time.sleep(2)
