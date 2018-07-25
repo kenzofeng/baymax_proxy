@@ -48,8 +48,8 @@
                         <i class='icon'
                                    ng-class="{Done:'green checkmark',Error :'red close'}[tj.status]" ng-bind="tj.status"></i>
                     </td>
-                    <td ng-bind="tj.start"></td>
-                    <td ng-bind="tj.end"></td>
+                    <td ng-bind="tj.start_time"></td>
+                    <td ng-bind="tj.end_time"></td>
                     <td>
                         <table class="ui small table very compact">
                             <thead>
@@ -63,7 +63,7 @@
                             <th class="one wide">report</th>
                             </thead>
                             <tbody>
-                            <tr ng-repeat="test in tj.tests">
+                            <tr ng-repeat="test in tj.job_test_set">
                                 <td class="collapsing" ng-bind="test.name"></td>
                                 <td class="collapsing" ng-bind="test.project_branch"></td>
                                 <td class="collapsing" ng-bind="test.project_sha"></td>

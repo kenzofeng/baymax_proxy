@@ -145,17 +145,20 @@ def test_redfile(request, logid, redfile):
 
 def job_getall(request, number):
     jobs = Job.objects.all().order_by('-pk')[:number]
-    return JsonResponse(JobSerializer(jobs, many=True).data, safe=False)
+    job_s = JobSerializer.setup_eager_loading(jobs)
+    return JsonResponse(JobSerializer(job_s, many=True,read_only=True).data, safe=False)
 
 
 def job_search(request, project):
-    jobs = Job.objects.filter(project=project).order_by('-start_time')
-    return JsonResponse(JobSerializer(jobs, many=True).data, safe=False)
+    jobs = Job.objects.filter(project=project).order_by('-pk')
+    job_s = JobSerializer.setup_eager_loading(jobs)
+    return JsonResponse(JobSerializer(job_s, many=True, read_only=True).data, safe=False)
 
 
 def job_search_number(request, project,number):
-    jobs = Job.objects.filter(project=project).order_by('-start_time')[:number]
-    return JsonResponse(JobSerializer(jobs, many=True).data, safe=False)
+    jobs = Job.objects.filter(project=project).order_by('-pk')[:number]
+    job_s = JobSerializer.setup_eager_loading(jobs)
+    return JsonResponse(JobSerializer(job_s, many=True, read_only=True).data, safe=False)
 
 
 def lab(request):
@@ -168,9 +171,9 @@ def lab_project(request, project):
 
 def lab_getproject(request, project):
     p = Project.objects.get(pk=project)
-    return JsonResponse(ProjectSerializer(p).data, safe=False)
+    return JsonResponse(ProjectSerializer(p,read_only=True).data, safe=False)
 
 
 def lab_getall(request):
     p = Project.objects.all()
-    return JsonResponse(ProjectSerializer(p, many=True).data, safe=False)
+    return JsonResponse(ProjectSerializer(p, many=True,read_only=True).data, safe=False)

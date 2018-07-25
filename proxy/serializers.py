@@ -5,27 +5,6 @@ import pytz
 sh = pytz.timezone('Asia/Shanghai')
 
 
-class JobSerializer(serializers.ModelSerializer):
-    start = serializers.SerializerMethodField()
-    end = serializers.SerializerMethodField()
-    tests = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Job
-        fields = ('project', 'start', 'end', 'status', 'tests')
-
-    def get_start(self, obj):
-        # return obj.start_time.astimezone(sh).strftime("%Y-%m-%d %H:%M:%S")
-        return obj.start_time.strftime("%Y-%m-%d %H:%M:%S")
-
-    def get_end(self, obj):
-        # return obj.end_time.astimezone(sh).strftime("%Y-%m-%d %H:%M:%S")
-        return obj.end_time.strftime("%Y-%m-%d %H:%M:%S")
-
-    def get_tests(self, obj):
-        return JobTestSerializer(obj.job_test_set.all(), many=True).data
-
-
 class JobTestSerializer(serializers.ModelSerializer):
     log = serializers.SerializerMethodField()
 
@@ -35,6 +14,19 @@ class JobTestSerializer(serializers.ModelSerializer):
 
     def get_log(self, obj):
         return obj.job_test_result.id
+
+
+class JobSerializer(serializers.ModelSerializer):
+    job_test_set = JobTestSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Job
+        fields = ('project', 'start_time', 'end_time', 'status', 'job_test_set')
+
+    @staticmethod
+    def setup_eager_loading(queryset):
+        queryset = queryset.prefetch_related('job_test_set')
+        return queryset
 
 
 class ProjectSerializer(serializers.ModelSerializer):
@@ -55,6 +47,11 @@ class ProjectSerializer(serializers.ModelSerializer):
     def get_allnodes(self, obj):
         return NodeSerializer(Node.objects.all(), many=True).data
 
+    @staticmethod
+    def setup_eager_loading(queryset):
+        queryset = queryset.prefetch_related('node', 'node_projects')
+        return queryset
+
 
 class TestMapSerializer(serializers.ModelSerializer):
     class Meta:
@@ -65,4 +62,4 @@ class TestMapSerializer(serializers.ModelSerializer):
 class NodeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Node
-        fields = ("host", 'name','status')
+        fields = ("host", 'name', 'status')
