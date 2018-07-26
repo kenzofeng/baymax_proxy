@@ -25,11 +25,13 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr ng-repeat="tj in testjobs" ng-class="{Done:'positive',Error :'error'}[tj.status]">
+                <tr ng-repeat="tj in testjobs"
+                    ng-class="{Done:'positive',Error :'error',Running:'warning',Waiting:'warning'}[tj.status]">
                     <td ng-bind="tj.project"></td>
-                    <td >
+                    <td>
                         <i class='icon'
-                                   ng-class="{Done:'green checkmark',Error :'red close'}[tj.status]" ng-bind="tj.status"></i>
+                           ng-class="{Done:'green checkmark',Error :'red close',Running:'spinner loading',Waiting:'spinner loading'}[tj.status]"
+                        ></i><span ng-bind="tj.status"></span>
                     </td>
                     <td ng-bind="tj.start_time"></td>
                     <td ng-bind="tj.end_time"></td>
@@ -52,7 +54,8 @@
                                 <td class="collapsing" ng-bind="test.project_sha"></td>
                                 <td class="collapsing" ng-bind="test.revision_number"></td>
                                 <td class="collapsing" ng-bind="test.robot_parameter"></td>
-                                <td class="collapsing" ng-class="{PASS:'positive',FAIL :'error'}[test.status]" ng-bind="test.status"></td>
+                                <td class="collapsing" ng-class="{PASS:'positive',FAIL :'error'}[test.status]"
+                                    ng-bind="test.status"></td>
                                 <td class="collapsing">
                                     <a target='_blank'
                                        href='/test/log/{% templatetag openvariable %} test.log {% templatetag closevariable %}'>
@@ -107,16 +110,23 @@
             $dropdown.dropdown('save defaults');
         })
 
+
 </script>
 <script type="text/javascript">
         var TestJobModule=angular.module('TestJobModule', []);
-        TestJobModule.controller('testpCtrl',['$scope','$http','$compile',
-            function($scope,$http,$compile){
+        TestJobModule.controller('testpCtrl',['$scope','$http','$compile','$interval',
+            function($scope,$http,$compile,$interval){
                 $http.get('/job/search/{{project}}/20/').success(function(result){
                     $scope.testjobs=result
                 });
+                $scope.timer = $interval( function(){
+                       $http.get('/job/search/{{project}}/20/').success(function(result){
+                        $scope.testjobs=result
+                    });
+                  }, 5000);
                 }
             ]);
+
 
 </script>
 </html>

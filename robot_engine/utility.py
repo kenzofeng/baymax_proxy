@@ -5,14 +5,13 @@ import signal
 import smtplib
 import zipfile
 import zlib
-from datetime import *
 from email.mime.text import MIMEText
 import logging
 import shutil
 import requests
 import tenjin
 from lxml import etree
-
+from django.utils import timezone
 from proxy import env
 
 tenjin.set_template_encoding("utf-8")
@@ -64,15 +63,15 @@ def get_variable_value(arg):
 
 
 def gettoday():
-    return datetime.now().strftime('%Y%m%d')
+    return timezone.now().strftime('%Y%m%d')
 
 
 def getnow():
-    return datetime.now().strftime('%H%M%S')
+    return timezone.now().strftime('%H%M%S')
 
 
-def gettime(format='%Y-%m-%d %H:%M:%S'):
-    return datetime.now().strftime(format)
+def gettime():
+    return timezone.now()
 
 
 def mkdir(dirpath):

@@ -9,6 +9,8 @@ import testresult
 import utility
 from proxy import env
 from proxy.models import Project
+from Baymax_Proxy.jobs import scheduler
+import datetime
 
 mswindows = (sys.platform == "win32")
 
@@ -100,14 +102,15 @@ class Execute():
             else:
                 test.status = 'Error'
                 test.save()
-            utility.send_email(test, self.ip)
-            testcase.delete_distribute_test_report(test)
+            scheduler.add_job(utility.send_email, 'date',
+                              run_date=datetime.datetime.now() + datetime.timedelta(seconds=2), args=[test, self.ip])
+            # utility.send_email(test, self.ip)
         except Exception, e:
+            print e
             test.status = 'Error'
             test.save()
-            print e
             utility.job_test_log(test.name, e)
         finally:
+            testcase.delete_distribute_test_report(test)
             testcase.delete_distribute_test_script(test)
             utility.save_test_log(test)
-            pass
