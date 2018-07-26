@@ -19,7 +19,7 @@ def start(request, project):
     try:
         p = Project.objects.get(pk=project)
         utility.mkdir(os.path.join(env.log, utility.gettoday()))
-        job = Job(project=project, status='waiting', start_time=utility.gettime(),
+        job = Job(project=project, status='Waiting', start_time=utility.gettime(),
                   job_number="", email=p.email)
         job.save()
         log = Job_Log()
