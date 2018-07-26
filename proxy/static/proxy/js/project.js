@@ -68,8 +68,11 @@ $(function(){
 var TestProjectModule=angular.module('TestProjectModule', []);
         TestProjectModule.controller('testpCtrl',['$scope','$http','$compile',
             function($scope,$http,$compile){
-                $http.get('/project/getall').success(function(result){
+                $http.get('/project/getall/').success(function(result){
                     $scope.testprojects=result
+                });
+                $http.get('/project/getallnodes/').success(function(result){
+                    $scope.allnodes=result
                 });
                 $scope.getproject=function(target){
                 $('#server_drop').dropdown('clear');

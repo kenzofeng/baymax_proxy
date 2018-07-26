@@ -32,11 +32,10 @@ class JobSerializer(serializers.ModelSerializer):
 class ProjectSerializer(serializers.ModelSerializer):
     nodes = serializers.SerializerMethodField()
     maps = serializers.SerializerMethodField()
-    allnodes = serializers.SerializerMethodField()
 
     class Meta:
         model = Project
-        fields = ('pk', 'name', 'email', 'nodes', 'maps', 'allnodes')
+        fields = ('pk', 'name', 'email', 'nodes', 'maps')
 
     def get_nodes(self, obj):
         return NodeSerializer(obj.node_set.all(), many=True).data
@@ -44,12 +43,9 @@ class ProjectSerializer(serializers.ModelSerializer):
     def get_maps(self, obj):
         return TestMapSerializer(Test_Map.objects.filter(project=obj.name), many=True).data
 
-    def get_allnodes(self, obj):
-        return NodeSerializer(Node.objects.all(), many=True).data
-
     @staticmethod
     def setup_eager_loading(queryset):
-        queryset = queryset.prefetch_related('node', 'node_projects')
+        queryset = queryset.prefetch_related('node_set')
         return queryset
 
 

@@ -3,7 +3,7 @@ import os
 import zlib
 
 from django.core import serializers
-from serializers import ProjectSerializer, JobSerializer
+from serializers import ProjectSerializer, JobSerializer, NodeSerializer
 from django.shortcuts import render, HttpResponse
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -11,7 +11,7 @@ from django.views.decorators.csrf import csrf_exempt
 import env
 from handler import job as job_handler
 from handler import project as project_handler
-from models import Project, Job, Job_Test_Result, Job_Test
+from models import Project, Job, Job_Test_Result, Job_Test, Node
 import requests
 from Baymax_Proxy.jobs import scheduler
 import datetime
@@ -34,14 +34,21 @@ def project_getall(request):
     return HttpResponse(serializers.serialize("json", list_project), content_type='application/json')
 
 
+def project_getallnodes(request):
+    nodes = Node.objects.all()
+    return JsonResponse(NodeSerializer(nodes, many=True, read_only=True).data, safe=False)
+
+
 def project_getdetail(request):
     tid = request.GET['tid']
     p = Project.objects.get(pk=tid)
     return JsonResponse(ProjectSerializer(p).data, safe=False)
 
-def getdetail(request,project):
+
+def getdetail(request, project):
     p = Project.objects.get(pk=project)
     return JsonResponse(ProjectSerializer(p).data, safe=False)
+
 
 @csrf_exempt
 def project_add(request):
@@ -146,7 +153,7 @@ def test_redfile(request, logid, redfile):
 def job_getall(request, number):
     jobs = Job.objects.all().order_by('-pk')[:number]
     job_s = JobSerializer.setup_eager_loading(jobs)
-    return JsonResponse(JobSerializer(job_s, many=True,read_only=True).data, safe=False)
+    return JsonResponse(JobSerializer(job_s, many=True, read_only=True).data, safe=False)
 
 
 def job_search(request, project):
@@ -155,7 +162,7 @@ def job_search(request, project):
     return JsonResponse(JobSerializer(job_s, many=True, read_only=True).data, safe=False)
 
 
-def job_search_number(request, project,number):
+def job_search_number(request, project, number):
     jobs = Job.objects.filter(project=project).order_by('-pk')[:number]
     job_s = JobSerializer.setup_eager_loading(jobs)
     return JsonResponse(JobSerializer(job_s, many=True, read_only=True).data, safe=False)
@@ -171,9 +178,10 @@ def lab_project(request, project):
 
 def lab_getproject(request, project):
     p = Project.objects.get(pk=project)
-    return JsonResponse(ProjectSerializer(p,read_only=True).data, safe=False)
+    return JsonResponse(ProjectSerializer(p, read_only=True).data, safe=False)
 
 
 def lab_getall(request):
     p = Project.objects.all()
-    return JsonResponse(ProjectSerializer(p, many=True,read_only=True).data, safe=False)
+    ps = ProjectSerializer.setup_eager_loading(p)
+    return JsonResponse(ProjectSerializer(ps, many=True, read_only=True).data, safe=False)
