@@ -34,8 +34,9 @@ class Execute():
 
     def rquest_test(self, test_ds, node):
         try:
-            r = requests.post("http://%s/%s/%s/start" % (node.host, test_ds.job_test.name, test_ds.pk),
-                              data={"filename": "%s_%s.zip" % (test_ds.job_test.name, test_ds.pk)}, files={
+            r = requests.post(
+                "http://{}:{}/{}/{}/start".format(node.host, node.port, test_ds.job_test.name, test_ds.pk),
+                data={"filename": "%s_%s.zip" % (test_ds.job_test.name, test_ds.pk)}, files={
                     "script": open(os.path.join(env.tmp, "%s.zip" % test_ds.script), 'rb')})
             download_zip = os.path.join(env.tmp, utility.gettoday(), "report_%s.zip" % r.headers["filename"])
             open(download_zip, 'wb').write(r.content)
@@ -52,7 +53,7 @@ class Execute():
         for test_ds, node in zip(test_ds_all, self.nodes):
             node.status = 'Running'
             node.save()
-            test_ds.host = node.host
+            test_ds.host = "{}:{}".format(node.host, node.port)
             test_ds.save()
             rt = threading.Thread(target=self.rquest_test, args=(test_ds, node))
             rt.setDaemon(True)
@@ -71,11 +72,19 @@ class Execute():
         test_ds_reports = tuple([os.path.join(ds_report, env.output_xml) for ds_report in test_ds_reports])
         testresult.merge_report(test_report, *test_ds_reports)
 
+    def updatenodes(self, nodes):
+        for node in nodes:
+            instantce_id = node.aws_instance_id
+            public_ip, private_ip = utility.getip(instantce_id)
+            node.host = public_ip
+            node.save()
+
     def check_use_node_server(self):
         p = Project.objects.get(name=self.job.project)
         nodes = p.node_set.all()
         if len(nodes) == 0:
             raise Exception("There is no node server to use")
+        self.updatenodes(nodes)
         self.nodes = nodes
         while True:
             p = Project.objects.get(name=self.job.project)

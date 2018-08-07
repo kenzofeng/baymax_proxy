@@ -31,6 +31,7 @@ class Node(models.Model):
     projects = models.ManyToManyField(Project, blank=True)
     aws_instance_id = models.CharField(max_length=100, blank=True, null=True)
     host = models.CharField(max_length=50, blank=True, null=True)
+    port = models.CharField(max_length=50, default="51234")
     status = models.CharField(max_length=20, choices=Run_Status)
 
 

@@ -13,12 +13,22 @@ import tenjin
 from lxml import etree
 from django.utils import timezone
 from proxy import env
+import json
 
 tenjin.set_template_encoding("utf-8")
 from tenjin.helpers import *
 import sys
 
 mswindows = (sys.platform == "win32")
+
+
+def getip(instance_id):
+    res = requests.get("https://devops.dbaws.net/aws/getip/{}/".format(instance_id))
+    if res.status_code == 200:
+        instance = json.loads(res.content)
+        return instance['public_ip'], instance['private_ip']
+    else:
+        return "", ""
 
 
 def newlogger(name, logfilename):
