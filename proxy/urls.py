@@ -26,7 +26,9 @@ urlpatterns = [
                   url(r'^report/(?P<logid>\d+)/$', views.test_log),
                   url(r'^report/(?P<logid>\d+)/log.html$', views.test_log),
                   url(r'^report/(?P<logid>\d+)/report.html$', views.test_report),
-                  url(r'^report/(?P<logid>\d+)/cache/(?P<cid>[\w-.]*.txt)$', views.test_cache),
-                  url(r'^report/(?P<logid>\d+)/compare/(?P<cid>[\w-.]*.html)$', views.test_compare),
+                  url(r'^report/(?P<logid>\d+)/cache/(?P<cid>\d+\.\d+\.txt)$', views.test_cache),
+                  url(r'^report/(?P<logid>\d+)/cache/(?P<cid>\d+.txt)$', views.test_cache),
+                  url(r'^report/(?P<logid>\d+)/compare/(?P<cid>\d+\.\d+\.html)$', views.test_compare),
+                  url(r'^report/(?P<logid>\d+)/compare/(?P<cid>\d+\.html)$', views.test_compare),
                   url(r'^report/(?P<logid>\d+)/compare/deps/(?P<redfile>.+)$', views.test_redfile),
               ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
