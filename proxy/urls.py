@@ -4,7 +4,8 @@ from django.conf.urls.static import static
 from proxy import views
 
 urlpatterns = [
-                  url(r'(?P<project>.*)/start', views.job_start),
+                  url(r'(?P<project>[\w-]*)/start', views.job_start),
+                  url(r'(?P<project>[\w-]*)/stop', views.job_stop),
                   url(r'^$', views.project, name='project'),
                   url(r'^project/getall/$', views.project_getall),
                   url(r'^project/getallnodes/$', views.project_getallnodes),
@@ -14,6 +15,7 @@ urlpatterns = [
                   url(r'^project/update$', views.project_update),
                   url(r'^project/delete$', views.project_delete),
                   url(r'^test/log/(?P<logid>\d+)/$', views.test_run_log),
+                  url(r'^job/log/(?P<logid>\d+)/$', views.test_run_log),
                   url(r'^job$', views.job, name='job'),
                   url(r'^job/(?P<project>[\w-]*)/$', views.job_project),
                   url(r'^job/getall/(?P<number>\d+)$', views.job_getall),

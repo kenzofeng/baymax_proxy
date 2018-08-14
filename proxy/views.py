@@ -19,9 +19,15 @@ import datetime
 
 def job_start(request, project):
     myrequest = job_handler.Myrequest(request)
-    # scheduler.add_job(job_handler.start, 'date', run_date=datetime.datetime.now() + datetime.timedelta(seconds=2),
-    #                   args=[myrequest, project])
-    rs = job_handler.start(myrequest, project)
+    scheduler.add_job(job_handler.start, 'date', run_date=datetime.datetime.now() + datetime.timedelta(seconds=2),
+                      args=[myrequest, project])
+    # rs = job_handler.start(myrequest, project)
+    return HttpResponse({"status": "true"}, content_type='application/json')
+
+
+def job_stop(request, project):
+    scheduler.add_job(job_handler.stop, 'date', run_date=datetime.datetime.now() + datetime.timedelta(seconds=2),
+                      args=[project])
     return HttpResponse({"status": "true"}, content_type='application/json')
 
 

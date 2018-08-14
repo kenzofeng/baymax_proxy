@@ -130,7 +130,7 @@
                 });
                 $scope.tojob=function(tp){
                 $scope.tp = tp;
-                jboname = tp.name;
+                jobname = tp.name;
                 $.ajax({
                     type:"GET",
                     url:'/getdetail/'+tp.name+'/',
@@ -141,13 +141,13 @@
                         onApprove : function() {
                             $.ajax({
                             type:"GET",
-                            url:"/"+jboname+"/start/",
+                            url:"/"+jobname+"/start/",
                             success:function(result){
                             }
                             })
                             $('.ui.second.modal').modal({
                             onApprove : function() {
-                                location.href='/job/'+jboname+'/';
+                                location.href='/job/'+jobname+'/';
                             }
                             }).modal('show');
                         }

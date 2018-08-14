@@ -15,6 +15,14 @@ class Myrequest:
         self.GET = request.GET
 
 
+def stop(project):
+    p = Project.objects.get(name=project)
+    nodes = p.node_set.all()
+    for node in nodes:
+        ip = node.host
+        utility.stop_job(ip)
+
+
 def start(request, project):
     try:
         p = Project.objects.get(pk=project)

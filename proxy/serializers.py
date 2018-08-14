@@ -21,7 +21,7 @@ class JobSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Job
-        fields = ('project', 'start_time', 'end_time', 'status', 'job_test_set')
+        fields = ('pk','project', 'start_time', 'end_time', 'status', 'job_test_set')
 
     @staticmethod
     def setup_eager_loading(queryset):

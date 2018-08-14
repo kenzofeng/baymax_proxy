@@ -14,12 +14,23 @@ from lxml import etree
 from django.utils import timezone
 from proxy import env
 import json
+import paramiko
 
 tenjin.set_template_encoding("utf-8")
 from tenjin.helpers import *
 import sys
 
 mswindows = (sys.platform == "win32")
+upload = 'upload'
+upload_pwd = 'upload.derby'
+
+
+def stop_job(host):
+    ssh = paramiko.SSHClient()
+    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    ssh.connect(host, 22, upload, upload_pwd, timeout=10.0)
+    stdin, stdout, stderr = ssh.exec_command("ps -ef|grep 'python -m' |awk '{print $2}'|xargs sudo kill -9")
+    ssh.close()
 
 
 def getip(instance_id):

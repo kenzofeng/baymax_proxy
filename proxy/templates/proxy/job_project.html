@@ -72,10 +72,24 @@
                             </tbody>
                         </table>
                     </td>
+                    <td class="one wide"><button class="ui button red" ng-click="stop(tj)">Stop</button></td>
                 </tr>
                 </tbody>
             </table>
         </div>
+    </div>
+</div>
+<div class="ui modal">
+    <i class="close icon"></i>
+    <div class="header">
+        Stop Job
+    </div>
+    <div class="content">
+            Do you want to stop this job?
+    </div>
+    <div class="actions">
+        <div class="ui red deny button">No</div>
+        <div class="ui green approve button">Yes</div>
     </div>
 </div>
 </div>
@@ -119,6 +133,17 @@
                 $http.get('/job/search/{{project}}/20/').success(function(result){
                     $scope.testjobs=result
                 });
+                $scope.stop=function(tj){
+            	     jobname = tj.project
+            		 $('.ui.modal').modal({
+                        onApprove : function() {
+                            $.ajax({
+                            type:"GET",
+                            url:"/"+jobname+"/stop/",
+                            success:function(result){
+                            }
+                            })
+                }}).modal('show');};
                 $scope.timer = $interval( function(){
                        $http.get('/job/search/{{project}}/20/').success(function(result){
                         $scope.testjobs=result
