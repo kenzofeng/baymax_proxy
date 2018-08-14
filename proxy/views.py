@@ -26,8 +26,9 @@ def job_start(request, project):
 
 
 def job_stop(request, project):
-    scheduler.add_job(job_handler.stop, 'date', run_date=datetime.datetime.now() + datetime.timedelta(seconds=2),
-                      args=[project])
+    rs = job_handler.stop(project)
+    if rs is not None:
+        return HttpResponse(rs, content_type='text/html')
     return HttpResponse({"status": "true"}, content_type='application/json')
 
 

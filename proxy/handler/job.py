@@ -16,11 +16,15 @@ class Myrequest:
 
 
 def stop(project):
-    p = Project.objects.get(name=project)
-    nodes = p.node_set.all()
-    for node in nodes:
-        ip = node.host
-        utility.stop_job(ip)
+    try:
+        p = Project.objects.get(name=project)
+        nodes = p.node_set.all()
+        for node in nodes:
+            ip = node.host
+            utility.stop_job(ip)
+        return None
+    except Exception as e:
+        return e
 
 
 def start(request, project):
