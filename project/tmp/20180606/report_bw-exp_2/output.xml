@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<robot generated="20180606 07:34:43.396" generator="Robot 3.0.2 (Python 2.7.10 on linux2)">
+<suite source="/usr/local/data/baymax_node/project/test_automation/bw-exp" id="s1" name="Bw-Exp">
+<suite source="/usr/local/data/baymax_node/project/test_automation/bw-exp/Expedia-BW-Booking.txt" id="s1-s1" name="Expedia-BW-Booking">
+<test id="s1-s1-t1" name="TC01.001">
+<kw name="booking" library="inner">
+<arguments>
+<arg>http://172.27.0.44:80/expedia-endpoint/soap</arg>
+</arguments>
+<kw name="Test HTTP Client Requests">
+<assign>
+<var>@{HttpRQ}=</var>
+</assign>
+<msg timestamp="20180606 07:34:43.709" level="FAIL">No keyword with name 'Test HTTP Client Requests' found.</msg>
+<status status="FAIL" endtime="20180606 07:34:43.709" starttime="20180606 07:34:43.709"></status>
+</kw>
+<status status="FAIL" endtime="20180606 07:34:43.709" starttime="20180606 07:34:43.706"></status>
+</kw>
+<status status="FAIL" endtime="20180606 07:34:43.709" critical="yes" starttime="20180606 07:34:43.706">No keyword with name 'Test HTTP Client Requests' found.</status>
+</test>
+<test id="s1-s1-t2" name="TC01.002">
+<kw name="booking" library="inner">
+<arguments>
+<arg>http://34.219.199.153:80/expedia-endpoint/soap</arg>
+</arguments>
+<kw name="Test HTTP Client Requests">
+<assign>
+<var>@{HttpRQ}=</var>
+</assign>
+<msg timestamp="20180606 07:34:43.712" level="FAIL">No keyword with name 'Test HTTP Client Requests' found.</msg>
+<status status="FAIL" endtime="20180606 07:34:43.712" starttime="20180606 07:34:43.712"></status>
+</kw>
+<status status="FAIL" endtime="20180606 07:34:43.712" starttime="20180606 07:34:43.710"></status>
+</kw>
+<status status="FAIL" endtime="20180606 07:34:43.713" critical="yes" starttime="20180606 07:34:43.710">No keyword with name 'Test HTTP Client Requests' found.</status>
+</test>
+<status status="FAIL" endtime="20180606 07:34:43.713" starttime="20180606 07:34:43.696"></status>
+</suite>
+<status status="FAIL" endtime="20180606 07:34:43.714" starttime="20180606 07:34:43.397"></status>
+</suite>
+<statistics>
+<total>
+<stat fail="2" pass="0">Critical Tests</stat>
+<stat fail="2" pass="0">All Tests</stat>
+</total>
+<tag>
+</tag>
+<suite>
+<stat fail="2" id="s1" name="Bw-Exp" pass="0">Bw-Exp</stat>
+<stat fail="2" id="s1-s1" name="Expedia-BW-Booking" pass="0">Bw-Exp.Expedia-BW-Booking</stat>
+</suite>
+</statistics>
+<errors>
+<msg timestamp="20180606 07:34:43.695" level="ERROR">Error in file '/usr/local/data/baymax_node/project/test_automation/bw-exp': Importing test library 'Doraemon' failed: ImportError: No module named enum
+Traceback (most recent call last):
+  File "/usr/local/lib/python2.7/site-packages/Doraemon/__init__.py", line 18, in &lt;module&gt;
+    from mock.Server import Server
+  File "/usr/local/lib/python2.7/site-packages/Doraemon/mock/Server.py", line 13, in &lt;module&gt;
+    from msftp import My_SFTP_Server
+  File "/usr/local/lib/python2.7/site-packages/Doraemon/mock/msftp.py", line 6, in &lt;module&gt;
+    import paramiko
+  File "/usr/local/lib/python2.7/site-packages/paramiko/__init__.py", line 31, in &lt;module&gt;
+    from paramiko.transport import SecurityOptions, Transport
+  File "/usr/local/lib/python2.7/site-packages/paramiko/transport.py", line 34, in &lt;module&gt;
+    from cryptography.hazmat.primitives.ciphers import algorithms, Cipher, modes
+  File "/usr/local/lib64/python2.7/site-packages/cryptography/hazmat/primitives/ciphers/__init__.py", line 7, in &lt;module&gt;
+    from cryptography.hazmat.primitives.ciphers.base import (
+  File "/usr/local/lib64/python2.7/site-packages/cryptography/hazmat/primitives/ciphers/base.py", line 12, in &lt;module&gt;
+    from cryptography.exceptions import (
+  File "/usr/local/lib64/python2.7/site-packages/cryptography/exceptions.py", line 7, in &lt;module&gt;
+    from enum import Enum
+PYTHONPATH:
+  /usr/lib64/python27.zip
+  /usr/lib64/python2.7
+  /usr/lib64/python2.7/plat-linux2
+  /usr/lib64/python2.7/lib-tk
+  /usr/lib64/python2.7/lib-old
+  /usr/lib64/python2.7/lib-dynload
+  /usr/local/lib64/python2.7/site-packages
+  /usr/local/lib/python2.7/site-packages
+  /usr/lib64/python2.7/site-packages
+  /usr/lib/python2.7/site-packages
+  /usr/lib64/python2.7/dist-packages
+  /usr/lib64/python2.7/dist-packages/PIL
+  /usr/lib/python2.7/dist-packages</msg>
+<msg timestamp="20180606 07:34:43.703" level="ERROR">Error in file '/usr/local/data/baymax_node/project/test_automation/bw-exp/inner.robot': Importing test library 'Doraemon' failed: ImportError: No module named enum
+Traceback (most recent call last):
+  File "/usr/local/lib/python2.7/site-packages/Doraemon/__init__.py", line 18, in &lt;module&gt;
+    from mock.Server import Server
+  File "/usr/local/lib/python2.7/site-packages/Doraemon/mock/Server.py", line 13, in &lt;module&gt;
+    from msftp import My_SFTP_Server
+  File "/usr/local/lib/python2.7/site-packages/Doraemon/mock/msftp.py", line 6, in &lt;module&gt;
+    import paramiko
+  File "/usr/local/lib/python2.7/site-packages/paramiko/__init__.py", line 31, in &lt;module&gt;
+    from paramiko.transport import SecurityOptions, Transport
+  File "/usr/local/lib/python2.7/site-packages/paramiko/transport.py", line 34, in &lt;module&gt;
+    from cryptography.hazmat.primitives.ciphers import algorithms, Cipher, modes
+  File "/usr/local/lib64/python2.7/site-packages/cryptography/hazmat/primitives/ciphers/__init__.py", line 7, in &lt;module&gt;
+    from cryptography.hazmat.primitives.ciphers.base import (
+  File "/usr/local/lib64/python2.7/site-packages/cryptography/hazmat/primitives/ciphers/base.py", line 12, in &lt;module&gt;
+    from cryptography.exceptions import (
+  File "/usr/local/lib64/python2.7/site-packages/cryptography/exceptions.py", line 7, in &lt;module&gt;
+    from enum import Enum
+PYTHONPATH:
+  /usr/lib64/python27.zip
+  /usr/lib64/python2.7
+  /usr/lib64/python2.7/plat-linux2
+  /usr/lib64/python2.7/lib-tk
+  /usr/lib64/python2.7/lib-old
+  /usr/lib64/python2.7/lib-dynload
+  /usr/local/lib64/python2.7/site-packages
+  /usr/local/lib/python2.7/site-packages
+  /usr/lib64/python2.7/site-packages
+  /usr/lib/python2.7/site-packages
+  /usr/lib64/python2.7/dist-packages
+  /usr/lib64/python2.7/dist-packages/PIL
+  /usr/lib/python2.7/dist-packages</msg>
+<msg timestamp="20180606 07:34:43.705" level="ERROR">Error in file '/usr/local/data/baymax_node/project/test_automation/bw-exp/Expedia-BW-Booking.txt': Importing test library 'Doraemon' failed: ImportError: No module named enum
+Traceback (most recent call last):
+  File "/usr/local/lib/python2.7/site-packages/Doraemon/__init__.py", line 18, in &lt;module&gt;
+    from mock.Server import Server
+  File "/usr/local/lib/python2.7/site-packages/Doraemon/mock/Server.py", line 13, in &lt;module&gt;
+    from msftp import My_SFTP_Server
+  File "/usr/local/lib/python2.7/site-packages/Doraemon/mock/msftp.py", line 6, in &lt;module&gt;
+    import paramiko
+  File "/usr/local/lib/python2.7/site-packages/paramiko/__init__.py", line 31, in &lt;module&gt;
+    from paramiko.transport import SecurityOptions, Transport
+  File "/usr/local/lib/python2.7/site-packages/paramiko/transport.py", line 34, in &lt;module&gt;
+    from cryptography.hazmat.primitives.ciphers import algorithms, Cipher, modes
+  File "/usr/local/lib64/python2.7/site-packages/cryptography/hazmat/primitives/ciphers/__init__.py", line 7, in &lt;module&gt;
+    from cryptography.hazmat.primitives.ciphers.base import (
+  File "/usr/local/lib64/python2.7/site-packages/cryptography/hazmat/primitives/ciphers/base.py", line 12, in &lt;module&gt;
+    from cryptography.exceptions import (
+  File "/usr/local/lib64/python2.7/site-packages/cryptography/exceptions.py", line 7, in &lt;module&gt;
+    from enum import Enum
+PYTHONPATH:
+  /usr/lib64/python27.zip
+  /usr/lib64/python2.7
+  /usr/lib64/python2.7/plat-linux2
+  /usr/lib64/python2.7/lib-tk
+  /usr/lib64/python2.7/lib-old
+  /usr/lib64/python2.7/lib-dynload
+  /usr/local/lib64/python2.7/site-packages
+  /usr/local/lib/python2.7/site-packages
+  /usr/lib64/python2.7/site-packages
+  /usr/lib/python2.7/site-packages
+  /usr/lib64/python2.7/dist-packages
+  /usr/lib64/python2.7/dist-packages/PIL
+  /usr/lib/python2.7/dist-packages</msg>
+</errors>
+</robot>

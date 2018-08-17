@@ -1,0 +1,56 @@
+{
+	"propCode" : "CHIOH",
+	"guest" : {
+		"name" : {
+			"firstName" : "Test",
+			"lastName" : "Derbysoft"
+		},
+		"addresses" : [{
+				"addressType" : "business",
+				"addressLine1" : "************************",
+				"city" : "*********",
+				"state" : "**",
+				"country" : "**",
+				"postalCode" : "*****",
+				"company" : "*******"
+			}
+		],
+		"phones" : [{
+				"phoneType" : "home",
+				"phoneNumber" : "**********"
+			}
+		]
+	},
+	"roomStays" : [{
+			"arrivalDate" : "2018-07-10",
+			"departureDate" : "2018-07-11",
+			"numAdults" : 1,
+			"numChildren" : 0,
+			"roomTypeCode" : "K1",
+			"ratePlanCode" : "OGEPSF",
+			"rateOverrideReason" : "EXPEDIA",
+			"rateOverrides" : [{
+					"effectiveDate" : "2018-07-10",
+					"amount" : 262.32
+				}
+			]
+		}
+	],
+	"guarantee" : {
+		"guarMethodCode" : "CC",
+		"paymentCard" : {
+			"cardHolderName" : "*******************",
+			"cardNumber" : "***************",
+			"cardCode" : "AX",
+			"cardExpireDate" : "****"
+		}
+	},
+	"comments" : {
+		"generalInfo" : ["BookID:1067931102 NightlyRates:262.32,"]
+	},
+	"clientAccounts" : [{
+			"clientId" : "3031303",
+			"clientType" : "corporate"
+		}
+	]
+}

@@ -1,0 +1,10 @@
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
+	<SOAP-ENV:Header/>
+	<SOAP-ENV:Body>
+		<OTA_CancelRQ xmlns="http://www.opentravel.org/OTA/2003/05" CancelType="Cancel" EchoToken="955872e4-8a8f-445a-8509-e672d34630a5" PrimaryLangID="en_US" Target="Test" TimeStamp="2018-05-02T02:29:05.013Z" TransactionIdentifier="2531CEE18BEE42DDBA551EE8B86DB54B" Version="5.000">
+			<UniqueID ID="BW" Instance="CHN" Type="10"/>
+			<UniqueID ID="HTL01031" Instance="CNF" Type="14"/>
+			<UniqueID ID="CHN01031" Instance="PNR" Type="14"/>
+		</OTA_CancelRQ>
+	</SOAP-ENV:Body>
+</SOAP-ENV:Envelope>

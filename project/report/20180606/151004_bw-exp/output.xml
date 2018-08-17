@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<robot generated="20180606 15:10:12.103" generator="Rebot 3.0.2 (Python 2.7.10 on win32)">
+<suite source="/usr/local/data/baymax_node/project/test_automation/bw-exp" id="s1" name="Bw-Exp">
+<suite source="/usr/local/data/baymax_node/project/test_automation/bw-exp/Expedia-BW-Booking.txt" id="s1-s1" name="Expedia-BW-Booking">
+<test id="s1-s1-t1" name="TC01.001">
+<kw name="booking" library="inner">
+<arguments>
+<arg>http://172.27.0.44:80/expedia-endpoint/soap</arg>
+</arguments>
+<kw name="Test HTTP Client Requests">
+<assign>
+<var>@{HttpRQ}=</var>
+</assign>
+<msg timestamp="20180606 07:10:11.624" level="FAIL">No keyword with name 'Test HTTP Client Requests' found.</msg>
+<status status="FAIL" endtime="20180606 07:10:11.624" starttime="20180606 07:10:11.624"></status>
+</kw>
+<status status="FAIL" endtime="20180606 07:10:11.624" starttime="20180606 07:10:11.622"></status>
+</kw>
+<status status="FAIL" endtime="20180606 07:10:11.625" critical="yes" starttime="20180606 07:10:11.621">No keyword with name 'Test HTTP Client Requests' found.</status>
+</test>
+<test id="s1-s1-t2" name="TC01.002">
+<kw name="booking" library="inner">
+<arguments>
+<arg>http://34.219.199.153:80/expedia-endpoint/soap</arg>
+</arguments>
+<kw name="Test HTTP Client Requests">
+<assign>
+<var>@{HttpRQ}=</var>
+</assign>
+<msg timestamp="20180606 07:10:11.627" level="FAIL">No keyword with name 'Test HTTP Client Requests' found.</msg>
+<status status="FAIL" endtime="20180606 07:10:11.627" starttime="20180606 07:10:11.627"></status>
+</kw>
+<status status="FAIL" endtime="20180606 07:10:11.628" starttime="20180606 07:10:11.625"></status>
+</kw>
+<status status="FAIL" endtime="20180606 07:10:11.628" critical="yes" starttime="20180606 07:10:11.625">No keyword with name 'Test HTTP Client Requests' found.</status>
+</test>
+<status status="FAIL" endtime="20180606 07:10:11.628" starttime="20180606 07:10:11.614"></status>
+</suite>
+<status status="FAIL" endtime="20180606 07:10:11.629" starttime="20180606 07:10:11.557"></status>
+</suite>
+<statistics>
+<total>
+<stat fail="2" pass="0">Critical Tests</stat>
+<stat fail="2" pass="0">All Tests</stat>
+</total>
+<tag>
+</tag>
+<suite>
+<stat fail="2" id="s1" name="Bw-Exp" pass="0">Bw-Exp</stat>
+<stat fail="2" id="s1-s1" name="Expedia-BW-Booking" pass="0">Bw-Exp.Expedia-BW-Booking</stat>
+</suite>
+</statistics>
+<errors>
+<msg timestamp="20180606 07:10:11.613" level="ERROR">Error in file '/usr/local/data/baymax_node/project/test_automation/bw-exp': Importing test library 'Doraemon' failed: AttributeError: 'str' object has no attribute '__file__'
+Traceback (most recent call last):
+  File "/usr/local/lib/python2.7/site-packages/Doraemon/__init__.py", line 1, in &lt;module&gt;
+    from App import *
+  File "/usr/local/lib/python2.7/site-packages/Doraemon/App.py", line 3, in &lt;module&gt;
+    import Environment as env
+  File "/usr/local/lib/python2.7/site-packages/Doraemon/Environment.py", line 47, in &lt;module&gt;
+    content_server = Common.get_path_from_pypath(get_package_dir(shop_storage_save), "shopstorage-client.jar")
+  File "/usr/local/lib/python2.7/site-packages/Doraemon/Environment.py", line 20, in get_package_dir
+    dir, _ = os.path.split(package.__file__)
+PYTHONPATH:
+  /usr/lib64/python27.zip
+  /usr/lib64/python2.7
+  /usr/lib64/python2.7/plat-linux2
+  /usr/lib64/python2.7/lib-tk
+  /usr/lib64/python2.7/lib-old
+  /usr/lib64/python2.7/lib-dynload
+  /usr/local/lib64/python2.7/site-packages
+  /usr/local/lib/python2.7/site-packages
+  /usr/lib64/python2.7/site-packages
+  /usr/lib/python2.7/site-packages
+  /usr/lib64/python2.7/dist-packages
+  /usr/lib64/python2.7/dist-packages/PIL
+  /usr/lib/python2.7/dist-packages</msg>
+<msg timestamp="20180606 07:10:11.619" level="ERROR">Error in file '/usr/local/data/baymax_node/project/test_automation/bw-exp/inner.robot': Importing test library 'Doraemon' failed: AttributeError: 'str' object has no attribute '__file__'
+Traceback (most recent call last):
+  File "/usr/local/lib/python2.7/site-packages/Doraemon/__init__.py", line 1, in &lt;module&gt;
+    from App import *
+  File "/usr/local/lib/python2.7/site-packages/Doraemon/App.py", line 3, in &lt;module&gt;
+    import Environment as env
+  File "/usr/local/lib/python2.7/site-packages/Doraemon/Environment.py", line 47, in &lt;module&gt;
+    content_server = Common.get_path_from_pypath(get_package_dir(shop_storage_save), "shopstorage-client.jar")
+  File "/usr/local/lib/python2.7/site-packages/Doraemon/Environment.py", line 20, in get_package_dir
+    dir, _ = os.path.split(package.__file__)
+PYTHONPATH:
+  /usr/lib64/python27.zip
+  /usr/lib64/python2.7
+  /usr/lib64/python2.7/plat-linux2
+  /usr/lib64/python2.7/lib-tk
+  /usr/lib64/python2.7/lib-old
+  /usr/lib64/python2.7/lib-dynload
+  /usr/local/lib64/python2.7/site-packages
+  /usr/local/lib/python2.7/site-packages
+  /usr/lib64/python2.7/site-packages
+  /usr/lib/python2.7/site-packages
+  /usr/lib64/python2.7/dist-packages
+  /usr/lib64/python2.7/dist-packages/PIL
+  /usr/lib/python2.7/dist-packages</msg>
+<msg timestamp="20180606 07:10:11.620" level="ERROR">Error in file '/usr/local/data/baymax_node/project/test_automation/bw-exp/Expedia-BW-Booking.txt': Importing test library 'Doraemon' failed: AttributeError: 'str' object has no attribute '__file__'
+Traceback (most recent call last):
+  File "/usr/local/lib/python2.7/site-packages/Doraemon/__init__.py", line 1, in &lt;module&gt;
+    from App import *
+  File "/usr/local/lib/python2.7/site-packages/Doraemon/App.py", line 3, in &lt;module&gt;
+    import Environment as env
+  File "/usr/local/lib/python2.7/site-packages/Doraemon/Environment.py", line 47, in &lt;module&gt;
+    content_server = Common.get_path_from_pypath(get_package_dir(shop_storage_save), "shopstorage-client.jar")
+  File "/usr/local/lib/python2.7/site-packages/Doraemon/Environment.py", line 20, in get_package_dir
+    dir, _ = os.path.split(package.__file__)
+PYTHONPATH:
+  /usr/lib64/python27.zip
+  /usr/lib64/python2.7
+  /usr/lib64/python2.7/plat-linux2
+  /usr/lib64/python2.7/lib-tk
+  /usr/lib64/python2.7/lib-old
+  /usr/lib64/python2.7/lib-dynload
+  /usr/local/lib64/python2.7/site-packages
+  /usr/local/lib/python2.7/site-packages
+  /usr/lib64/python2.7/site-packages
+  /usr/lib/python2.7/site-packages
+  /usr/lib64/python2.7/dist-packages
+  /usr/lib64/python2.7/dist-packages/PIL
+  /usr/lib/python2.7/dist-packages</msg>
+</errors>
+</robot>

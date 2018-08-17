@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<env:Envelope xmlns:env="http://schemas.xmlsoap.org/soap/envelope/">  
+  <env:Header/>  
+  <env:Body> 
+    <ns2:OTA_HotelResNotifRS xmlns:ns2="http://www.opentravel.org/OTA/2003/05" AltLangID="en" EchoToken="2014102300001" PrimaryLangID="en" ResResponseType="Committed" RetransmissionIndicator="false" Target="Test" TimeStamp="2018-09-09T01:56:22.803-07:00" TransactionIdentifier="F7AB0FD65F0A41789644CCD0FB609D6A" TransactionStatusCode="" Version="5.000">  
+      <ns2:Success/>  
+      <ns2:HotelReservations> 
+        <ns2:HotelReservation> 
+          <ns2:UniqueID ID="CHN01003" Instance="PNR" Type="14"/>  
+          <ns2:ResGlobalInfo> 
+            <ns2:HotelReservationIDs> 
+              <ns2:HotelReservationID ResID_Type="14" ResID_Value="HTL01003"/> 
+            </ns2:HotelReservationIDs> 
+          </ns2:ResGlobalInfo> 
+        </ns2:HotelReservation> 
+      </ns2:HotelReservations> 
+    </ns2:OTA_HotelResNotifRS> 
+  </env:Body> 
+</env:Envelope>

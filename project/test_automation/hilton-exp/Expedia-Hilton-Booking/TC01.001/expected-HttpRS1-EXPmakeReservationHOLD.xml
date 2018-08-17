@@ -1,0 +1,82 @@
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+   <soap:Header/>
+   <soap:Body>
+      <OTA_HotelResRS EchoToken="dbdbdda7-ed60-411b-b1a4-f0d8c9420a1b" PrimaryLangID="en-us" RetransmissionIndicator="false" TimeStamp="2018-07-12T11:01:38.761+08:00" TransactionIdentifier="c082fec5127b4ae09542b51036151af7" Version="5.001" xmlns="http://www.opentravel.org/OTA/2003/05">
+         <Success/>
+         <HotelReservations>
+            <HotelReservation>
+               <UniqueID ID="1067931102" ID_Context="Expedia" Type="14"/>
+               <UniqueID ID="JJHYT38M000" ID_Context="Hilton_DerbySoft" Type="14"/>
+               <RoomStays>
+                  <RoomStay>
+                     <RoomTypes>
+                        <RoomType NonSmoking="true" RoomTypeCode="K1"/>
+                     </RoomTypes>
+                     <RoomRates>
+                        <RoomRate>
+                           <Rates>
+                              <Rate EffectiveDate="2018-07-10" ExpireDate="2018-07-11" RateTypeCode="OGEPSF">
+                                 <Base AmountBeforeTax="262.32" CurrencyCode="USD"/>
+                                 <Discount AmountBeforeTax="-11.83" CurrencyCode="USD" DiscountCode="EFR"/>
+                                 <Total AmountAfterTax="294.08" AmountBeforeTax="250.49" CurrencyCode="USD"/>
+                              </Rate>
+                           </Rates>
+                        </RoomRate>
+                     </RoomRates>
+                     <GuestCounts>
+                        <GuestCount AgeQualifyingCode="10" Count="1"/>
+                     </GuestCounts>
+                     <TimeSpan End="2018-07-11" Start="2018-07-10"/>
+                     <Guarantee>
+                        <GuaranteesAccepted>
+                           <GuaranteeAccepted>
+                              <PaymentCard CardCode="AX" CardNumber="4111111111111111" CardType="1" ExpireDate="1220">
+                                 <CardHolderName>Test Derbysoft</CardHolderName>
+                              </PaymentCard>
+                           </GuaranteeAccepted>
+                        </GuaranteesAccepted>
+                     </Guarantee>
+                     <Total AmountAfterTax="294.08" AmountBeforeTax="250.49" CurrencyCode="USD"/>
+                     <BasicPropertyInfo BrandCode="HI" ChainCode="HH" HotelCode="CHIOH"/>
+                  </RoomStay>
+               </RoomStays>
+               <ResGuests>
+                  <ResGuest>
+                     <Profiles>
+                        <ProfileInfo>
+                           <Profile>
+                              <Customer>
+                                 <PersonName>
+                                    <GivenName>Test</GivenName>
+                                    <Surname>Derbysoft</Surname>
+                                 </PersonName>
+                                 <Telephone AreaCityCode="2" CountryAccessCode="12" Extension="" PhoneNumber="1234567"/>
+                                 <Telephone AreaCityCode="3" CountryAccessCode="13" Extension="" PhoneNumber="2345678"/>
+                              </Customer>
+                           </Profile>
+                        </ProfileInfo>
+                     </Profiles>
+                  </ResGuest>
+               </ResGuests>
+               <ResGlobalInfo>
+                  <HotelReservationIDs>
+                     <HotelReservationID ResID_Source="Expedia" ResID_Type="34" ResID_Value="CHN01001"/>
+                  </HotelReservationIDs>
+                  <Profiles>
+                     <ProfileInfo>
+                        <Profile>
+                           <Customer>
+                              <PersonName>
+                                 <GivenName>Test</GivenName>
+                                 <Surname>Derbysoft</Surname>
+                              </PersonName>
+                           </Customer>
+                        </Profile>
+                     </ProfileInfo>
+                  </Profiles>
+               </ResGlobalInfo>
+            </HotelReservation>
+         </HotelReservations>
+      </OTA_HotelResRS>
+   </soap:Body>
+</soap:Envelope>

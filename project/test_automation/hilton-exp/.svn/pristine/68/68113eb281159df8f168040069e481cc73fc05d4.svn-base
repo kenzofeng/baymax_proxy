@@ -1,0 +1,63 @@
+{
+    "clientAccounts": [
+        {
+            "clientId": "3031303", 
+            "clientType": "corporate"
+        }
+    ], 
+    "comments": {
+        "generalInfo": [
+            "BookID:1067931102 NightlyRates:262.32,"
+        ]
+    }, 
+    "guarantee": {
+        "guarMethodCode": "CC", 
+        "paymentCard": {
+            "cardCode": "AX", 
+            "cardExpireDate": "1220", 
+            "cardHolderName": "Test Derbysoft", 
+            "cardNumber": "4111111111111111"
+        }
+    }, 
+    "guest": {
+        "addresses": [
+            {
+                "addressLine1": "10190 COVINGTON CROSS RD", 
+                "addressType": "business", 
+                "city": "LAS VEGAS", 
+                "company": "EXPEDIA", 
+                "country": "US", 
+                "postalCode": "89144", 
+                "state": "NV"
+            }
+        ], 
+        "name": {
+            "firstName": "Test", 
+            "lastName": "Derbysoft"
+        }, 
+        "phones": [
+            {
+                "phoneNumber": "1234567", 
+                "phoneType": "home"
+            }
+        ]
+    }, 
+    "propCode": "CHIOH", 
+    "roomStays": [
+        {
+            "arrivalDate": "2018-07-10", 
+            "departureDate": "2018-07-11", 
+            "numAdults": 1, 
+            "numChildren": 0, 
+            "rateOverrideReason": "EXPEDIA", 
+            "rateOverrides": [
+                {
+                    "amount": 262.32, 
+                    "effectiveDate": "2018-07-10"
+                }
+            ], 
+            "ratePlanCode": "OGEPSF", 
+            "roomTypeCode": "K1"
+        }
+    ]
+}

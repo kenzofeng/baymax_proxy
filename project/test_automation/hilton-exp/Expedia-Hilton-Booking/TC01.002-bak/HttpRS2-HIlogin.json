@@ -1,0 +1,13 @@
+{
+	"access_token" : "181c043e1390b36cf299944e1eb7aa4d.000001645a520d2d.772da6222f3c30dcd79b5ae071e8ce9a79450d46",
+	"refresh_token" : "7f12c288f75a54c0d81fe4faf84469b8",
+	"scope" : "default",
+	"token_type" : "Bearer",
+	"expires_in" : 772,
+	"UserClaims" : {
+		"keyIdentifier" : 16,
+		"partnerId" : 16,
+		"domainUserName" : "derbyexp",
+		"userRealm" : "partners"
+	}
+}

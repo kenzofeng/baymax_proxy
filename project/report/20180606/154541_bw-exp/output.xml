@@ -1,0 +1,377 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<robot generated="20180606 15:45:48.735" generator="Rebot 3.0.2 (Python 2.7.10 on win32)">
+<suite source="/usr/local/data/baymax_node/project/test_automation/bw-exp" id="s1" name="Bw-Exp">
+<suite source="/usr/local/data/baymax_node/project/test_automation/bw-exp/Expedia-BW-Booking.txt" id="s1-s1" name="Expedia-BW-Booking">
+<test id="s1-s1-t1" name="TC01.001">
+<kw name="booking" library="inner">
+<arguments>
+<arg>http://172.27.0.63:80/expedia-endpoint/soap</arg>
+</arguments>
+<kw name="Test HTTP Client Requests" library="Doraemon">
+<doc>Return List</doc>
+<assign>
+<var>@{HttpRQ}</var>
+</assign>
+<msg timestamp="20180606 07:45:47.725" level="INFO">/usr/local/data/baymax_node/project/test_automation/bw-exp/Expedia-BW-Booking/TC01.001</msg>
+<msg timestamp="20180606 07:45:47.726" level="INFO">@{HttpRQ} = [ /usr/local/data/baymax_node/project/test_automation/bw-exp/Expedia-BW-Booking/TC01.001/HttpRQ1-EXPmakeReservation.xml ]</msg>
+<status status="PASS" endtime="20180606 07:45:47.726" starttime="20180606 07:45:47.724"></status>
+</kw>
+<kw name="Comment" library="BuiltIn">
+<doc>Displays the given messages in the log file as keyword arguments.</doc>
+<arguments>
+<arg>@{HttpProviderRS}=</arg>
+<arg>Test HTTP Server Responses</arg>
+</arguments>
+<status status="PASS" endtime="20180606 07:45:47.726" starttime="20180606 07:45:47.726"></status>
+</kw>
+<kw name="Comment" library="BuiltIn">
+<doc>Displays the given messages in the log file as keyword arguments.</doc>
+<arguments>
+<arg>@{HttpChannelRS}=</arg>
+<arg>Test HTTP Server Responses</arg>
+</arguments>
+<status status="PASS" endtime="20180606 07:45:47.727" starttime="20180606 07:45:47.726"></status>
+</kw>
+<kw name="Test Data" library="Doraemon">
+<doc>get test folder or file</doc>
+<arguments>
+<arg>HttpRS.*-BW.*.xml</arg>
+</arguments>
+<assign>
+<var>@{HttpProviderRS}</var>
+</assign>
+<msg timestamp="20180606 07:45:47.728" level="INFO">/usr/local/data/baymax_node/project/test_automation/bw-exp/Expedia-BW-Booking/TC01.001</msg>
+<msg timestamp="20180606 07:45:47.728" level="INFO">@{HttpProviderRS} = [ /usr/local/data/baymax_node/project/test_automation/bw-exp/Expedia-BW-Booking/TC01.001/HttpRS1-BW.xml ]</msg>
+<status status="PASS" endtime="20180606 07:45:47.728" starttime="20180606 07:45:47.727"></status>
+</kw>
+<kw name="Test Data" library="Doraemon">
+<doc>get test folder or file</doc>
+<arguments>
+<arg>HttpRS.*-EXP.*.xml</arg>
+</arguments>
+<assign>
+<var>@{HttpChannelRS}</var>
+</assign>
+<msg timestamp="20180606 07:45:47.729" level="INFO">/usr/local/data/baymax_node/project/test_automation/bw-exp/Expedia-BW-Booking/TC01.001</msg>
+<msg timestamp="20180606 07:45:47.729" level="INFO">@{HttpChannelRS} = [ /usr/local/data/baymax_node/project/test_automation/bw-exp/Expedia-BW-Booking/TC01.001/HttpRS1-EXP.xml ]</msg>
+<status status="PASS" endtime="20180606 07:45:47.730" starttime="20180606 07:45:47.728"></status>
+</kw>
+<kw name="Run Http Server" library="Doraemon">
+<doc>模拟一个HTTP Server，使用这个方法后，可以通过"Get Http Server Request"来获取Server的Request</doc>
+<arguments>
+<arg>${Http_Port_Provider}</arg>
+<arg>200</arg>
+<arg>@{HttpProviderRS}</arg>
+</arguments>
+<status status="PASS" endtime="20180606 07:45:47.743" starttime="20180606 07:45:47.730"></status>
+</kw>
+<kw name="Run Http Server" library="Doraemon">
+<doc>模拟一个HTTP Server，使用这个方法后，可以通过"Get Http Server Request"来获取Server的Request</doc>
+<arguments>
+<arg>${Http_Port_Channel}</arg>
+<arg>200</arg>
+<arg>@{HttpChannelRS}</arg>
+</arguments>
+<status status="PASS" endtime="20180606 07:45:47.755" starttime="20180606 07:45:47.744"></status>
+</kw>
+<kw name="Run Http Client" library="Doraemon">
+<doc>After use this method ,please use "Get Http Client Responses" to get responses</doc>
+<arguments>
+<arg>${Http_URL}</arg>
+<arg>POST</arg>
+<arg>@{HttpRQ}[0]</arg>
+</arguments>
+<status status="PASS" endtime="20180606 07:45:47.758" starttime="20180606 07:45:47.756"></status>
+</kw>
+<kw name="Get Http Client Responses" library="Doraemon">
+<doc>Return response list</doc>
+<assign>
+<var>@{httpRSActual}</var>
+</assign>
+<msg timestamp="20180606 07:45:47.869" html="yes" level="INFO">please click &lt;a target="_blank" href="cache/0.530000.txt"&gt;Cache file&lt;/a&gt; to check details</msg>
+<msg timestamp="20180606 07:45:47.870" level="INFO">@{httpRSActual} = [ &lt;SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"&gt;&lt;SOAP-ENV:Header&gt;&lt;Interface xmlns="http://www.newtrade.com/expedia/R14/header" Name="ExpediaDirectConnect" Version="4.0"...</msg>
+<status status="PASS" endtime="20180606 07:45:47.870" starttime="20180606 07:45:47.758"></status>
+</kw>
+<kw name="Get Http Server Request" library="Doraemon">
+<doc>get http server reuqest</doc>
+<arguments>
+<arg>${Http_Port_Provider}</arg>
+</arguments>
+<assign>
+<var>${httpProviderRQActual}</var>
+</assign>
+<msg timestamp="20180606 07:45:47.871" html="yes" level="INFO">please click &lt;a target="_blank" href="cache/0.530000.txt"&gt;Cache file&lt;/a&gt; to check details</msg>
+<msg timestamp="20180606 07:45:47.871" level="INFO">${httpProviderRQActual} = []</msg>
+<status status="PASS" endtime="20180606 07:45:47.872" starttime="20180606 07:45:47.870"></status>
+</kw>
+<kw name="Get Http Server Request" library="Doraemon">
+<doc>get http server reuqest</doc>
+<arguments>
+<arg>${Http_Port_Channel}</arg>
+</arguments>
+<assign>
+<var>${httpChannelRQActual}</var>
+</assign>
+<msg timestamp="20180606 07:45:47.872" html="yes" level="INFO">please click &lt;a target="_blank" href="cache/0.530000.txt"&gt;Cache file&lt;/a&gt; to check details</msg>
+<msg timestamp="20180606 07:45:47.873" level="INFO">${httpChannelRQActual} = []</msg>
+<status status="PASS" endtime="20180606 07:45:47.873" starttime="20180606 07:45:47.872"></status>
+</kw>
+<kw name="Comment" library="BuiltIn">
+<doc>Displays the given messages in the log file as keyword arguments.</doc>
+<arguments>
+<arg>${expected_HttpProviderRQ}=</arg>
+<arg>Test HTTP Server Expected Requests</arg>
+</arguments>
+<status status="PASS" endtime="20180606 07:45:47.873" starttime="20180606 07:45:47.873"></status>
+</kw>
+<kw name="Comment" library="BuiltIn">
+<doc>Displays the given messages in the log file as keyword arguments.</doc>
+<arguments>
+<arg>${expected_HttpChannelRQ}=</arg>
+<arg>Test HTTP Server Expected Requests</arg>
+</arguments>
+<status status="PASS" endtime="20180606 07:45:47.873" starttime="20180606 07:45:47.873"></status>
+</kw>
+<kw name="Test Data" library="Doraemon">
+<doc>get test folder or file</doc>
+<arguments>
+<arg>expected-HttpRQ.*-BW.*.xml</arg>
+</arguments>
+<assign>
+<var>${expected_HttpProviderRQ}</var>
+</assign>
+<msg timestamp="20180606 07:45:47.874" level="INFO">/usr/local/data/baymax_node/project/test_automation/bw-exp/Expedia-BW-Booking/TC01.001</msg>
+<msg timestamp="20180606 07:45:47.875" level="INFO">${expected_HttpProviderRQ} = [u'/usr/local/data/baymax_node/project/test_automation/bw-exp/Expedia-BW-Booking/TC01.001/expected-HttpRQ1-BW.xml']</msg>
+<status status="PASS" endtime="20180606 07:45:47.875" starttime="20180606 07:45:47.873"></status>
+</kw>
+<kw name="Test Data" library="Doraemon">
+<doc>get test folder or file</doc>
+<arguments>
+<arg>expected-HttpRQ.*-EXP.*.xml</arg>
+</arguments>
+<assign>
+<var>${expected_HttpChannelRQ}</var>
+</assign>
+<msg timestamp="20180606 07:45:47.876" level="INFO">/usr/local/data/baymax_node/project/test_automation/bw-exp/Expedia-BW-Booking/TC01.001</msg>
+<msg timestamp="20180606 07:45:47.876" level="INFO">${expected_HttpChannelRQ} = [u'/usr/local/data/baymax_node/project/test_automation/bw-exp/Expedia-BW-Booking/TC01.001/expected-HttpRQ1-EXP.xml']</msg>
+<status status="PASS" endtime="20180606 07:45:47.876" starttime="20180606 07:45:47.875"></status>
+</kw>
+<kw name="Test HTTP Client Expected Responses" library="Doraemon">
+<doc>Return List</doc>
+<assign>
+<var>@{expected_httpRS}</var>
+</assign>
+<msg timestamp="20180606 07:45:47.877" level="INFO">/usr/local/data/baymax_node/project/test_automation/bw-exp/Expedia-BW-Booking/TC01.001</msg>
+<msg timestamp="20180606 07:45:47.878" level="INFO">Can't find defined files,you can reference this link(http://10.200.107.43/wiki/en/Automation_File_Format</msg>
+<msg timestamp="20180606 07:45:47.878" level="INFO">@{expected_httpRS} = [ ]</msg>
+<status status="PASS" endtime="20180606 07:45:47.878" starttime="20180606 07:45:47.877"></status>
+</kw>
+<kw name="Xml Compare" library="Doraemon">
+<doc>对比两个XML文件，默认会把XML重复的节点排序</doc>
+<arguments>
+<arg>@{httpRSActual}[0]</arg>
+<arg>@{expected_httpRS}[0]</arg>
+</arguments>
+<msg timestamp="20180606 07:45:47.879" level="FAIL">List variable '@{expected_httpRS}' has no item in index 0.</msg>
+<status status="FAIL" endtime="20180606 07:45:47.879" starttime="20180606 07:45:47.878"></status>
+</kw>
+<status status="FAIL" endtime="20180606 07:45:47.879" starttime="20180606 07:45:47.724"></status>
+</kw>
+<status status="FAIL" endtime="20180606 07:45:47.879" critical="yes" starttime="20180606 07:45:47.723">List variable '@{expected_httpRS}' has no item in index 0.</status>
+</test>
+<test id="s1-s1-t2" name="TC01.002">
+<kw name="booking" library="inner">
+<arguments>
+<arg>http://172.27.0.63:80/expedia-endpoint/soap</arg>
+</arguments>
+<kw name="Test HTTP Client Requests" library="Doraemon">
+<doc>Return List</doc>
+<assign>
+<var>@{HttpRQ}</var>
+</assign>
+<msg timestamp="20180606 07:45:47.882" level="INFO">/usr/local/data/baymax_node/project/test_automation/bw-exp/Expedia-BW-Booking/TC01.002</msg>
+<msg timestamp="20180606 07:45:47.882" level="INFO">@{HttpRQ} = [ /usr/local/data/baymax_node/project/test_automation/bw-exp/Expedia-BW-Booking/TC01.002/HttpRQ1-EXPmakeReservation.xml ]</msg>
+<status status="PASS" endtime="20180606 07:45:47.882" starttime="20180606 07:45:47.881"></status>
+</kw>
+<kw name="Comment" library="BuiltIn">
+<doc>Displays the given messages in the log file as keyword arguments.</doc>
+<arguments>
+<arg>@{HttpProviderRS}=</arg>
+<arg>Test HTTP Server Responses</arg>
+</arguments>
+<status status="PASS" endtime="20180606 07:45:47.882" starttime="20180606 07:45:47.882"></status>
+</kw>
+<kw name="Comment" library="BuiltIn">
+<doc>Displays the given messages in the log file as keyword arguments.</doc>
+<arguments>
+<arg>@{HttpChannelRS}=</arg>
+<arg>Test HTTP Server Responses</arg>
+</arguments>
+<status status="PASS" endtime="20180606 07:45:47.883" starttime="20180606 07:45:47.882"></status>
+</kw>
+<kw name="Test Data" library="Doraemon">
+<doc>get test folder or file</doc>
+<arguments>
+<arg>HttpRS.*-BW.*.xml</arg>
+</arguments>
+<assign>
+<var>@{HttpProviderRS}</var>
+</assign>
+<msg timestamp="20180606 07:45:47.884" level="INFO">/usr/local/data/baymax_node/project/test_automation/bw-exp/Expedia-BW-Booking/TC01.002</msg>
+<msg timestamp="20180606 07:45:47.884" level="INFO">@{HttpProviderRS} = [ /usr/local/data/baymax_node/project/test_automation/bw-exp/Expedia-BW-Booking/TC01.002/HttpRS1-BW.xml ]</msg>
+<status status="PASS" endtime="20180606 07:45:47.884" starttime="20180606 07:45:47.883"></status>
+</kw>
+<kw name="Test Data" library="Doraemon">
+<doc>get test folder or file</doc>
+<arguments>
+<arg>HttpRS.*-EXP.*.xml</arg>
+</arguments>
+<assign>
+<var>@{HttpChannelRS}</var>
+</assign>
+<msg timestamp="20180606 07:45:47.885" level="INFO">/usr/local/data/baymax_node/project/test_automation/bw-exp/Expedia-BW-Booking/TC01.002</msg>
+<msg timestamp="20180606 07:45:47.885" level="INFO">@{HttpChannelRS} = [ /usr/local/data/baymax_node/project/test_automation/bw-exp/Expedia-BW-Booking/TC01.002/HttpRS1-EXP.xml ]</msg>
+<status status="PASS" endtime="20180606 07:45:47.885" starttime="20180606 07:45:47.884"></status>
+</kw>
+<kw name="Run Http Server" library="Doraemon">
+<doc>模拟一个HTTP Server，使用这个方法后，可以通过"Get Http Server Request"来获取Server的Request</doc>
+<arguments>
+<arg>${Http_Port_Provider}</arg>
+<arg>200</arg>
+<arg>@{HttpProviderRS}</arg>
+</arguments>
+<status status="PASS" endtime="20180606 07:45:47.895" starttime="20180606 07:45:47.885"></status>
+</kw>
+<kw name="Run Http Server" library="Doraemon">
+<doc>模拟一个HTTP Server，使用这个方法后，可以通过"Get Http Server Request"来获取Server的Request</doc>
+<arguments>
+<arg>${Http_Port_Channel}</arg>
+<arg>200</arg>
+<arg>@{HttpChannelRS}</arg>
+</arguments>
+<status status="PASS" endtime="20180606 07:45:47.922" starttime="20180606 07:45:47.896"></status>
+</kw>
+<kw name="Run Http Client" library="Doraemon">
+<doc>After use this method ,please use "Get Http Client Responses" to get responses</doc>
+<arguments>
+<arg>${Http_URL}</arg>
+<arg>POST</arg>
+<arg>@{HttpRQ}[0]</arg>
+</arguments>
+<status status="PASS" endtime="20180606 07:45:47.925" starttime="20180606 07:45:47.923"></status>
+</kw>
+<kw name="Get Http Client Responses" library="Doraemon">
+<doc>Return response list</doc>
+<assign>
+<var>@{httpRSActual}</var>
+</assign>
+<msg timestamp="20180606 07:45:48.144" html="yes" level="INFO">please click &lt;a target="_blank" href="cache/0.880000.txt"&gt;Cache file&lt;/a&gt; to check details</msg>
+<msg timestamp="20180606 07:45:48.144" level="INFO">@{httpRSActual} = [ &lt;SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"&gt;&lt;SOAP-ENV:Header&gt;&lt;Interface xmlns="http://www.newtrade.com/expedia/R14/header" Name="ExpediaDirectConnect" Version="4.0"...</msg>
+<status status="PASS" endtime="20180606 07:45:48.144" starttime="20180606 07:45:47.926"></status>
+</kw>
+<kw name="Get Http Server Request" library="Doraemon">
+<doc>get http server reuqest</doc>
+<arguments>
+<arg>${Http_Port_Provider}</arg>
+</arguments>
+<assign>
+<var>${httpProviderRQActual}</var>
+</assign>
+<msg timestamp="20180606 07:45:48.145" html="yes" level="INFO">please click &lt;a target="_blank" href="cache/0.880000.txt"&gt;Cache file&lt;/a&gt; to check details</msg>
+<msg timestamp="20180606 07:45:48.146" level="INFO">${httpProviderRQActual} = []</msg>
+<status status="PASS" endtime="20180606 07:45:48.146" starttime="20180606 07:45:48.144"></status>
+</kw>
+<kw name="Get Http Server Request" library="Doraemon">
+<doc>get http server reuqest</doc>
+<arguments>
+<arg>${Http_Port_Channel}</arg>
+</arguments>
+<assign>
+<var>${httpChannelRQActual}</var>
+</assign>
+<msg timestamp="20180606 07:45:48.147" html="yes" level="INFO">please click &lt;a target="_blank" href="cache/0.880000.txt"&gt;Cache file&lt;/a&gt; to check details</msg>
+<msg timestamp="20180606 07:45:48.147" level="INFO">${httpChannelRQActual} = []</msg>
+<status status="PASS" endtime="20180606 07:45:48.147" starttime="20180606 07:45:48.146"></status>
+</kw>
+<kw name="Comment" library="BuiltIn">
+<doc>Displays the given messages in the log file as keyword arguments.</doc>
+<arguments>
+<arg>${expected_HttpProviderRQ}=</arg>
+<arg>Test HTTP Server Expected Requests</arg>
+</arguments>
+<status status="PASS" endtime="20180606 07:45:48.147" starttime="20180606 07:45:48.147"></status>
+</kw>
+<kw name="Comment" library="BuiltIn">
+<doc>Displays the given messages in the log file as keyword arguments.</doc>
+<arguments>
+<arg>${expected_HttpChannelRQ}=</arg>
+<arg>Test HTTP Server Expected Requests</arg>
+</arguments>
+<status status="PASS" endtime="20180606 07:45:48.148" starttime="20180606 07:45:48.147"></status>
+</kw>
+<kw name="Test Data" library="Doraemon">
+<doc>get test folder or file</doc>
+<arguments>
+<arg>expected-HttpRQ.*-BW.*.xml</arg>
+</arguments>
+<assign>
+<var>${expected_HttpProviderRQ}</var>
+</assign>
+<msg timestamp="20180606 07:45:48.149" level="INFO">/usr/local/data/baymax_node/project/test_automation/bw-exp/Expedia-BW-Booking/TC01.002</msg>
+<msg timestamp="20180606 07:45:48.149" level="INFO">${expected_HttpProviderRQ} = [u'/usr/local/data/baymax_node/project/test_automation/bw-exp/Expedia-BW-Booking/TC01.002/expected-HttpRQ1-BW.xml']</msg>
+<status status="PASS" endtime="20180606 07:45:48.149" starttime="20180606 07:45:48.148"></status>
+</kw>
+<kw name="Test Data" library="Doraemon">
+<doc>get test folder or file</doc>
+<arguments>
+<arg>expected-HttpRQ.*-EXP.*.xml</arg>
+</arguments>
+<assign>
+<var>${expected_HttpChannelRQ}</var>
+</assign>
+<msg timestamp="20180606 07:45:48.150" level="INFO">/usr/local/data/baymax_node/project/test_automation/bw-exp/Expedia-BW-Booking/TC01.002</msg>
+<msg timestamp="20180606 07:45:48.150" level="INFO">${expected_HttpChannelRQ} = [u'/usr/local/data/baymax_node/project/test_automation/bw-exp/Expedia-BW-Booking/TC01.002/expected-HttpRQ1-EXP.xml']</msg>
+<status status="PASS" endtime="20180606 07:45:48.150" starttime="20180606 07:45:48.149"></status>
+</kw>
+<kw name="Test HTTP Client Expected Responses" library="Doraemon">
+<doc>Return List</doc>
+<assign>
+<var>@{expected_httpRS}</var>
+</assign>
+<msg timestamp="20180606 07:45:48.151" level="INFO">/usr/local/data/baymax_node/project/test_automation/bw-exp/Expedia-BW-Booking/TC01.002</msg>
+<msg timestamp="20180606 07:45:48.152" level="INFO">Can't find defined files,you can reference this link(http://10.200.107.43/wiki/en/Automation_File_Format</msg>
+<msg timestamp="20180606 07:45:48.152" level="INFO">@{expected_httpRS} = [ ]</msg>
+<status status="PASS" endtime="20180606 07:45:48.152" starttime="20180606 07:45:48.151"></status>
+</kw>
+<kw name="Xml Compare" library="Doraemon">
+<doc>对比两个XML文件，默认会把XML重复的节点排序</doc>
+<arguments>
+<arg>@{httpRSActual}[0]</arg>
+<arg>@{expected_httpRS}[0]</arg>
+</arguments>
+<msg timestamp="20180606 07:45:48.152" level="FAIL">List variable '@{expected_httpRS}' has no item in index 0.</msg>
+<status status="FAIL" endtime="20180606 07:45:48.152" starttime="20180606 07:45:48.152"></status>
+</kw>
+<status status="FAIL" endtime="20180606 07:45:48.153" starttime="20180606 07:45:47.880"></status>
+</kw>
+<status status="FAIL" endtime="20180606 07:45:48.153" critical="yes" starttime="20180606 07:45:47.880">List variable '@{expected_httpRS}' has no item in index 0.</status>
+</test>
+<status status="FAIL" endtime="20180606 07:45:48.154" starttime="20180606 07:45:47.718"></status>
+</suite>
+<status status="FAIL" endtime="20180606 07:45:48.155" starttime="20180606 07:45:47.422"></status>
+</suite>
+<statistics>
+<total>
+<stat fail="2" pass="0">Critical Tests</stat>
+<stat fail="2" pass="0">All Tests</stat>
+</total>
+<tag>
+</tag>
+<suite>
+<stat fail="2" id="s1" name="Bw-Exp" pass="0">Bw-Exp</stat>
+<stat fail="2" id="s1-s1" name="Expedia-BW-Booking" pass="0">Bw-Exp.Expedia-BW-Booking</stat>
+</suite>
+</statistics>
+<errors>
+</errors>
+</robot>
