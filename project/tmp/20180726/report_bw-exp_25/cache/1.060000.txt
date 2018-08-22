@@ -1,1 +1,0 @@
-['<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"><SOAP-ENV:Header><Interface xmlns="http://www.newtrade.com/expedia/R14/header" Name="ExpediaDirectConnect" Version="4.0"><Acknowledgement RequestId="REQ01003"/></Interface></SOAP-ENV:Header><SOAP-ENV:Body/></SOAP-ENV:Envelope>']
