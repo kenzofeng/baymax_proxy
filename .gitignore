@@ -4,4 +4,4 @@ project/log
 project/report
 project/tmp
 project/test_automation
-.*.pyc
+*.pyc
