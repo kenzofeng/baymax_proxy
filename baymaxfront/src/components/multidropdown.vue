@@ -18,8 +18,14 @@ export default {
   },
   watch: {
     value (val) {
-      this.selected = ['integration']
-      console.log(this.selected)
+      $('.dropdown').dropdown('clear')
+      for (var s in val) {
+        $('.dropdown').dropdown('set selected', val[s])
+      }
+      this.selected = val
+    },
+    selected (val) {
+      this.$emit('changeselected', val)
     }
   }
 }

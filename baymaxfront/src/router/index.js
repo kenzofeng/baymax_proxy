@@ -33,13 +33,33 @@ export default new Router({
       path: '/lab',
       name: 'Lab',
       component: Layout,
-      menu: true
+      redirect: '/lab/index',
+      menu: true,
+      children: [{
+        path: 'index',
+        component: () => import('@/views/lab/index'),
+        children: [{
+          path: ':name',
+          name: 'labtoproject',
+          component: () => import('@/views/lab/index')
+        }]
+      }]
     },
     {
       path: '/job',
       name: 'Job',
       component: Layout,
-      menu: true
+      redirect: '/job/index',
+      menu: true,
+      children: [{
+        path: 'index',
+        component: () => import('@/views/job/index'),
+        children: [{
+          path: ':name',
+          name: 'jobtoproject',
+          component: () => import('@/views/job/index')
+        }]
+      }]
     },
     { path: '*', redirect: '/404', hidden: true }
   ]

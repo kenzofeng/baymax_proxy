@@ -1,6 +1,6 @@
 <template>
     <div class="ui form">
-        <div class="ui top attached inverted blue button" tabindex="0" >GoTo Test Lab</div>
+        <div class="ui top attached inverted blue button" tabindex="0" @click="gotolab">GoTo Test Lab</div>
         <h4 class="ui teal dividing header">Information</h4>
         <div class="two fields">
             <div class="required field">
@@ -12,7 +12,7 @@
         </div>
         <h4 class="ui teal dividing header">Servers</h4>
         <div class="fields">
-            <multidrop  :items="nodes" :value="item.nodes"></multidrop>
+            <multidrop  :items="nodes" :value="item.nodes" @changeselected="changeselected"></multidrop>
         </div>
         <h4 class="ui teal header">Test Automation</h4>
         <div>
@@ -25,31 +25,54 @@
         </div>
         <h4 class="ui teal dividing header"></h4>
         <div class="ui large buttons">
-            <button class="ui red button">Delete</button>
+            <button class="ui red button" @click="deleteshow">Delete</button>
             <div class="or"></div>
-            <button class="ui teal button" @click="save">Save</button>
+            <button class="ui teal button" @click="saveshow">Save</button>
         </div>
+        <model ref="savemodelcomponent" @yes="saveproject" :name="savem">
+            <div slot="header">Save Project</div>
+            <div slot="content">Are you sure save project?</div>
+        </model>
+        <model ref="deletemodelcomponent" @yes="deleteproject" :name="deletem">
+            <div slot="header">Delete Project</div>
+            <div slot="content">Are you sure delete project?</div>
+        </model>
+        <model ref="notifymodelcomponent" :name="notify">
+            <div slot="header">Status</div>
+            <div slot="content">{{response}}</div>
+        </model>
     </div>
 </template>
 <script>
-import {getdetail} from '@/api/project'
+import {getdetail, saveproject} from '@/api/project'
 import {getList} from '@/api/node'
 import testauto from './testauto'
 import multidrop from '@/components/multidropdown'
+import model from '@/components/model'
 export default {
   name: 'detail',
   data () {
     return {
       item: {},
-      nodes: []
+      nodes: [],
+      savem: 'save',
+      deletem: 'delete',
+      notify: 'notify',
+      response: null
     }
   },
-  components: {testauto, multidrop},
+  components: {testauto, multidrop, model},
   created () {
     this.fetchData()
     this.fetchNodes()
   },
+  mounted () {
+    $('.ui.modals').remove()
+  },
   methods: {
+    changeselected (nodes) {
+      this.item.nodes = nodes
+    },
     deleteauto (item) {
       this.item.maps.pop()
     },
@@ -66,8 +89,24 @@ export default {
         this.nodes = response.data
       })
     },
-    save () {
+    saveshow () {
+      this.$refs.savemodelcomponent.$emit('show')
+    },
+    deleteshow () {
+      this.$refs.deletemodelcomponent.$emit('show')
+    },
+    saveproject () {
       console.log(JSON.stringify(this.item))
+      saveproject(this.item).then(response => {
+        this.response = response.data
+      })
+      this.$refs.notifymodelcomponent.$emit('show')
+    },
+    deleteproject () {
+      console.log(JSON.stringify(this.item))
+    },
+    gotolab () {
+      this.$router.push({name: 'labtoproject', params: {name: this.item.name}})
     }
   },
   watch: {

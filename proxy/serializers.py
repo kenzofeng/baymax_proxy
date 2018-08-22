@@ -38,10 +38,16 @@ class ProjectSerializer(serializers.ModelSerializer):
         fields = ('pk', 'name', 'email', 'nodes', 'maps')
 
     def get_nodes(self, obj):
-        return NodeSerializer(obj.node_set.all(), many=True).data
+        return [node.name for node in  obj.node_set.all()]
 
     def get_maps(self, obj):
         return TestMapSerializer(Test_Map.objects.filter(project=obj.name), many=True).data
+
+    def update(self, instance, validated_data):
+        # instance.job_status =validated_data.get('job_status', instance.job_status)
+        # instance.job_cron = validated_data.get('job_cron', instance.job_cron)
+        # instance.save()
+        return instance
 
     @staticmethod
     def setup_eager_loading(queryset):
@@ -55,7 +61,3 @@ class TestMapSerializer(serializers.ModelSerializer):
         fields = ('pk', 'project', 'test', 'testurl', 'robot_parameter', 'use')
 
 
-class NodeSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Node
-        fields = ("host", 'name', 'status')
