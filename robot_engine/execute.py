@@ -101,16 +101,12 @@ class Execute():
             test.status = 'Running'
             test.save()
             testcase.checkout_script(test)
-            if testcase.run_autobuild(test):
-                testcase.distribute_test_script(self.nodes, test)
-                self.send_test(test)
-                self.merge_test_report(test)
-                test.status = utility.get_result_fromxml(
-                    os.path.join(env.report, test.job_test_result.report, env.output_xml))
-                test.save()
-            else:
-                test.status = 'Error'
-                test.save()
+            testcase.distribute_test_script(self.nodes, test)
+            self.send_test(test)
+            self.merge_test_report(test)
+            test.status = utility.get_result_fromxml(
+                os.path.join(env.report, test.job_test_result.report, env.output_xml))
+            test.save()
             scheduler.add_job(utility.send_email, 'date',
                               run_date=datetime.datetime.now() + datetime.timedelta(seconds=2), args=[test, self.ip])
             # utility.send_email(test, self.ip)
