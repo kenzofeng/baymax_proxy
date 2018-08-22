@@ -3,7 +3,7 @@ import os
 import zlib
 
 from django.core import serializers
-from serializers import ProjectSerializer, JobSerializer
+from serializers import ProjectSerializer, JobSerializer, NodeSerializer
 from django.shortcuts import render, HttpResponse
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -32,6 +32,10 @@ def job_stop(request, project):
     return HttpResponse({"status": "true"}, content_type='application/json')
 
 
+def project(request):
+    return render(request, 'proxy/project.html')
+
+
 def project_getall(request):
     list_project = Project.objects.all()
     return HttpResponse(serializers.serialize("json", list_project), content_type='application/json')
@@ -39,8 +43,7 @@ def project_getall(request):
 
 def project_getallnodes(request):
     nodes = Node.objects.all()
-    nodelist = [node.name for node in nodes]
-    return JsonResponse(nodelist, safe=False)
+    return JsonResponse(NodeSerializer(nodes, many=True, read_only=True).data, safe=False)
 
 
 def project_getdetail(request):
@@ -48,10 +51,11 @@ def project_getdetail(request):
     p = Project.objects.get(pk=tid)
     return JsonResponse(ProjectSerializer(p).data, safe=False)
 
-@csrf_exempt
-def project_save(request):
-    print json.loads(request.body)
-    return JsonResponse({'status': 'scuess'}, safe=False)
+
+def getdetail(request, project):
+    p = Project.objects.get(pk=project)
+    return JsonResponse(ProjectSerializer(p).data, safe=False)
+
 
 @csrf_exempt
 def project_add(request):
@@ -73,6 +77,10 @@ def project_update(request):
 def project_delete(request):
     project_handler.delete(request)
     return HttpResponse(json.dumps({'status': 'scuess'}), content_type='application/json')
+
+
+def job(request):
+    return render(request, 'proxy/job.html')
 
 
 def job_project(request, project):
