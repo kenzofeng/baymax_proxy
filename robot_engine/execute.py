@@ -56,7 +56,7 @@ class Execute():
             test_ds.host = "{}:{}".format(node.host, node.port)
             test_ds.save()
             # self.request_test(test_ds,node)
-            rt = threading.Thread(target=self.rquest_test, args=(test_ds, node))
+            rt = threading.Thread(target=self.request_test, args=(test_ds, node))
             rt.setDaemon(True)
             rt.start()
             request_threads.append(rt)
