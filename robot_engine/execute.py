@@ -110,7 +110,6 @@ class Execute():
             test.save()
             scheduler.add_job(utility.send_email, 'date',
                               run_date=datetime.datetime.now() + datetime.timedelta(seconds=2), args=[test, self.ip])
-            utility.send_email(test, self.ip)
         except Exception, e:
             print e
             test.status = 'Error'
