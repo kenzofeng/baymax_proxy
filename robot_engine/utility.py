@@ -15,7 +15,7 @@ from django.utils import timezone
 from proxy import env
 import json
 import paramiko
-
+logger = logging.getLogger('django')
 tenjin.set_template_encoding("utf-8")
 from tenjin.helpers import *
 import sys
@@ -107,7 +107,7 @@ def logmsgs(logpath, msgs):
         f.write('\n')
         f.close()
     except Exception, e:
-        print e
+        logger.error(e)
     finally:
         f.close()
 
@@ -119,7 +119,7 @@ def logmsg(logpath, msg):
         f.write('\n')
         f.close()
     except Exception, e:
-        print e
+        logger.error(e)
     finally:
         f.close()
 
@@ -236,7 +236,7 @@ def zip_file(sourcefile, targetfile):
             zf.write(tar, arcname)
         zf.close()
     except Exception, e:
-        print e
+        logger.error(e)
 
 
 def extract_zip(source, target):

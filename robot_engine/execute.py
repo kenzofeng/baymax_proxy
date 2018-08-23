@@ -1,3 +1,4 @@
+import logging
 import os
 import sys
 import threading
@@ -11,7 +12,7 @@ from proxy import env
 from proxy.models import Project
 from Baymax_Proxy.jobs import scheduler
 import datetime
-
+logger = logging.getLogger('django')
 mswindows = (sys.platform == "win32")
 
 
@@ -32,7 +33,7 @@ class Execute():
         for test in job_tests:
             self.execute(test)
 
-    def rquest_test(self, test_ds, node):
+    def request_test(self, test_ds, node):
         try:
             r = requests.post(
                 "http://{}:{}/{}/{}/start".format(node.host, node.port, test_ds.job_test.name, test_ds.pk),
@@ -42,7 +43,7 @@ class Execute():
             open(download_zip, 'wb').write(r.content)
             utility.extract_zip(download_zip, os.path.join(env.tmp, test_ds.report))
         except Exception, e:
-            print e
+            logger.error("test error:{}".format(e))
         finally:
             node.status = "Done"
             node.save()
@@ -55,7 +56,8 @@ class Execute():
             node.save()
             test_ds.host = "{}:{}".format(node.host, node.port)
             test_ds.save()
-            rt = threading.Thread(target=self.rquest_test, args=(test_ds, node))
+            # self.request_test(test_ds,node)
+            rt = threading.Thread(target=self.request_test, args=(test_ds, node))
             rt.setDaemon(True)
             rt.start()
             request_threads.append(rt)
@@ -109,9 +111,8 @@ class Execute():
             test.save()
             scheduler.add_job(utility.send_email, 'date',
                               run_date=datetime.datetime.now() + datetime.timedelta(seconds=2), args=[test, self.ip])
-            # utility.send_email(test, self.ip)
         except Exception, e:
-            print e
+            logger.error("execute error:{}".format(e))
             test.status = 'Error'
             test.save()
             utility.job_test_log(test.name, e)
