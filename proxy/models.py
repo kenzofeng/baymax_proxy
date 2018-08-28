@@ -74,6 +74,7 @@ class Job_Test(models.Model):
     project_branch = models.CharField(max_length=60)
     testurl = models.CharField(max_length=250)
     robot_parameter = models.CharField(max_length=250, blank=True, null=True, default='')
+    app = models.CharField(max_length=250,blank=True, null=True, default='')
     name = models.CharField(max_length=50, blank=True, null=True, default='')
     pid = models.CharField(max_length=50, blank=True, null=True, default='')
     status = models.CharField(max_length=20, choices=Run_Status)

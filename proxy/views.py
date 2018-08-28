@@ -17,10 +17,11 @@ import datetime
 
 def job_start(request, project):
     myrequest = job_handler.Myrequest(request)
-    scheduler.add_job(job_handler.start, 'date', run_date=datetime.datetime.now() + datetime.timedelta(seconds=2),
+    scheduler.add_job(job_handler.start, 'date', run_date=datetime.datetime.now() + datetime.timedelta(seconds=1),
                       args=[myrequest, project])
     # rs = job_handler.start(myrequest, project)
-    return JsonResponse({"status": "true"}, safe=False)
+    print myrequest
+    return JsonResponse({"status": "Job added successfully"}, safe=False)
 
 
 def job_stop(request, project):

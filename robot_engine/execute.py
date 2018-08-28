@@ -37,7 +37,7 @@ class Execute():
         try:
             r = requests.post(
                 "http://{}:{}/{}/{}/start".format(node.host, node.port, test_ds.job_test.name, test_ds.pk),
-                data={"filename": "%s_%s.zip" % (test_ds.job_test.name, test_ds.pk)}, files={
+                data={"filename": "%s_%s.zip" % (test_ds.job_test.name, test_ds.pk),"app":test_ds.job_test.app}, files={
                     "script": open(os.path.join(env.tmp, "%s.zip" % test_ds.script), 'rb')})
             download_zip = os.path.join(env.tmp, utility.gettoday(), "report_%s.zip" % r.headers["filename"])
             open(download_zip, 'wb').write(r.content)
