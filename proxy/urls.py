@@ -11,7 +11,6 @@ urlpatterns = [
                   url(r'^project/getdetail$', views.project_getdetail),
                   url(r'^project/save$', views.project_save),
                   url(r'^project/add$', views.project_add),
-                  url(r'^project/update$', views.project_update),
                   url(r'^project/delete$', views.project_delete),
                   url(r'^test/log/(?P<logid>\d+)/$', views.test_run_log),
                   url(r'^job/log/(?P<logid>\d+)/$', views.test_run_log),

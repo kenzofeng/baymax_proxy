@@ -1,8 +1,8 @@
 <template>
-    <router-link :class="Active()" class="item" :to="'/project/index/'+item.pk">
+    <router-link :class="Active()" class="item" :to="'/project/index/'+item">
                 <i class="clipboard list icon"></i>
                 <div class="content">
-                    <div class="header">{{item.pk}}</div>
+                    <div class="header">{{item}}</div>
                 </div>
             </router-link>
 </template>
@@ -15,7 +15,7 @@ export default {
   },
   methods: {
     Active () {
-      if (this.$route.params.name === this.item.pk) {
+      if (this.$route.params.name === this.item) {
         return {active: true}
       } else {
         return {active: false}

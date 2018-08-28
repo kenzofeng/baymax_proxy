@@ -2,18 +2,21 @@
     <div>
         <div v-for="item in items" :key="item.pk">
             <h4 class="ui teal dividing header"></h4>
-            <div class="two fields">
-                <div class="required field">
+            <div class="fields">
+                <div class="required five wide field">
                     <label>Test Name:</label>
-                    <input type="text" v-model="item.project"></div>
-                <div class="required field">
+                    <input type="text" v-model="item.test"></div>
+                <div class="required ten wide field">
                     <label>Automation URL:</label>
                     <input type="text" v-model="item.testurl"></div>
             </div>
-            <div class="two fields">
-                <div class="field">
-                    <label>Robot Parameters:</label>
+            <div class="fields">
+                <div class="five wide field">
+                    <label >Robot Parameters:</label>
                     <input type="text" v-model="item.robot_parameter"></div>
+                <div class="five wide field">
+                    <label>App Log:</label>
+                    <input type="text" v-model="item.app"></div>
                 <div class="field">
                     <label>Enable</label>
                     <div class="ui toggle checkbox">

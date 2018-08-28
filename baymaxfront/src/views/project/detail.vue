@@ -12,7 +12,7 @@
         </div>
         <h4 class="ui teal dividing header">Servers</h4>
         <div class="fields">
-            <multidrop  :items="nodes" :value="item.nodes" @changeselected="changeselected"></multidrop>
+            <multidrop  :items="nodes" :value="item.nodes" @changeselected="changeselected" :isfluid="true"></multidrop>
         </div>
         <h4 class="ui teal header">Test Automation</h4>
         <div>
@@ -44,7 +44,7 @@
     </div>
 </template>
 <script>
-import {getdetail, saveproject} from '@/api/project'
+import {getdetail, saveproject, deleteproject} from '@/api/project'
 import {getList} from '@/api/node'
 import testauto from './testauto'
 import multidrop from '@/components/multidropdown'
@@ -96,14 +96,16 @@ export default {
       this.$refs.deletemodelcomponent.$emit('show')
     },
     saveproject () {
-      console.log(JSON.stringify(this.item))
       saveproject(this.item).then(response => {
         this.response = response.data
       })
       this.$refs.notifymodelcomponent.$emit('show')
     },
     deleteproject () {
-      console.log(JSON.stringify(this.item))
+      deleteproject(this.item).then(response => {
+        this.response = response.data
+      })
+      this.$refs.notifymodelcomponent.$emit('show')
     },
     gotolab () {
       this.$router.push({name: 'labtoproject', params: {name: this.item.name}})
@@ -113,6 +115,7 @@ export default {
     $route: {
       handler: function (val, oldVal) {
         this.fetchData()
+        this.fetchNodes()
       }
     }
   }

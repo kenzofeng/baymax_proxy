@@ -2,7 +2,6 @@ import json
 import os
 import zlib
 
-from django.core import serializers
 from serializers import ProjectSerializer, JobSerializer
 from django.shortcuts import render, HttpResponse
 from django.http import JsonResponse
@@ -10,8 +9,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 import env
 from handler import job as job_handler
-from handler import project as project_handler
-from models import Project, Job, Job_Test_Result, Job_Test, Node
+from models import Project, Job, Job_Test_Result, Job_Test, Node, Test_Map
 import requests
 from Baymax_Proxy.jobs import scheduler
 import datetime
@@ -22,19 +20,20 @@ def job_start(request, project):
     scheduler.add_job(job_handler.start, 'date', run_date=datetime.datetime.now() + datetime.timedelta(seconds=2),
                       args=[myrequest, project])
     # rs = job_handler.start(myrequest, project)
-    return HttpResponse({"status": "true"}, content_type='application/json')
+    return JsonResponse({"status": "true"}, safe=False)
 
 
 def job_stop(request, project):
     rs = job_handler.stop(project)
     if rs is not None:
         return HttpResponse(rs, content_type='text/html')
-    return HttpResponse({"status": "true"}, content_type='application/json')
+    return JsonResponse({"status": "true"}, safe=False)
 
 
 def project_getall(request):
     list_project = Project.objects.all()
-    return HttpResponse(serializers.serialize("json", list_project), content_type='application/json')
+    list_project=[project.pk for project in list_project]
+    return JsonResponse(list_project, safe=False)
 
 
 def project_getallnodes(request):
@@ -50,7 +49,11 @@ def project_getdetail(request):
 
 @csrf_exempt
 def project_save(request):
-    print json.loads(request.body)
+    p = json.loads(request.body)
+    project = Project.objects.get(pk=p['pk'])
+    serializer = ProjectSerializer(project, data=p)
+    serializer.is_valid()
+    serializer.save()
     return JsonResponse({'status': 'scuess'}, safe=False)
 
 @csrf_exempt
@@ -64,14 +67,14 @@ def project_add(request):
 
 
 @csrf_exempt
-def project_update(request):
-    project_handler.update(request)
-    return HttpResponse(json.dumps({'status': 'scuess'}), content_type='application/json')
-
-
-@csrf_exempt
 def project_delete(request):
-    project_handler.delete(request)
+    p = json.loads(request.body)
+    project = Project.objects.get(pk=p['pk'])
+    maps = Test_Map.objects.filter(project=project.pk)
+    for m in maps:
+        m.delete()
+    project.node_set.clear()
+    project.delete()
     return HttpResponse(json.dumps({'status': 'scuess'}), content_type='application/json')
 
 

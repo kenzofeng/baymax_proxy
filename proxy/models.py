@@ -40,6 +40,7 @@ class Test_Map(models.Model):
     test = models.CharField(max_length=50)
     testurl = models.CharField(max_length=250)
     robot_parameter = models.CharField(max_length=250, blank=True, null=True, default='')
+    app= models.CharField(max_length=250)
     use = models.BooleanField(default=True)
 
     def touse(self):

@@ -1,6 +1,6 @@
 <template>
-    <select  multiple=""   class="ui fluid search dropdown" :value="value" v-model="selected">
-        <option value="">Servers</option>
+    <select  multiple="" :class="{fluid:isfluid}"  class="ui search dropdown" :value="value" v-model="selected">
+        <option value=""></option>
         <option v-for="item in items" :value="item" :key="item">{{item}}</option>
     </select >
 </template>
@@ -12,16 +12,16 @@ export default {
       selected: []
     }
   },
-  props: {items: null, value: null},
+  props: {items: null, value: null, isfluid: false},
   mounted () {
     $('.dropdown').dropdown()
   },
   watch: {
     value (val) {
       $('.dropdown').dropdown('clear')
-      for (var s in val) {
-        $('.dropdown').dropdown('set selected', val[s])
-      }
+      val.forEach(function (val) {
+        $('.dropdown').dropdown('set selected', val)
+      })
       this.selected = val
     },
     selected (val) {

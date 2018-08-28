@@ -1,7 +1,7 @@
 <template>
     <div>
         <div class="ui large divided aligned selection list">
-            <item v-for="item in items" :key="item.pk" :item="item"> </item>
+            <item v-for="item in items" :key="item" :item="item"> </item>
         </div>
     </div>
 </template>

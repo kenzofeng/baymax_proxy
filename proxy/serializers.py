@@ -30,8 +30,8 @@ class JobSerializer(serializers.ModelSerializer):
 
 
 class ProjectSerializer(serializers.ModelSerializer):
-    nodes = serializers.SerializerMethodField()
-    maps = serializers.SerializerMethodField()
+    nodes = serializers.SerializerMethodField(read_only=False)
+    maps = serializers.SerializerMethodField(read_only=False)
 
     class Meta:
         model = Project
@@ -43,10 +43,31 @@ class ProjectSerializer(serializers.ModelSerializer):
     def get_maps(self, obj):
         return TestMapSerializer(Test_Map.objects.filter(project=obj.name), many=True).data
 
+    def validate(self, attrs):
+        attrs['maps'] = self.initial_data['maps']
+        attrs['nodes'] = self.initial_data['nodes']
+        return attrs
+
     def update(self, instance, validated_data):
-        # instance.job_status =validated_data.get('job_status', instance.job_status)
-        # instance.job_cron = validated_data.get('job_cron', instance.job_cron)
-        # instance.save()
+        instance.email = validated_data.get('email')
+        maps = Test_Map.objects.filter(project=instance.pk)
+        for m in maps:
+            m.delete()
+        for map in validated_data.get('maps'):
+            m = Test_Map()
+            m.project= instance.pk
+            m.test = map['test']
+            m.testurl = map['testurl']
+            m.robot_parameter = map['robot_parameter']
+            m.app = map['app']
+            m.use = map['use']
+            m.save()
+        instance.node_set.clear()
+        for node in validated_data.get('nodes'):
+            n = Node.objects.get(name=node)
+            n.projects.add(instance)
+            n.save()
+        instance.save()
         return instance
 
     @staticmethod
@@ -58,6 +79,6 @@ class ProjectSerializer(serializers.ModelSerializer):
 class TestMapSerializer(serializers.ModelSerializer):
     class Meta:
         model = Test_Map
-        fields = ('pk', 'project', 'test', 'testurl', 'robot_parameter', 'use')
+        fields = ('pk', 'project', 'test', 'testurl', 'robot_parameter','app', 'use')
 
 
