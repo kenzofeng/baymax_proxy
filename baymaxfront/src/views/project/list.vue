@@ -1,9 +1,7 @@
 <template>
-    <div>
         <div class="ui large divided aligned selection list">
-            <item v-for="item in items" :key="item" :item="item"> </item>
+            <item v-for="item in items" :key="item" :item="item" @deleteproject="deleteproject"> </item>
         </div>
-    </div>
 </template>
 
 <script>
@@ -14,6 +12,11 @@ export default {
   components: {item},
   props: {
     items: {}
+  },
+  methods: {
+    deleteproject (item) {
+      this.$emit('deleteproject', item)
+    }
   }
 }
 </script>

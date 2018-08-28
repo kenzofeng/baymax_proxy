@@ -13,38 +13,60 @@
     </div>
     <div class="row">
       <div class="three wide column">
-        <list :items="items"></list>
+        <list :items="items" @deleteproject="deleteshow"></list>
       </div>
       <div class="thirteen wide column">
         <router-view></router-view>
       </div>
     </div>
     <actionmodel ref="actionmodelcomponent"  @yes="yes" ></actionmodel>
+    <model ref="deletemodelcomponent" @yes="dproject" :name="deletem">
+            <div slot="header">Delete Project</div>
+            <div slot="content">Are you sure delete project?</div>
+    </model>
+    <model ref="notifymodelcomponent" :name="notify">
+            <div slot="header">Status</div>
+            <div slot="content">{{response}}</div>
+        </model>
   </div>
 </template>
-
 <script>
-import {
-  getList
-} from '@/api/project'
+import {getList, newproject, deleteproject} from '@/api/project'
 import multidrop from '@/components/multidropdown'
 import actionmodel from '@/components/actionmodel'
+import model from '@/components/model'
 import list from './list'
 export default {
   name: 'project',
   data () {
     return {
       selectitems: {},
-      items: {}
+      items: {},
+      deletem: 'delete',
+      notify: 'indexnotify',
+      ditem: '',
+      response: null
     }
   },
   components: {
-    list, multidrop, actionmodel
+    list, multidrop, actionmodel, model
   },
+  mounted () { $('.ui.modals').remove() },
   created () {
     this.fetchData()
   },
   methods: {
+    dproject () {
+      deleteproject(this.ditem).then(response => {
+        this.response = response.data
+        this.fetchData()
+      })
+      this.$refs.notifymodelcomponent.$emit('show')
+    },
+    deleteshow (item) {
+      this.ditem = item
+      this.$refs.deletemodelcomponent.$emit('show')
+    },
     fetchData () {
       getList(null).then(response => {
         this.selectitems = response.data
@@ -62,7 +84,9 @@ export default {
       this.$refs.actionmodelcomponent.$emit('show')
     },
     yes (val) {
-      console.log(val)
+      newproject(val).then(response => {
+        this.fetchData()
+      })
     }
   }
 }

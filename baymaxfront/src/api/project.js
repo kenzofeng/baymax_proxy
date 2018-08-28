@@ -34,7 +34,7 @@ export function newproject (data) {
 
 export function deleteproject (data) {
   return request({
-    url: '/api/project/delete$',
+    url: '/api/project/delete',
     method: 'post',
     data: data
   })

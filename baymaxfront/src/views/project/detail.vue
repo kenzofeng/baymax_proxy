@@ -24,18 +24,10 @@
             Add Automation
         </div>
         <h4 class="ui teal dividing header"></h4>
-        <div class="ui large buttons">
-            <button class="ui red button" @click="deleteshow">Delete</button>
-            <div class="or"></div>
-            <button class="ui teal button" @click="saveshow">Save</button>
-        </div>
+        <button class="ui teal button" @click="saveshow">Save</button>
         <model ref="savemodelcomponent" @yes="saveproject" :name="savem">
             <div slot="header">Save Project</div>
             <div slot="content">Are you sure save project?</div>
-        </model>
-        <model ref="deletemodelcomponent" @yes="deleteproject" :name="deletem">
-            <div slot="header">Delete Project</div>
-            <div slot="content">Are you sure delete project?</div>
         </model>
         <model ref="notifymodelcomponent" :name="notify">
             <div slot="header">Status</div>
@@ -44,7 +36,7 @@
     </div>
 </template>
 <script>
-import {getdetail, saveproject, deleteproject} from '@/api/project'
+import {getdetail, saveproject} from '@/api/project'
 import {getList} from '@/api/node'
 import testauto from './testauto'
 import multidrop from '@/components/multidropdown'
@@ -56,7 +48,6 @@ export default {
       item: {},
       nodes: [],
       savem: 'save',
-      deletem: 'delete',
       notify: 'notify',
       response: null
     }
@@ -92,17 +83,8 @@ export default {
     saveshow () {
       this.$refs.savemodelcomponent.$emit('show')
     },
-    deleteshow () {
-      this.$refs.deletemodelcomponent.$emit('show')
-    },
     saveproject () {
       saveproject(this.item).then(response => {
-        this.response = response.data
-      })
-      this.$refs.notifymodelcomponent.$emit('show')
-    },
-    deleteproject () {
-      deleteproject(this.item).then(response => {
         this.response = response.data
       })
       this.$refs.notifymodelcomponent.$emit('show')

@@ -6,61 +6,82 @@ Vue.use(Router)
 
 export default new Router({
   mode: 'history',
-  routes: [
-    { path: '/404', component: () => import('@/views/404'), hidden: true },
-    {
-      path: '/',
-      component: Layout,
-      redirect: '/project'
-    },
-    {
-      path: '/project',
-      name: 'Project',
-      component: Layout,
-      redirect: '/project/index',
-      menu: true,
+  routes: [{
+    path: '/404',
+    component: () =>
+        import('@/views/404'),
+    hidden: true
+  },
+  {
+    path: '/',
+    component: Layout,
+    redirect: '/project'
+  },
+  {
+    path: '/project',
+    name: 'Project',
+    component: Layout,
+    redirect: '/project/index',
+    menu: true,
+    children: [{
+      path: 'index',
+      component: () =>
+          import('@/views/project/index'),
       children: [{
-        path: 'index',
-        component: () => import('@/views/project/index'),
-        children: [{
-          path: ':name',
-          component: () => import('@/views/project/detail')
-        }]
+        name: 'toproject',
+        path: ':name',
+        component: () =>
+            import('@/views/project/detail')
+      }]
 
-      }]
-    },
-    {
-      path: '/lab',
-      name: 'Lab',
-      component: Layout,
-      redirect: '/lab/index',
-      menu: true,
+    }]
+  },
+  {
+    path: '/lab',
+    name: 'Lab',
+    component: Layout,
+    redirect: '/lab/index',
+    menu: true,
+    children: [{
+      path: 'index',
+      component: () =>
+          import('@/views/lab/index'),
       children: [{
-        path: 'index',
-        component: () => import('@/views/lab/index'),
-        children: [{
-          path: ':name',
-          name: 'labtoproject',
-          component: () => import('@/views/lab/index')
-        }]
+        path: ':name',
+        name: 'labtoproject',
+        component: () =>
+            import('@/views/lab/index')
       }]
+    }]
+  },
+  {
+    path: '/job',
+    name: 'Job',
+    component: Layout,
+    redirect: {
+      path: '/job/index',
+      query: {
+        number: 30
+      }
     },
-    {
-      path: '/job',
-      name: 'Job',
-      component: Layout,
-      redirect: '/job/index',
-      menu: true,
+    menu: true,
+    children: [{
+      path: 'index',
+      name: 'jobindex',
+      component: () =>
+          import('@/views/job/index'),
       children: [{
-        path: 'index',
-        component: () => import('@/views/job/index'),
-        children: [{
-          path: ':name',
-          name: 'jobtoproject',
-          component: () => import('@/views/job/index')
-        }]
+        path: ':name',
+        name: 'jobtoproject',
+        component: () =>
+            import('@/views/job/index')
       }]
-    },
-    { path: '*', redirect: '/404', hidden: true }
+    }]
+  },
+  {
+    path: '*',
+    redirect: '/404',
+    hidden: true
+  }
   ]
 })
