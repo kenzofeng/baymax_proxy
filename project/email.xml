@@ -22,20 +22,6 @@
 					<td width="16%" style="border: solid 1 #000000" nowrap="">
 						<font size="2" face="Verdana">
 							<div>
-								<b>&nbsp;Project Branch</b>
-							</div>
-						</font>
-					</td>
-					<td width="16%" style="border: solid 1 #000000" nowrap="">
-						<font size="2" face="Verdana">
-							<div>
-								<b>&nbsp;Project SHA</b>
-							</div>
-						</font>
-					</td>
-					<td width="16%" style="border: solid 1 #000000" nowrap="">
-						<font size="2" face="Verdana">
-							<div>
 								<b>&nbsp;Automation</b>
 							</div>
 						</font>
@@ -50,7 +36,7 @@
 					<td width="16%" style="border: solid 1 #000000" nowrap="">
 						<font size="2" face="Verdana">
 							<div>
-								<b>&nbsp;Result</b>
+								<b>&nbsp;Report</b>
 							</div>
 						</font>
 					</td>
@@ -71,16 +57,6 @@
 					<td width="16%" style="border: solid 1 #000000" nowrap="">
 						<font size="2" face="Verdana">
 							<div>&nbsp;${project}</div>
-						</font>
-					</td>
-					<td width="16%" style="border: solid 1 #000000" nowrap="">
-						<font size="2" face="Verdana">
-							<div>&nbsp;${project_branch}</div>
-						</font>
-					</td>
-					<td width="16%" style="border: solid 1 #000000" nowrap="">
-						<font size="2" face="Verdana">
-							<div>&nbsp;${project_sha}</div>
 						</font>
 					</td>
 					<td width="16%" style="border: solid 1 #000000" nowrap="">
