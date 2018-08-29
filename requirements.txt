@@ -9,3 +9,4 @@ robotframework==3.0.2
 apscheduler==3.5.1
 djangorestframework==3.8.2
 paramiko==2.4.1
+django-cors-headers==2.4.0
