@@ -19,6 +19,8 @@ class JobTestSerializer(serializers.ModelSerializer):
 class JobSerializer(serializers.ModelSerializer):
     job_test_set = JobTestSerializer(many=True, read_only=True)
     servers = serializers.SerializerMethodField()
+    start_time = serializers.SerializerMethodField()
+    end_time = serializers.SerializerMethodField()
 
     class Meta:
         model = Job
@@ -26,6 +28,12 @@ class JobSerializer(serializers.ModelSerializer):
 
     def get_servers(self, obj):
         return obj.servers.split(":")
+
+    def get_start_time(self, obj):
+        return obj.start_time.astimezone(sh).strftime("%Y-%m-%d %H:%M:%S") if obj.start_time is not None else ""
+
+    def get_end_time(self, obj):
+        return obj.end_time.astimezone(sh).strftime("%Y-%m-%d %H:%M:%S") if obj.end_time is not None else ""
 
     @staticmethod
     def setup_eager_loading(queryset):

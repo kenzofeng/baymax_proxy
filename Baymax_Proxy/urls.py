@@ -19,7 +19,11 @@ from django.views.generic import TemplateView
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^api/', include('proxy.urls', namespace='proxy')),
+    url(r'^api/', include('proxy.urls.api')),
+    url(r'^job/result/', include('proxy.urls.report')),
     url(r'^$', TemplateView.as_view(template_name="index.html")),
+    url(r'^project', TemplateView.as_view(template_name="index.html")),
+    url(r'^lab', TemplateView.as_view(template_name="index.html")),
+    url(r'^job', TemplateView.as_view(template_name="index.html")),
 ]
 
