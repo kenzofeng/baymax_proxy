@@ -40,6 +40,7 @@ class Test_Map(models.Model):
     test = models.CharField(max_length=50)
     testurl = models.CharField(max_length=250)
     robot_parameter = models.CharField(max_length=250, blank=True, null=True, default='')
+    app= models.CharField(max_length=250)
     use = models.BooleanField(default=True)
 
     def touse(self):
@@ -51,6 +52,7 @@ class Test_Map(models.Model):
 
 class Job(models.Model):
     project = models.CharField(max_length=50)
+    servers = models.CharField(max_length=100)
     status = models.CharField(max_length=20, choices=Run_Status)
     start_time = models.DateTimeField(blank=True, null=True)
     end_time = models.DateTimeField(blank=True, null=True)
@@ -73,6 +75,7 @@ class Job_Test(models.Model):
     project_branch = models.CharField(max_length=60)
     testurl = models.CharField(max_length=250)
     robot_parameter = models.CharField(max_length=250, blank=True, null=True, default='')
+    app = models.CharField(max_length=250,blank=True, null=True, default='')
     name = models.CharField(max_length=50, blank=True, null=True, default='')
     pid = models.CharField(max_length=50, blank=True, null=True, default='')
     status = models.CharField(max_length=20, choices=Run_Status)

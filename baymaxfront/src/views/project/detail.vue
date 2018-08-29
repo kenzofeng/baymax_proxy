@@ -12,7 +12,7 @@
         </div>
         <h4 class="ui teal dividing header">Servers</h4>
         <div class="fields">
-            <multidrop  :items="nodes" :value="item.nodes" @changeselected="changeselected"></multidrop>
+            <multidrop  :items="nodes" :value="item.nodes" @changeselected="changeselected" :isfluid="true"></multidrop>
         </div>
         <h4 class="ui teal header">Test Automation</h4>
         <div>
@@ -24,18 +24,10 @@
             Add Automation
         </div>
         <h4 class="ui teal dividing header"></h4>
-        <div class="ui large buttons">
-            <button class="ui red button" @click="deleteshow">Delete</button>
-            <div class="or"></div>
-            <button class="ui teal button" @click="saveshow">Save</button>
-        </div>
+        <button class="ui teal button" @click="saveshow">Save</button>
         <model ref="savemodelcomponent" @yes="saveproject" :name="savem">
             <div slot="header">Save Project</div>
             <div slot="content">Are you sure save project?</div>
-        </model>
-        <model ref="deletemodelcomponent" @yes="deleteproject" :name="deletem">
-            <div slot="header">Delete Project</div>
-            <div slot="content">Are you sure delete project?</div>
         </model>
         <model ref="notifymodelcomponent" :name="notify">
             <div slot="header">Status</div>
@@ -56,7 +48,6 @@ export default {
       item: {},
       nodes: [],
       savem: 'save',
-      deletem: 'delete',
       notify: 'notify',
       response: null
     }
@@ -65,9 +56,6 @@ export default {
   created () {
     this.fetchData()
     this.fetchNodes()
-  },
-  mounted () {
-    $('.ui.modals').remove()
   },
   methods: {
     changeselected (nodes) {
@@ -92,18 +80,11 @@ export default {
     saveshow () {
       this.$refs.savemodelcomponent.$emit('show')
     },
-    deleteshow () {
-      this.$refs.deletemodelcomponent.$emit('show')
-    },
     saveproject () {
-      console.log(JSON.stringify(this.item))
       saveproject(this.item).then(response => {
         this.response = response.data
       })
       this.$refs.notifymodelcomponent.$emit('show')
-    },
-    deleteproject () {
-      console.log(JSON.stringify(this.item))
     },
     gotolab () {
       this.$router.push({name: 'labtoproject', params: {name: this.item.name}})
@@ -113,6 +94,7 @@ export default {
     $route: {
       handler: function (val, oldVal) {
         this.fetchData()
+        this.fetchNodes()
       }
     }
   }

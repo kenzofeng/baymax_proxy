@@ -32,7 +32,7 @@ def start(request, project):
         p = Project.objects.get(pk=project)
         utility.mkdir(os.path.join(env.log, utility.gettoday()))
         job = Job(project=project, status='Waiting', start_time=utility.gettime(),
-                  job_number="", email=p.email)
+                  job_number="", email=p.email,servers=":".join([n.name for n in p.node_set.all()]))
         job.save()
         log = Job_Log()
         log.job = job

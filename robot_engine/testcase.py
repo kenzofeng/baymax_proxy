@@ -23,6 +23,7 @@ def jot_test_init(job):
         job_test.robot_parameter = m.robot_parameter
         job_test.testurl = m.testurl
         job_test.name = m.test
+        job_test.app = m.app
         job_test.save()
         result = Job_Test_Result()
         result.job_test = job_test

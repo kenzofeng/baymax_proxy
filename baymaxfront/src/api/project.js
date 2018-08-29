@@ -23,3 +23,19 @@ export function saveproject (data) {
     data: data
   })
 }
+
+export function newproject (data) {
+  return request({
+    url: '/api/project/new',
+    method: 'post',
+    data: data
+  })
+}
+
+export function deleteproject (data) {
+  return request({
+    url: '/api/project/delete',
+    method: 'post',
+    data: data
+  })
+}

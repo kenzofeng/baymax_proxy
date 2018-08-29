@@ -2,16 +2,14 @@ import json
 import os
 import zlib
 
-from django.core import serializers
-from serializers import ProjectSerializer, JobSerializer, NodeSerializer
+from serializers import ProjectSerializer, JobSerializer
 from django.shortcuts import render, HttpResponse
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
 import env
 from handler import job as job_handler
-from handler import project as project_handler
-from models import Project, Job, Job_Test_Result, Job_Test, Node
+from models import Project, Job, Job_Test_Result, Job_Test, Node, Test_Map
 import requests
 from Baymax_Proxy.jobs import scheduler
 import datetime
@@ -19,31 +17,30 @@ import datetime
 
 def job_start(request, project):
     myrequest = job_handler.Myrequest(request)
-    scheduler.add_job(job_handler.start, 'date', run_date=datetime.datetime.now() + datetime.timedelta(seconds=2),
+    scheduler.add_job(job_handler.start, 'date', run_date=datetime.datetime.now() + datetime.timedelta(seconds=1),
                       args=[myrequest, project])
     # rs = job_handler.start(myrequest, project)
-    return HttpResponse({"status": "true"}, content_type='application/json')
+    print myrequest
+    return JsonResponse({"status": "Job added successfully"}, safe=False)
 
 
 def job_stop(request, project):
     rs = job_handler.stop(project)
     if rs is not None:
         return HttpResponse(rs, content_type='text/html')
-    return HttpResponse({"status": "true"}, content_type='application/json')
-
-
-def project(request):
-    return render(request, 'proxy/project.html')
+    return JsonResponse({"status": "true"}, safe=False)
 
 
 def project_getall(request):
     list_project = Project.objects.all()
-    return HttpResponse(serializers.serialize("json", list_project), content_type='application/json')
+    list_project=[project.pk for project in list_project]
+    return JsonResponse(list_project, safe=False)
 
 
 def project_getallnodes(request):
     nodes = Node.objects.all()
-    return JsonResponse(NodeSerializer(nodes, many=True, read_only=True).data, safe=False)
+    nodelist = [node.name for node in nodes]
+    return JsonResponse(nodelist, safe=False)
 
 
 def project_getdetail(request):
@@ -51,36 +48,35 @@ def project_getdetail(request):
     p = Project.objects.get(pk=tid)
     return JsonResponse(ProjectSerializer(p).data, safe=False)
 
-
-def getdetail(request, project):
-    p = Project.objects.get(pk=project)
-    return JsonResponse(ProjectSerializer(p).data, safe=False)
-
+@csrf_exempt
+def project_save(request):
+    p = json.loads(request.body)
+    project = Project.objects.get(pk=p['pk'])
+    serializer = ProjectSerializer(project, data=p)
+    serializer.is_valid()
+    serializer.save()
+    return JsonResponse({'status': 'scuess'}, safe=False)
 
 @csrf_exempt
 def project_add(request):
-    name = request.POST['name']
+    name = request.body
     if name != "":
         p = Project()
         p.name = name
         p.save()
-    return HttpResponse(json.dumps({'status': 'scuess'}), content_type='application/json')
-
-
-@csrf_exempt
-def project_update(request):
-    project_handler.update(request)
-    return HttpResponse(json.dumps({'status': 'scuess'}), content_type='application/json')
+    return JsonResponse({'status': 'scuess'}, safe=False)
 
 
 @csrf_exempt
 def project_delete(request):
-    project_handler.delete(request)
-    return HttpResponse(json.dumps({'status': 'scuess'}), content_type='application/json')
-
-
-def job(request):
-    return render(request, 'proxy/job.html')
+    p = request.body
+    project = Project.objects.get(pk=p)
+    maps = Test_Map.objects.filter(project=project.pk)
+    for m in maps:
+        m.delete()
+    project.node_set.clear()
+    project.delete()
+    return JsonResponse({'status': 'scuess'}, safe=False)
 
 
 def job_project(request, project):
@@ -157,35 +153,15 @@ def test_redfile(request, logid, redfile):
     return HttpResponse(f.read(), content_type='text/css')
 
 
-def job_getall(request, number):
-    jobs = Job.objects.all().order_by('-pk')[:number]
+def job_getall(request):
+    number = request.GET['number']
+    if 'project' in request.GET:
+        project = request.GET['project']
+        jobs = Job.objects.filter(project=project).order_by('-pk')[:number]
+    else:
+        jobs = Job.objects.all().order_by('-pk')[:number]
     job_s = JobSerializer.setup_eager_loading(jobs)
     return JsonResponse(JobSerializer(job_s, many=True, read_only=True).data, safe=False)
-
-
-def job_search(request, project):
-    jobs = Job.objects.filter(project=project).order_by('-pk')
-    job_s = JobSerializer.setup_eager_loading(jobs)
-    return JsonResponse(JobSerializer(job_s, many=True, read_only=True).data, safe=False)
-
-
-def job_search_number(request, project, number):
-    jobs = Job.objects.filter(project=project).order_by('-pk')[:number]
-    job_s = JobSerializer.setup_eager_loading(jobs)
-    return JsonResponse(JobSerializer(job_s, many=True, read_only=True).data, safe=False)
-
-
-def lab(request):
-    return render(request, 'proxy/lab.html')
-
-
-def lab_project(request, project):
-    return render(request, 'proxy/lab_project.html', {'project': project})
-
-
-def lab_getproject(request, project):
-    p = Project.objects.get(pk=project)
-    return JsonResponse(ProjectSerializer(p, read_only=True).data, safe=False)
 
 
 def lab_getall(request):

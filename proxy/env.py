@@ -1,13 +1,6 @@
 import os
-import sys
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
-mswindows = (sys.platform == "win32")
-if mswindows:
-    Doraemon = r'C:\Python27\Lib\site-packages\Doraemon'
-else:
-    Doraemon = r'/usr/local/lib/python2.7/site-packages/Doraemon'
 
 opath = os.getcwd()
 project = 'project'
@@ -32,7 +25,7 @@ deps = 'deps'
 email = os.path.join(BASE_DIR, project, 'email.xml')
 
 
-SENDER = "Automation_Regression_System@derbygroupmail.com"
+SENDER = "Baymax@derbygroupmail.com"
 SMPT = 'mail.derbygroupmail.com'
 USERNAME = "warrior@derbygroupmail.com"
 PWD = 'oWpR7svZHm3rxapF'

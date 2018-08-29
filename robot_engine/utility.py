@@ -15,7 +15,7 @@ from django.utils import timezone
 from proxy import env
 import json
 import paramiko
-
+logger = logging.getLogger('django')
 tenjin.set_template_encoding("utf-8")
 from tenjin.helpers import *
 import sys
@@ -30,6 +30,7 @@ def stop_job(host):
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     ssh.connect(host, 22, upload, upload_pwd, timeout=10.0)
     stdin, stdout, stderr = ssh.exec_command("ps -ef|grep 'python -m' |awk '{print $2}'|xargs sudo kill -9")
+    logger.error(stderr.read())
     ssh.close()
 
 
@@ -107,7 +108,7 @@ def logmsgs(logpath, msgs):
         f.write('\n')
         f.close()
     except Exception, e:
-        print e
+        logger.error(e)
     finally:
         f.close()
 
@@ -119,7 +120,7 @@ def logmsg(logpath, msg):
         f.write('\n')
         f.close()
     except Exception, e:
-        print e
+        logger.error(e)
     finally:
         f.close()
 
@@ -190,8 +191,6 @@ def set_email(test, host):
         "run_time": str(test.job.start_time),
         #                "job_number":test.job.job_number,
         "project": test.job.project,
-        "project_branch": test.project_branch,
-        "project_sha": test.project_sha,
         "Automation": test.name,
         'log': 'http://%s/test/log/%s' % (host, test.job_test_result.id),
         'test_version': test.revision_number,
@@ -236,7 +235,7 @@ def zip_file(sourcefile, targetfile):
             zf.write(tar, arcname)
         zf.close()
     except Exception, e:
-        print e
+        logger.error(e)
 
 
 def extract_zip(source, target):

@@ -1,3 +1,4 @@
+import logging
 import os
 import sys
 import threading
@@ -11,7 +12,7 @@ from proxy import env
 from proxy.models import Project
 from Baymax_Proxy.jobs import scheduler
 import datetime
-
+logger = logging.getLogger('django')
 mswindows = (sys.platform == "win32")
 
 
@@ -36,13 +37,13 @@ class Execute():
         try:
             r = requests.post(
                 "http://{}:{}/{}/{}/start".format(node.host, node.port, test_ds.job_test.name, test_ds.pk),
-                data={"filename": "%s_%s.zip" % (test_ds.job_test.name, test_ds.pk)}, files={
+                data={"filename": "%s_%s.zip" % (test_ds.job_test.name, test_ds.pk),"app":test_ds.job_test.app}, files={
                     "script": open(os.path.join(env.tmp, "%s.zip" % test_ds.script), 'rb')})
             download_zip = os.path.join(env.tmp, utility.gettoday(), "report_%s.zip" % r.headers["filename"])
             open(download_zip, 'wb').write(r.content)
             utility.extract_zip(download_zip, os.path.join(env.tmp, test_ds.report))
         except Exception, e:
-            print "test error:{}".format(e)
+            logger.error("test error:{}".format(e))
         finally:
             node.status = "Done"
             node.save()
@@ -111,7 +112,7 @@ class Execute():
             scheduler.add_job(utility.send_email, 'date',
                               run_date=datetime.datetime.now() + datetime.timedelta(seconds=2), args=[test, self.ip])
         except Exception, e:
-            print e
+            logger.error("execute error:{}".format(e))
             test.status = 'Error'
             test.save()
             utility.job_test_log(test.name, e)

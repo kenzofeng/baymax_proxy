@@ -10,7 +10,7 @@ class JobTestSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Job_Test
-        fields = ('id', 'log', 'name', 'robot_parameter', 'project_branch', 'project_sha', 'status', 'revision_number')
+        fields = ('id', 'log', 'name', 'robot_parameter', 'status', 'revision_number')
 
     def get_log(self, obj):
         return obj.job_test_result.id
@@ -18,10 +18,22 @@ class JobTestSerializer(serializers.ModelSerializer):
 
 class JobSerializer(serializers.ModelSerializer):
     job_test_set = JobTestSerializer(many=True, read_only=True)
+    servers = serializers.SerializerMethodField()
+    start_time = serializers.SerializerMethodField()
+    end_time = serializers.SerializerMethodField()
 
     class Meta:
         model = Job
-        fields = ('pk','project', 'start_time', 'end_time', 'status', 'job_test_set')
+        fields = ('pk', 'project', 'servers', 'start_time', 'end_time', 'status', 'job_test_set')
+
+    def get_servers(self, obj):
+        return obj.servers.split(":")
+
+    def get_start_time(self, obj):
+        return obj.start_time.astimezone(sh).strftime("%Y-%m-%d %H:%M:%S") if obj.start_time is not None else ""
+
+    def get_end_time(self, obj):
+        return obj.end_time.astimezone(sh).strftime("%Y-%m-%d %H:%M:%S") if obj.end_time is not None else ""
 
     @staticmethod
     def setup_eager_loading(queryset):
@@ -30,18 +42,45 @@ class JobSerializer(serializers.ModelSerializer):
 
 
 class ProjectSerializer(serializers.ModelSerializer):
-    nodes = serializers.SerializerMethodField()
-    maps = serializers.SerializerMethodField()
+    nodes = serializers.SerializerMethodField(read_only=False)
+    maps = serializers.SerializerMethodField(read_only=False)
 
     class Meta:
         model = Project
         fields = ('pk', 'name', 'email', 'nodes', 'maps')
 
     def get_nodes(self, obj):
-        return NodeSerializer(obj.node_set.all(), many=True).data
+        return [node.name for node in obj.node_set.all()]
 
     def get_maps(self, obj):
         return TestMapSerializer(Test_Map.objects.filter(project=obj.name), many=True).data
+
+    def validate(self, attrs):
+        attrs['maps'] = self.initial_data['maps']
+        attrs['nodes'] = self.initial_data['nodes']
+        return attrs
+
+    def update(self, instance, validated_data):
+        instance.email = validated_data.get('email')
+        maps = Test_Map.objects.filter(project=instance.pk)
+        for m in maps:
+            m.delete()
+        for map in validated_data.get('maps'):
+            m = Test_Map()
+            m.project = instance.pk
+            m.test = map['test']
+            m.testurl = map['testurl']
+            m.robot_parameter = map['robot_parameter']
+            m.app = map['app']
+            m.use = map['use']
+            m.save()
+        instance.node_set.clear()
+        for node in validated_data.get('nodes'):
+            n = Node.objects.get(name=node)
+            n.projects.add(instance)
+            n.save()
+        instance.save()
+        return instance
 
     @staticmethod
     def setup_eager_loading(queryset):
@@ -52,10 +91,4 @@ class ProjectSerializer(serializers.ModelSerializer):
 class TestMapSerializer(serializers.ModelSerializer):
     class Meta:
         model = Test_Map
-        fields = ('pk', 'project', 'test', 'testurl', 'robot_parameter', 'use')
-
-
-class NodeSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Node
-        fields = ("host", 'name', 'status')
+        fields = ('pk', 'project', 'test', 'testurl', 'robot_parameter', 'app', 'use')
