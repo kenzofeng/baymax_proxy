@@ -57,9 +57,6 @@ export default {
     this.fetchData()
     this.fetchNodes()
   },
-  mounted () {
-    $('.ui.modals').remove()
-  },
   methods: {
     changeselected (nodes) {
       this.item.nodes = nodes

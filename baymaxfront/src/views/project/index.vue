@@ -51,7 +51,6 @@ export default {
   components: {
     list, multidrop, actionmodel, model
   },
-  mounted () { $('.ui.modals').remove() },
   created () {
     this.fetchData()
   },

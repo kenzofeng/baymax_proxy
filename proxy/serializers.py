@@ -10,7 +10,7 @@ class JobTestSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Job_Test
-        fields = ('id', 'log', 'name', 'robot_parameter', 'project_branch', 'project_sha', 'status', 'revision_number')
+        fields = ('id', 'log', 'name', 'robot_parameter', 'status', 'revision_number')
 
     def get_log(self, obj):
         return obj.job_test_result.id
@@ -18,10 +18,14 @@ class JobTestSerializer(serializers.ModelSerializer):
 
 class JobSerializer(serializers.ModelSerializer):
     job_test_set = JobTestSerializer(many=True, read_only=True)
+    servers = serializers.SerializerMethodField()
 
     class Meta:
         model = Job
-        fields = ('pk','project', 'start_time', 'end_time', 'status', 'job_test_set')
+        fields = ('pk', 'project', 'servers', 'start_time', 'end_time', 'status', 'job_test_set')
+
+    def get_servers(self, obj):
+        return obj.servers.split(":")
 
     @staticmethod
     def setup_eager_loading(queryset):
@@ -38,7 +42,7 @@ class ProjectSerializer(serializers.ModelSerializer):
         fields = ('pk', 'name', 'email', 'nodes', 'maps')
 
     def get_nodes(self, obj):
-        return [node.name for node in  obj.node_set.all()]
+        return [node.name for node in obj.node_set.all()]
 
     def get_maps(self, obj):
         return TestMapSerializer(Test_Map.objects.filter(project=obj.name), many=True).data
@@ -55,7 +59,7 @@ class ProjectSerializer(serializers.ModelSerializer):
             m.delete()
         for map in validated_data.get('maps'):
             m = Test_Map()
-            m.project= instance.pk
+            m.project = instance.pk
             m.test = map['test']
             m.testurl = map['testurl']
             m.robot_parameter = map['robot_parameter']
@@ -79,6 +83,4 @@ class ProjectSerializer(serializers.ModelSerializer):
 class TestMapSerializer(serializers.ModelSerializer):
     class Meta:
         model = Test_Map
-        fields = ('pk', 'project', 'test', 'testurl', 'robot_parameter','app', 'use')
-
-
+        fields = ('pk', 'project', 'test', 'testurl', 'robot_parameter', 'app', 'use')
