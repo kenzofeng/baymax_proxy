@@ -1,6 +1,5 @@
 <template>
     <div class="ui form">
-        <div class="ui top attached inverted blue button" tabindex="0" @click="gotolab">GoTo Test Lab</div>
         <h4 class="ui teal dividing header">Information</h4>
         <div class="two fields">
             <div class="required field">
@@ -24,7 +23,8 @@
             Add Automation
         </div>
         <h4 class="ui teal dividing header"></h4>
-        <button class="ui teal button" @click="saveshow">Save</button>
+        <button class="ui green labeled icon button" @click="saveshow"><i class="save icon"></i>Save</button>
+        <button class="ui teal labeled icon button" @click="gotolab"><i class="tasks icon"></i>Lab</button>
         <model ref="savemodelcomponent" @yes="saveproject" :name="savem">
             <div slot="header">Save Project</div>
             <div slot="content">Are you sure save project?</div>
