@@ -163,7 +163,7 @@ def save_test_log(test):
         test_ds_all = test.job_test_distributed_result_set.all()
         for test_ds in test_ds_all:
             try:
-                r = requests.get("http://%s/job/test/log/%s" % (test_ds.host, test_ds.pk), timeout=5)
+                r = requests.get("http://%s/test/log/%s" % (test_ds.host, test_ds.pk), timeout=5)
                 fstr = fstr + r.content
             except Exception, e:
                 fstr = fstr + str(e)
