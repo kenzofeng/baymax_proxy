@@ -29,7 +29,7 @@
             <div slot="header">Save Project</div>
             <div slot="content">Are you sure save project?</div>
         </model>
-        <model ref="notifymodelcomponent" :name="notify">
+        <model ref="notifymodelcomponent" :name="notify" :noshow='false'>
             <div slot="header">Status</div>
             <div slot="content">{{response}}</div>
         </model>
@@ -49,7 +49,8 @@ export default {
       nodes: [],
       savem: 'save',
       notify: 'notify',
-      response: null
+      response: null,
+      false: false
     }
   },
   components: {testauto, multidrop, model},

@@ -14,3 +14,17 @@ export function startjob (project) {
     method: 'get'
   })
 }
+
+export function stopjob (project) {
+  return request({
+    url: '/api/job/' + project + '/stop',
+    method: 'get'
+  })
+}
+
+export function rerunjob (jobpk) {
+  return request({
+    url: '/api/job/' + jobpk + '/rerun',
+    method: 'get'
+  })
+}

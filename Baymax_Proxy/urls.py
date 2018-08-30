@@ -24,6 +24,6 @@ urlpatterns = [
     url(r'^$', TemplateView.as_view(template_name="index.html")),
     url(r'^project', TemplateView.as_view(template_name="index.html")),
     url(r'^lab', TemplateView.as_view(template_name="index.html")),
-    url(r'^job', TemplateView.as_view(template_name="index.html")),
+    url(r'^job/index', TemplateView.as_view(template_name="index.html")),
 ]
 

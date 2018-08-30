@@ -1,36 +1,14 @@
 import os
-import subprocess
-import logging
+
 import svn.local
 import svn.remote
+
 import autobuild
+import testparameter
 import utility
 from proxy import env
-from proxy.models import Test_Map, Job_Test, Job_Test_Result, Job_Test_Distributed_Result
+from proxy.models import Job_Test_Distributed_Result
 from testrun import TestRun
-import testparameter
-
-
-def jot_test_init(job):
-    maps = Test_Map.objects.filter(project=job.project, use=True)
-    if len(maps) == 0:
-        raise Exception("please config test automation for project(%s)" % job.project)
-    utility.mkdir(os.path.join(env.report, utility.gettoday()))
-    for m in maps:
-        job_test = Job_Test()
-        job_test.job = job
-        job_test.status = 'Waiting'
-        job_test.robot_parameter = m.robot_parameter
-        job_test.testurl = m.testurl
-        job_test.name = m.test
-        job_test.app = m.app
-        job_test.save()
-        result = Job_Test_Result()
-        result.job_test = job_test
-        result.log_path = "%s/Test_%s_%s.log" % (utility.gettoday(), m.test, utility.getnow())
-        result.report = "%s/%s_%s" % (utility.gettoday(), utility.getnow(), m.test)
-        utility.newlogger(job_test.name, result.log_path)
-        result.save()
 
 
 def distribute_test_script(nodes, test):

@@ -24,16 +24,23 @@ def job_start(request, project):
     return JsonResponse({"status": "Job added successfully"}, safe=False)
 
 
+def job_rerun(request, jobpk):
+    myrequest = job_handler.Myrequest(request)
+    # scheduler.add_job(job_handler.rerun, 'date', run_date=datetime.datetime.now() + datetime.timedelta(seconds=1),
+    #                   args=[myrequest, jobpk])
+    rs = job_handler.rerun(myrequest, jobpk)
+    print myrequest
+    return JsonResponse({"status": "Job added successfully"}, safe=False)
+
+
 def job_stop(request, project):
     rs = job_handler.stop(project)
-    if rs is not None:
-        return HttpResponse(rs, content_type='text/html')
-    return JsonResponse({"status": "true"}, safe=False)
+    return JsonResponse({"status": rs}, safe=False)
 
 
 def project_getall(request):
     list_project = Project.objects.all()
-    list_project=[project.pk for project in list_project]
+    list_project = [project.pk for project in list_project]
     return JsonResponse(list_project, safe=False)
 
 
@@ -48,6 +55,7 @@ def project_getdetail(request):
     p = Project.objects.get(pk=tid)
     return JsonResponse(ProjectSerializer(p).data, safe=False)
 
+
 @csrf_exempt
 def project_save(request):
     p = json.loads(request.body)
@@ -56,6 +64,7 @@ def project_save(request):
     serializer.is_valid()
     serializer.save()
     return JsonResponse({'status': 'scuess'}, safe=False)
+
 
 @csrf_exempt
 def project_add(request):

@@ -15,6 +15,7 @@ from django.utils import timezone
 from proxy import env
 import json
 import paramiko
+
 logger = logging.getLogger('django')
 tenjin.set_template_encoding("utf-8")
 from tenjin.helpers import *
@@ -30,8 +31,8 @@ def stop_job(host):
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     ssh.connect(host, 22, upload, upload_pwd, timeout=10.0)
     stdin, stdout, stderr = ssh.exec_command("ps -ef|grep 'python -m' |awk '{print $2}'|xargs sudo kill -9")
-    logger.error(stderr.read())
     ssh.close()
+    return "stdout:{}\nstderr:{}".format(stdout.read(), stderr.read())
 
 
 def getip(instance_id):
@@ -162,7 +163,7 @@ def save_test_log(test):
         test_ds_all = test.job_test_distributed_result_set.all()
         for test_ds in test_ds_all:
             try:
-                r = requests.get("http://%s/test/log/%s" % (test_ds.host, test_ds.pk), timeout=5)
+                r = requests.get("http://%s/job/test/log/%s" % (test_ds.host, test_ds.pk), timeout=5)
                 fstr = fstr + r.content
             except Exception, e:
                 fstr = fstr + str(e)
@@ -192,10 +193,10 @@ def set_email(test, host):
         #                "job_number":test.job.job_number,
         "project": test.job.project,
         "Automation": test.name,
-        'log': 'http://%s/test/log/%s' % (host, test.job_test_result.id),
+        'log': 'http://%s/job/test/log/%s' % (host, test.job_test_result.id),
         'test_version': test.revision_number,
         'result': test.status,
-        'reportlink': 'http://%s/report/%s' % (host, test.id)}
+        'reportlink': 'http://%s/job/report/%s' % (host, test.id)}
     path = '\\'.join((emailfile.split('\\'))[:-1])
     engine = tenjin.Engine(path=[path], cache=tenjin.MemoryCacheStorage())
     emailstring = engine.render(emailfile, context)

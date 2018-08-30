@@ -50,7 +50,7 @@
       <div slot="header">Run Project</div>
       <div slot="content">Are you sure run project?</div>
     </model>
-    <model  ref="jobmodelcomponent" @yes="tojob" :name="job" >
+    <model  ref="jobmodelcomponent" @yes="tojob" :name="job" :noshow="false">
       <div slot="header">Status</div>
       <div slot="content">{{response}}</div>
     </model>
@@ -72,7 +72,8 @@ export default {
       job: 'job',
       project: this.$route.params.name,
       runitem: '',
-      response: ''
+      response: '',
+      false: false
     }
   },
   created () {

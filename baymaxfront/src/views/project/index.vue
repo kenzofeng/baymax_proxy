@@ -24,7 +24,7 @@
             <div slot="header">Delete Project</div>
             <div slot="content">Are you sure delete project?</div>
     </model>
-    <model ref="notifymodelcomponent" :name="notify">
+    <model ref="notifymodelcomponent" :name="notify" :noshow="false">
             <div slot="header">Status</div>
             <div slot="content">{{response}}</div>
         </model>
@@ -45,7 +45,8 @@ export default {
       deletem: 'delete',
       notify: 'indexnotify',
       ditem: '',
-      response: null
+      response: null,
+      false: false
     }
   },
   components: {

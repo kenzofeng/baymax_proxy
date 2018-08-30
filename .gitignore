@@ -6,3 +6,4 @@ project/report
 project/tmp
 project/test_automation
 /db.sqlite3
+/proxy/migrations/

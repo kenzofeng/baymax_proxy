@@ -1,4 +1,5 @@
 <template>
+<div>
   <table class="ui compact selectable celled striped teal table">
     <thead>
       <tr>
@@ -62,24 +63,46 @@
         </td>
         <td class="one wide">
             <div class="ui large buttons">
-          <button class="ui icon button red" @click="stop"><i class="stop icon"></i></button>
-          <button class="ui icon button olive" ><i class="undo icon"></i></button>
-          <button class="ui icon button" ><i class="paper plane icon"></i></button>
+          <button class="ui icon button red" :class="buttonclass(job.status)" @click="stopshow(job.project)"><i class="stop icon"></i></button>
+          <button class="ui icon button olive"  @click="rerunshow(job.pk)"><i class="undo icon"></i></button>
+          <button class="ui icon button"><i class="paper plane icon"></i></button>
           </div>
         </td>
       </tr>
     </tbody>
   </table>
+   <model  ref="stopmodelcomponent" @yes="stopproject" :name="stopm">
+      <div slot="header">Stop Project</div>
+      <div slot="content">Are you sure stop project?</div>
+    </model>
+    <model  ref="rerunmodelcomponent" @yes="rerunproject" :name="rerunm">
+      <div slot="header">ReRun Project</div>
+      <div slot="content">Are you sure rerun project?</div>
+    </model>
+    <model ref="notifymodelcomponent" :name="notify" :noshow='false'>
+            <div slot="header">Status</div>
+            <div slot="content">{{response}}</div>
+    </model>
+</div>
 </template>
 <script>
-import {getall} from '@/api/job'
+import {getall, stopjob, rerunjob} from '@/api/job'
+import model from '@/components/model'
 export default {
   name: 'job',
+  components: {model},
   data () {
     return {
       jobs: null,
       params: this.$route.query,
-      interval_id: ''
+      interval_id: '',
+      stopm: 'stopm',
+      rerunm: 'rerunm',
+      notify: 'notifym',
+      false: false,
+      sproject: '',
+      rjob: '',
+      response: null
     }
   },
   created () {
@@ -101,8 +124,25 @@ export default {
     testreport (id) {
       return 'result/report/' + id
     },
-    stop () {
-
+    stopshow (item) {
+      this.sproject = item
+      this.$refs.stopmodelcomponent.$emit('show')
+    },
+    rerunshow (item) {
+      this.rjob = item
+      this.$refs.rerunmodelcomponent.$emit('show')
+    },
+    stopproject () {
+      stopjob(this.sproject).then(response => {
+        this.response = response.data
+      })
+      this.$refs.notifymodelcomponent.$emit('show')
+    },
+    rerunproject () {
+      rerunjob(this.rjob).then(response => {
+        this.response = response.data
+      })
+      this.$refs.notifymodelcomponent.$emit('show')
     },
     fetchData () {
       getall(this.params).then(response => {
@@ -140,6 +180,11 @@ export default {
         case 'FAIL': case 'Error':
           return 'error'
       }
+    },
+    buttonclass (i) {
+      // if (i !== 'Running') {
+      //   return 'disabled'
+      // }
     }
   }
 }

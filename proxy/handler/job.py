@@ -4,7 +4,7 @@ import os
 from django.core.exceptions import ObjectDoesNotExist
 
 from proxy import env
-from proxy.models import Job, Project, Job_Log
+from proxy.models import Job, Project, Job_Log, Test_Map, Job_Test, Job_Test_Result
 from robot_engine import utility
 from robot_engine.execute import Execute
 
@@ -16,29 +16,90 @@ class Myrequest:
 
 
 def stop(project):
+    rs = []
     try:
         p = Project.objects.get(name=project)
         nodes = p.node_set.all()
         for node in nodes:
             ip = node.host
-            utility.stop_job(ip)
-        return None
+            rs.append(utility.stop_job(ip))
+        return rs
     except Exception as e:
         return e
 
 
+def init_job(project):
+    p = Project.objects.get(pk=project)
+    job = Job(project=project, status='Waiting', start_time=utility.gettime(),
+              job_number="", email=p.email, servers=":".join([n.name for n in p.node_set.all()]))
+    job.save()
+    log = Job_Log()
+    log.job = job
+    log.path = "%s/project_%s_%s.log" % (utility.gettoday(), p.name, utility.getnow())
+    log.save()
+    utility.logmsg(log.path, "")
+    return job
+
+
+def copy_job(job_pk):
+    job = Job.objects.get(pk=job_pk)
+    old_job_test_set = job.job_test_set.all()
+    job.pk = None
+    job.save()
+    job.status = 'Waiting'
+    job.start_time = utility.gettime()
+    job.end_time = None
+    job.save()
+    log = Job_Log()
+    log.job = job
+    log.path = "%s/project_%s_%s.log" % (utility.gettoday(), job.project, utility.getnow())
+    log.save()
+    utility.logmsg(log.path, "")
+    for m in old_job_test_set:
+        job_test = Job_Test()
+        job_test.job = job
+        job_test.status = 'Waiting'
+        job_test.robot_parameter = m.robot_parameter
+        job_test.testurl = m.testurl
+        job_test.name = m.test
+        job_test.app = m.app
+        job_test.save()
+        result = Job_Test_Result()
+        result.job_test = job_test
+        result.log_path = "%s/Test_%s_%s.log" % (utility.gettoday(), m.test, utility.getnow())
+        result.report = "%s/%s_%s" % (utility.gettoday(), utility.getnow(), m.test)
+        utility.newlogger(job_test.name, result.log_path)
+        result.save()
+    return job
+
+
+def jot_test_init(job):
+    maps = Test_Map.objects.filter(project=job.project, use=True)
+    if len(maps) == 0:
+        raise Exception("please config test automation for project(%s)" % job.project)
+    utility.mkdir(os.path.join(env.report, utility.gettoday()))
+    for m in maps:
+        job_test = Job_Test()
+        job_test.job = job
+        job_test.status = 'Waiting'
+        job_test.robot_parameter = m.robot_parameter
+        job_test.testurl = m.testurl
+        job_test.name = m.test
+        job_test.app = m.app
+        job_test.save()
+        result = Job_Test_Result()
+        result.job_test = job_test
+        result.log_path = "%s/Test_%s_%s.log" % (utility.gettoday(), m.test, utility.getnow())
+        result.report = "%s/%s_%s" % (utility.gettoday(), utility.getnow(), m.test)
+        utility.newlogger(job_test.name, result.log_path)
+        result.save()
+
+
 def start(request, project):
     try:
-        p = Project.objects.get(pk=project)
         utility.mkdir(os.path.join(env.log, utility.gettoday()))
-        job = Job(project=project, status='Waiting', start_time=utility.gettime(),
-                  job_number="", email=p.email,servers=":".join([n.name for n in p.node_set.all()]))
-        job.save()
-        log = Job_Log()
-        log.job = job
-        log.path = "%s/project_%s_%s.log" % (utility.gettoday(), p.name, utility.getnow())
-        log.save()
-        utility.logmsg(log.path, "")
+        job = init_job(project)
+        jot_test_init(job)
         execute = Execute(job, request.host, request)
         execute.run()
         job.status = 'Done'
@@ -48,6 +109,26 @@ def start(request, project):
         return get_results(request, job)
     except ObjectDoesNotExist:
         raise Exception("%s doesn't exist,please config in Baymax System!" % (project))
+    except Exception, e:
+        job.end_time = utility.gettime()
+        job.status = 'Error'
+        job.save()
+        utility.logmsg(job.job_log.path, str(e))
+        utility.save_log(job)
+        raise Exception(e)
+
+
+def rerun(request, jobpk):
+    try:
+        utility.mkdir(os.path.join(env.log, utility.gettoday()))
+        job = copy_job(jobpk)
+        execute = Execute(job, request.host, request)
+        execute.run()
+        job.status = 'Done'
+        job.end_time = utility.gettime()
+        job.save()
+        utility.save_log(job)
+        return get_results(request, job)
     except Exception, e:
         job.end_time = utility.gettime()
         job.status = 'Error'

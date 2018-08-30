@@ -8,7 +8,7 @@
          <slot name="content"></slot>
     </div>
     <div class="actions">
-        <div class="ui red deny button">No</div>
+        <div v-if="noshow" class="ui red deny button">No</div>
         <div class="ui green approve button">Yes</div>
     </div>
 </div>
@@ -17,7 +17,11 @@
 export default {
   name: 'model',
   props: {
-    name: null
+    name: null,
+    noshow: {
+      type: Boolean,
+      default: true
+    }
   },
   mounted () {
     let _model = this

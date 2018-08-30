@@ -24,7 +24,7 @@ class Execute():
         self.nodes = None
 
     def run(self):
-        testcase.jot_test_init(self.job)
+        # testcase.jot_test_init(self.job)
         self.do_job()
 
     def do_job(self):
