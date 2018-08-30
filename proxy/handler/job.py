@@ -43,7 +43,6 @@ def init_job(project):
 
 def copy_job(job_pk):
     job = Job.objects.get(pk=job_pk)
-    old_job_test_set = job.job_test_set.all()
     job.pk = None
     job.save()
     job.status = 'Waiting'
@@ -55,25 +54,30 @@ def copy_job(job_pk):
     log.path = "%s/project_%s_%s.log" % (utility.gettoday(), job.project, utility.getnow())
     log.save()
     utility.logmsg(log.path, "")
+    return job
+
+
+def copy_job_test(job, jobpk):
+    oldjob = Job.objects.get(pk=jobpk)
+    old_job_test_set = oldjob.job_test_set.all()
     for m in old_job_test_set:
         job_test = Job_Test()
         job_test.job = job
         job_test.status = 'Waiting'
         job_test.robot_parameter = m.robot_parameter
         job_test.testurl = m.testurl
-        job_test.name = m.test
+        job_test.name = m.name
         job_test.app = m.app
         job_test.save()
         result = Job_Test_Result()
         result.job_test = job_test
-        result.log_path = "%s/Test_%s_%s.log" % (utility.gettoday(), m.test, utility.getnow())
-        result.report = "%s/%s_%s" % (utility.gettoday(), utility.getnow(), m.test)
+        result.log_path = "%s/Test_%s_%s.log" % (utility.gettoday(), m.name, utility.getnow())
+        result.report = "%s/%s_%s" % (utility.gettoday(), utility.getnow(), m.name)
         utility.newlogger(job_test.name, result.log_path)
         result.save()
-    return job
 
 
-def jot_test_init(job):
+def init_jot_test(job):
     maps = Test_Map.objects.filter(project=job.project, use=True)
     if len(maps) == 0:
         raise Exception("please config test automation for project(%s)" % job.project)
@@ -99,7 +103,7 @@ def start(request, project):
     try:
         utility.mkdir(os.path.join(env.log, utility.gettoday()))
         job = init_job(project)
-        jot_test_init(job)
+        init_jot_test(job)
         execute = Execute(job, request.host, request)
         execute.run()
         job.status = 'Done'
@@ -122,6 +126,7 @@ def rerun(request, jobpk):
     try:
         utility.mkdir(os.path.join(env.log, utility.gettoday()))
         job = copy_job(jobpk)
+        copy_job_test(job, jobpk)
         execute = Execute(job, request.host, request)
         execute.run()
         job.status = 'Done'

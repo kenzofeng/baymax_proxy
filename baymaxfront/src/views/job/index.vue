@@ -64,7 +64,7 @@
         <td class="one wide">
             <div class="ui large buttons">
           <button class="ui icon button red" :class="buttonclass(job.status)" @click="stopshow(job.project)"><i class="stop icon"></i></button>
-          <button class="ui icon button olive"  @click="rerunshow(job.pk)"><i class="undo icon"></i></button>
+          <button class="ui icon button olive"  @click="rerunshow(job.pk,job.project)"><i class="undo icon"></i></button>
           <button class="ui icon button"><i class="paper plane icon"></i></button>
           </div>
         </td>
@@ -72,11 +72,11 @@
     </tbody>
   </table>
    <model  ref="stopmodelcomponent" @yes="stopproject" :name="stopm">
-      <div slot="header">Stop Project</div>
+      <div slot="header">Stop Project:{{sproject}}</div>
       <div slot="content">Are you sure stop project?</div>
     </model>
     <model  ref="rerunmodelcomponent" @yes="rerunproject" :name="rerunm">
-      <div slot="header">ReRun Project</div>
+      <div slot="header">ReRun Project:{{rproject}}</div>
       <div slot="content">Are you sure rerun project?</div>
     </model>
     <model ref="notifymodelcomponent" :name="notify" :noshow='false'>
@@ -101,6 +101,7 @@ export default {
       notify: 'notifym',
       false: false,
       sproject: '',
+      rproject: '',
       rjob: '',
       response: null
     }
@@ -128,8 +129,9 @@ export default {
       this.sproject = item
       this.$refs.stopmodelcomponent.$emit('show')
     },
-    rerunshow (item) {
-      this.rjob = item
+    rerunshow (pk, project) {
+      this.rproject = project
+      this.rjob = pk
       this.$refs.rerunmodelcomponent.$emit('show')
     },
     stopproject () {
