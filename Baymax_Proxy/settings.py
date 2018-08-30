@@ -22,7 +22,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'sn#@8^qg-$ql$92(vp7f#*#u(=d$5ww1o(0qoe1%pih%#xly!u'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -119,6 +119,7 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "baymaxfront/dist/static"),
 ]
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
