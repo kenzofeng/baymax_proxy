@@ -10,7 +10,7 @@ class JobTestSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Job_Test
-        fields = ('id', 'log', 'name', 'robot_parameter', 'status', 'revision_number')
+        fields = ('id', 'log', 'name', 'app','robot_parameter', 'status', 'revision_number')
 
     def get_log(self, obj):
         return obj.job_test_result.id

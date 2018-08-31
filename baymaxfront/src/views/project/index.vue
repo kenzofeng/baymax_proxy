@@ -26,7 +26,7 @@
     </model>
     <model ref="notifymodelcomponent" :name="notify" :noshow="false">
             <div slot="header">Status</div>
-            <div slot="content">{{response}}</div>
+            <div slot="content" v-html="response"></div>
         </model>
   </div>
 </template>
@@ -57,6 +57,7 @@ export default {
   },
   methods: {
     dproject () {
+      this.response = '<i class="spinner loading icon"></i>'
       deleteproject(this.ditem).then(response => {
         this.response = response.data
         this.fetchData()

@@ -11,28 +11,30 @@
       </thead>
       <tbody>
         <tr v-for="tp in projects" :key="tp.name">
-          <td>{{tp.name}}</td>
+          <td @click="toproject(tp.name)"><i class="clipboard list link icon" ></i>{{tp.name}}</td>
           <td>
               <div class="ui aligned divided list">
-                <a class="item" v-for="node in tp.nodes" :key="node">
+                <div class="item" v-for="node in tp.nodes" :key="node" >
                 <i class="orange server icon"></i>
                 <div class="content">
                     <div class="header">{{node}}</div>
                 </div>
-                </a>
+                </div>
             </div>
           </td>
           <td>
             <table class="ui small table very compact">
               <thead>
                 <th class="two wide">Test</th>
-                <th class="nine wide">URL</th>
+                <th class="six wide">URL</th>
+                <th class="two wide">App Log</th>
                 <th>Robot Parameter</th>
               </thead>
               <tbody>
-                <tr v-for="map in tp.maps" :key="map.test">
+                <tr v-for="map in tp.maps" :key="map.test" v-if="map.use">
                   <td>{{map.test}}</td>
                   <td>{{map.testurl}}</td>
+                  <td>{{map.app}}</td>
                   <td>{{map.robot_parameter}}</td>
                 </tr>
               </tbody>
@@ -52,7 +54,7 @@
     </model>
     <model  ref="jobmodelcomponent" @yes="tojob" :name="job" :noshow="false">
       <div slot="header">Status</div>
-      <div slot="content">{{response}}</div>
+      <div slot="content" v-html="response"></div>
     </model>
   </div>
 </template>
@@ -80,6 +82,9 @@ export default {
     this.fetchData()
   },
   methods: {
+    toproject (item) {
+      this.$router.push({name: 'toproject', params: {name: item}})
+    },
     filterproject () {
       if (typeof (this.project) !== 'undefined') {
         for (let p in this.projects) {
@@ -101,10 +106,10 @@ export default {
       this.$refs.runmodelcomponent.$emit('show')
     },
     runproject () {
+      this.response = '<i class="spinner loading icon"></i>'
       startjob(this.runitem).then(response => {
         this.response = response.data
       })
-
       this.$refs.jobmodelcomponent.$emit('show')
     },
     tojob () {

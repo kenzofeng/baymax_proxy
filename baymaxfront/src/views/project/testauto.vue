@@ -12,12 +12,12 @@
             </div>
             <div class="fields">
                 <div class="five wide field">
-                    <label >Robot Parameters:</label>
-                    <input type="text" v-model="item.robot_parameter"></div>
-                <div class="five wide field">
                     <label>App Log:</label>
                     <input type="text" v-model="item.app"></div>
-                <div class="field">
+                <div class="ten wide field">
+                    <label >Robot Parameters:</label>
+                    <input type="text" v-model="item.robot_parameter"></div>
+                <div class="one wide field">
                     <label>Enable</label>
                     <div class="ui toggle checkbox">
                         <input type="checkbox" v-model="item.use">

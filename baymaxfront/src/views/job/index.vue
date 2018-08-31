@@ -14,15 +14,15 @@
     </thead>
     <tbody>
       <tr v-for="job in jobs" :class="lineclass(job.status)" :key="job.pk">
-        <td>{{job.project}}</td>
+        <td @click="toproject(job.project)"><i class="clipboard list link icon"></i>{{job.project}}</td>
         <td>
             <div class="ui aligned divided list">
-                <a class="item"  v-for="server in job.servers" :key="server">
+                <div class="item"  v-for="server in job.servers" :key="server">
                 <i class="orange server icon"></i>
                 <div class="content">
                     <div class="header">{{server}}</div>
                 </div>
-                </a>
+                </div>
             </div>
         </td>
         <td>
@@ -36,15 +36,17 @@
             <thead>
               <th class="two wide">Test</th>
               <th class="one wide">Version</th>
+              <th class="three wide">App Log</th>
               <th>Robot Parameter</th>
               <th class="one wide">Status</th>
-              <th class="two wide">RunTime Log</th>
+              <th class="one wide">RunTime</th>
               <th class="one wide">Report</th>
             </thead>
             <tbody>
               <tr v-for="test in job.job_test_set" :key="test.id">
                 <td class="collapsing" >{{test.name}}</td>
                 <td class="collapsing" >{{test.revision_number}}</td>
+                <td class="collapsing" >{{test.app}}</td>
                 <td class="collapsing" >{{test.robot_parameter}}</td>
                 <td class="collapsing" :class="resultclass(test.status)" >{{test.status}}</td>
                 <td class="collapsing">
@@ -81,7 +83,7 @@
     </model>
     <model ref="notifymodelcomponent" :name="notify" :noshow='false'>
             <div slot="header">Status</div>
-            <div slot="content">{{response}}</div>
+            <div slot="content" v-html="response"></div>
     </model>
 </div>
 </template>
@@ -116,6 +118,9 @@ export default {
     clearInterval(this.interval_id)
   },
   methods: {
+    toproject (item) {
+      this.$router.push({name: 'toproject', params: {name: item}})
+    },
     Interval () {
       this.interval_id = setInterval(this.fetchData, 5000)
     },
@@ -135,12 +140,14 @@ export default {
       this.$refs.rerunmodelcomponent.$emit('show')
     },
     stopproject () {
+      this.response = '<i class="spinner loading icon"></i>'
       stopjob(this.sproject).then(response => {
         this.response = response.data
       })
       this.$refs.notifymodelcomponent.$emit('show')
     },
     rerunproject () {
+      this.response = '<i class="spinner loading icon"></i>'
       rerunjob(this.rjob).then(response => {
         this.response = response.data
       })
@@ -184,9 +191,9 @@ export default {
       }
     },
     buttonclass (i) {
-      // if (i !== 'Running') {
-      //   return 'disabled'
-      // }
+      if (i !== 'Running') {
+        return 'disabled'
+      }
     }
   }
 }

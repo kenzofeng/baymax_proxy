@@ -20,6 +20,7 @@ export default new Router({
   {
     path: '/project',
     name: 'Project',
+    icon: 'clipboard list',
     component: Layout,
     redirect: '/project/index',
     menu: true,
@@ -39,6 +40,7 @@ export default new Router({
   {
     path: '/lab',
     name: 'Lab',
+    icon: 'flask',
     component: Layout,
     redirect: '/lab/index',
     menu: true,
@@ -58,6 +60,7 @@ export default new Router({
     path: '/job',
     name: 'Job',
     component: Layout,
+    icon: 'tasks',
     redirect: {
       path: '/job/index',
       query: {

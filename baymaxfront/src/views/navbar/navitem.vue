@@ -1,5 +1,5 @@
 <template>
-    <router-link :class="{active : isActive()}" class="item" v-if="item.menu" :to="item.path">{{item.name}}</router-link>
+    <router-link :class="{active : isActive()}" class="item" v-if="item.menu" :to="item.path"><i :class="item.icon" class="icon"></i>{{item.name}}</router-link>
 </template>
 
 <script>

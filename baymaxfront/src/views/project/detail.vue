@@ -5,7 +5,7 @@
             <div class="required field">
                 <label>Name:</label>
                 <input type="text" name="name" v-model="item.name"></div>
-            <div class="field">
+            <div class="required field">
                 <label>Email:</label>
                 <input type="text" name="email" placeholder="aaa@derbysoft.com;bbb@derbysoft.com" v-model="item.email"></div>
         </div>
@@ -24,14 +24,14 @@
         </div>
         <h4 class="ui teal dividing header"></h4>
         <button class="ui green labeled icon button" @click="saveshow"><i class="save icon"></i>Save</button>
-        <button class="ui teal labeled icon button" @click="gotolab"><i class="tasks icon"></i>Lab</button>
+        <button class="ui teal labeled icon button" @click="gotolab"><i class="flask icon"></i>Lab</button>
         <model ref="savemodelcomponent" @yes="saveproject" :name="savem">
             <div slot="header">Save Project</div>
             <div slot="content">Are you sure save project?</div>
         </model>
         <model ref="notifymodelcomponent" :name="notify" :noshow='false'>
             <div slot="header">Status</div>
-            <div slot="content">{{response}}</div>
+            <div slot="content" v-html="response"></div>
         </model>
     </div>
 </template>
@@ -66,7 +66,7 @@ export default {
       this.item.maps.pop()
     },
     addauto () {
-      this.item.maps.push({project: '', robot_parameter: '', test: '', testurl: '', use: true})
+      this.item.maps.push({project: '', robot_parameter: '', test: '', testurl: '', app: '', use: true})
     },
     fetchData () {
       getdetail({tid: this.$route.params.name}).then(response => {
@@ -82,6 +82,7 @@ export default {
       this.$refs.savemodelcomponent.$emit('show')
     },
     saveproject () {
+      this.response = '<i class="spinner loading icon"></i>'
       saveproject(this.item).then(response => {
         this.response = response.data
       })
