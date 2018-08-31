@@ -59,9 +59,12 @@ def project_save(request):
     p = json.loads(request.body)
     project = Project.objects.get(pk=p['pk'])
     serializer = ProjectSerializer(project, data=p)
-    serializer.is_valid()
+    if not serializer.is_valid():
+        return JsonResponse(serializer.errors, safe=False)
     serializer.save()
     return JsonResponse({'status': 'scuess'}, safe=False)
+
+
 
 
 @csrf_exempt
