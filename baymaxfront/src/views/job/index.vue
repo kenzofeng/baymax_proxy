@@ -1,98 +1,112 @@
 <template>
-<div>
-  <table class="ui compact selectable celled striped teal table">
-    <thead>
-      <tr>
-        <th class="one wide">Project</th>
-        <th class="one wide">Servers</th>
-        <th class="one wide">Status</th>
-        <th class="one wide">Start Date</th>
-        <th class="one wide">End Date</th>
-        <th>Test Automation</th>
-        <th>Atction</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr v-for="job in jobs" :class="lineclass(job.status)" :key="job.pk">
-        <td @click="toproject(job.project)"><i class="clipboard list link icon"></i>{{job.project}}</td>
-        <td>
+  <div>
+    <table class="ui compact selectable celled striped teal table">
+      <thead>
+        <tr>
+          <th class="one wide">Project</th>
+          <th class="one wide">Servers</th>
+          <th class="one wide">Status</th>
+          <th class="one wide">Start Date</th>
+          <th class="one wide">End Date</th>
+          <th>Test Automation</th>
+          <th>Atction</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="job in jobs" :class="lineclass(job.status)" :key="job.pk">
+          <td @click="toproject(job.project)">
+            <i class="clipboard list link icon"></i>{{job.project}}</td>
+          <td>
             <div class="ui aligned divided list">
-                <div class="item"  v-for="server in job.servers" :key="server">
+              <div class="item" v-for="server in job.servers" :key="server">
                 <i class="orange server icon"></i>
                 <div class="content">
-                    <div class="header">{{server}}</div>
+                  <div class="header">{{server}}</div>
                 </div>
-                </div>
+              </div>
             </div>
-        </td>
-        <td>
-          <i class='icon' :class="statusclass(job.status)"></i>
-          <span>{{job.status}}</span>
-        </td>
-        <td>{{job.start_time}}</td>
-        <td>{{job.end_time}}</td>
-        <td>
-          <table class="ui small table very compact">
-            <thead>
-              <th class="two wide">Test</th>
-              <th class="one wide">Version</th>
-              <th class="three wide">App Log</th>
-              <th>Robot Parameter</th>
-              <th class="one wide">Status</th>
-              <th class="one wide">RunTime</th>
-              <th class="one wide">Report</th>
-            </thead>
-            <tbody>
-              <tr v-for="test in job.job_test_set" :key="test.id">
-                <td class="collapsing" >{{test.name}}</td>
-                <td class="collapsing" >{{test.revision_number}}</td>
-                <td class="collapsing" >{{test.app}}</td>
-                <td class="collapsing" >{{test.robot_parameter}}</td>
-                <td class="collapsing" :class="resultclass(test.status)" >{{test.status}}</td>
-                <td class="collapsing">
-                  <a target='_blank' :href="testlog(test.log)">
-                    <i class='large file text outline icon'></i>
-                  </a>
-                </td>
-                <td class="collapsing">
-                  <a target='_blank' :href="testreport(test.id)">
-                    <i class='large file text outline icon'></i>
-                  </a>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </td>
-        <td class="one wide">
+          </td>
+          <td>
+            <i class='icon' :class="statusclass(job.status)"></i>
+            <span>{{job.status}}</span>
+          </td>
+          <td>{{job.start_time}}</td>
+          <td>{{job.end_time}}</td>
+          <td>
+            <table class="ui small table very compact">
+              <thead>
+                <th class="two wide">Test</th>
+                <th class="one wide">Version</th>
+                <th class="four wide">App Log</th>
+                <th>Robot Parameter</th>
+                <th class="one wide">Status</th>
+                <th class="one wide">RunTime</th>
+                <th class="one wide">Report</th>
+              </thead>
+              <tbody>
+                <tr v-for="test in job.job_test_set" :key="test.id">
+                  <td class="collapsing">{{test.name}}</td>
+                  <td class="collapsing">{{test.revision_number}}</td>
+                  <td class="collapsing">{{test.app}}</td>
+                  <td class="collapsing">{{test.robot_parameter}}</td>
+                  <td class="collapsing" :class="resultclass(test.status)">{{test.status}}</td>
+                  <td class="collapsing">
+                    <a target='_blank' :href="testlog(test.log)">
+                      <i class='large file text outline icon'></i>
+                    </a>
+                  </td>
+                  <td class="collapsing">
+                    <a target='_blank' :href="testreport(test.id)">
+                      <i class='large file text outline icon'></i>
+                    </a>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </td>
+          <td class="one wide">
             <div class="ui large buttons">
-          <button class="ui icon button red" :class="buttonclass(job.status)" @click="stopshow(job.project)"><i class="stop icon"></i></button>
-          <button class="ui icon button olive"  @click="rerunshow(job.pk,job.project)"><i class="undo icon"></i></button>
-          <button class="ui icon button"><i class="paper plane icon"></i></button>
-          </div>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-   <model  ref="stopmodelcomponent" @yes="stopproject" :name="stopm">
+              <button class="ui icon button red" :class="buttonclass(job.status)" @click="stopshow(job.project)">
+                <i class="stop icon"></i>
+              </button>
+              <button class="ui icon button olive" @click="rerunshow(job.pk,job.project)">
+                <i class="undo icon"></i>
+              </button>
+              <a class="ui icon button" target='_blank' :href="downloadxml(job.pk)">
+                <i class="download icon" >
+                </i>
+              </a>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <model ref="stopmodelcomponent" @yes="stopproject" :name="stopm">
       <div slot="header">Stop Project:{{sproject}}</div>
       <div slot="content">Are you sure stop project?</div>
     </model>
-    <model  ref="rerunmodelcomponent" @yes="rerunproject" :name="rerunm">
+    <model ref="rerunmodelcomponent" @yes="rerunproject" :name="rerunm">
       <div slot="header">ReRun Project:{{rproject}}</div>
       <div slot="content">Are you sure rerun project?</div>
     </model>
     <model ref="notifymodelcomponent" :name="notify" :noshow='false'>
-            <div slot="header">Status</div>
-            <div slot="content" v-html="response"></div>
+      <div slot="header">Status</div>
+      <div slot="content" v-html="response"></div>
     </model>
-</div>
+  </div>
 </template>
 <script>
-import {getall, stopjob, rerunjob} from '@/api/job'
+import {
+  getall,
+  stopjob,
+  rerunjob
+} from '@/api/job'
 import model from '@/components/model'
 export default {
   name: 'job',
-  components: {model},
+  components: {
+    model
+  },
   data () {
     return {
       jobs: null,
@@ -119,7 +133,12 @@ export default {
   },
   methods: {
     toproject (item) {
-      this.$router.push({name: 'toproject', params: {name: item}})
+      this.$router.push({
+        name: 'toproject',
+        params: {
+          name: item
+        }
+      })
     },
     Interval () {
       this.interval_id = setInterval(this.fetchData, 5000)
@@ -129,6 +148,9 @@ export default {
     },
     testreport (id) {
       return 'result/report/' + id
+    },
+    downloadxml (id) {
+      return 'result/report/' + id + '/output.xml'
     },
     stopshow (item) {
       this.sproject = item
@@ -164,7 +186,8 @@ export default {
           return 'positive'
         case 'Error':
           return 'error'
-        case 'Running':case 'Waiting':
+        case 'Running':
+        case 'Waiting':
           return 'warning'
       }
     },
@@ -186,7 +209,8 @@ export default {
           return 'positive'
         case 'Running':
           return 'warning'
-        case 'FAIL': case 'Error':
+        case 'FAIL':
+        case 'Error':
           return 'error'
       }
     },
@@ -197,4 +221,5 @@ export default {
     }
   }
 }
+
 </script>

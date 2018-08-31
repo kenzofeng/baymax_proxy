@@ -4,7 +4,7 @@ import zlib
 
 from serializers import ProjectSerializer, JobSerializer
 from django.shortcuts import render, HttpResponse
-from django.http import JsonResponse
+from django.http import JsonResponse,FileResponse
 from django.views.decorators.csrf import csrf_exempt
 
 import env
@@ -141,6 +141,13 @@ def test_report(request, logid):
     f = open(path)
     return HttpResponse(f.read(), content_type='text/html')
 
+def test_xml(request, logid):
+    test = Job_Test.objects.get(pk=logid)
+    path = os.path.join(env.report, test.job_test_result.report, env.output_xml)
+    response = FileResponse(open(path, 'rb'))
+    response['Content-Type'] = 'application/xml'
+    response['Content-Disposition']='attachment;filename="{}"'.format(env.output_xml)
+    return response
 
 def test_cache(request, logid, cid):
     test = Job_Test.objects.get(pk=logid)
