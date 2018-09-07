@@ -83,8 +83,13 @@ def checkout_script(test):
         os.mkdir(testpath)
         r = svn.remote.RemoteClient(test.testurl)
         r.checkout(testpath)
+    except UnicodeDecodeError:
+        pass
+    except Exception as e:
+        raise Exception("Checkout Automation Script Error:%s" % e)
+    try:
         l = svn.local.LocalClient(testpath)
         test.revision_number = l.info()['commit#revision']
         test.save()
-    except Exception, e:
-        raise Exception("Checkout Automation Script Error:%s" % e)
+    except Exception as e:
+        raise Exception("Get Svn Vision Automation Script Error:%s" % e)
