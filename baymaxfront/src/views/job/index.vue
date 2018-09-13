@@ -8,20 +8,19 @@
           <th class="one wide">Status</th>
           <th class="one wide">Start Date</th>
           <th class="one wide">End Date</th>
-          <th>Test Automation</th>
-          <th>Atction</th>
+          <th class="ten wide">Test Automation</th>
+          <th class="one wide">Atction</th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="job in jobs" :class="lineclass(job.status)" :key="job.pk">
-          <td @click="toproject(job.project)">
-            <i class="clipboard list link icon"></i>{{job.project}}</td>
+          <td @click="toproject(job.project)">{{job.project}}</td>
           <td>
             <div class="ui aligned divided list">
-              <div class="item" v-for="server in job.servers" :key="server">
-                <i class="orange server icon"></i>
-                <div class="content">
-                  <div class="header">{{server}}</div>
+              <div class="item" v-for="server in job.servers" :key="server.name">
+                <i class="orange server link icon" v-clipboard:copy="server.ip" v-clipboard:success="onCopy"></i>
+                <div class="content" :data-tooltip="server.ip">
+                  <div class="header">{{server.name}}</div>
                 </div>
               </div>
             </div>
@@ -35,51 +34,51 @@
           <td>
             <table class="ui small table very compact">
               <thead>
-                <th class="two wide">Test</th>
-                <th class="one wide">Version</th>
-                <th class="four wide">App Log</th>
-                <th>Robot Parameter</th>
-                <th class="one wide">Status</th>
-                <th class="one wide">RunTime</th>
-                <th class="one wide">Report</th>
-              </thead>
-              <tbody>
-                <tr v-for="test in job.job_test_set" :key="test.id">
-                  <td class="collapsing">{{test.name}}</td>
-                  <td class="collapsing">{{test.revision_number}}</td>
-                  <td class="collapsing">{{test.app}}</td>
-                  <td class="collapsing">{{test.robot_parameter}}</td>
-                  <td class="collapsing" :class="resultclass(test.status)">{{test.status}}</td>
-                  <td class="collapsing">
-                    <a target='_blank' :href="testlog(test.log)">
-                      <i class='large file text outline icon'></i>
-                    </a>
-                  </td>
-                  <td class="collapsing">
-                    <a target='_blank' :href="testreport(test.id)">
-                      <i class='large file text outline icon'></i>
-                    </a>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+          <th class="two wide">Test</th>
+          <th class="one wide">Version</th>
+          <th class="four wide">App Log</th>
+          <th class="six wide">Robot Parameter</th>
+          <th class="one wide">Status</th>
+          <th class="one wide">RunTime</th>
+          <th class="one wide">Report</th>
+          </thead>
+      <tbody>
+        <tr v-for="test in job.job_test_set" :key="test.id">
+          <td>{{test.name}}</td>
+          <td>{{test.revision_number}}</td>
+          <td>{{test.app}}</td>
+          <td>{{test.robot_parameter}}</td>
+          <td :class="resultclass(test.status)">{{test.status}}</td>
+          <td>
+            <a target='_blank' :href="testlog(test.log)">
+              <i class='large file text outline icon'></i>
+            </a>
           </td>
-          <td class="one wide">
-            <div class="ui large buttons">
-              <button class="ui icon button red" :class="buttonclass(job.status)" @click="stopshow(job.project)">
-                <i class="stop icon"></i>
-              </button>
-              <button class="ui icon button olive" @click="rerunshow(job.pk,job.project)">
-                <i class="undo icon"></i>
-              </button>
-              <a class="ui icon button" target='_blank' :href="downloadxml(job.pk)">
-                <i class="download icon" >
-                </i>
-              </a>
-            </div>
+          <td>
+            <a target='_blank' :href="testreport(test.id)">
+              <i class='large file text outline icon'></i>
+            </a>
           </td>
         </tr>
       </tbody>
+    </table>
+    </td>
+    <td>
+      <div class="ui large buttons">
+        <button class="ui icon button red" :class="buttonclass(job.status)" @click="stopshow(job.project)">
+          <i class="stop icon"></i>
+        </button>
+        <button class="ui icon button olive" @click="rerunshow(job.pk,job.project)">
+          <i class="undo icon"></i>
+        </button>
+        <a class="ui icon button" target='_blank' :href="downloadxml(job.pk)">
+          <i class="download icon">
+          </i>
+        </a>
+      </div>
+    </td>
+    </tr>
+    </tbody>
     </table>
     <model ref="stopmodelcomponent" @yes="stopproject" :name="stopm">
       <div slot="header">Stop Project:{{sproject}}</div>
@@ -132,6 +131,9 @@ export default {
     clearInterval(this.interval_id)
   },
   methods: {
+    onCopy (e) {
+      alert('You just copied: ' + e.text)
+    },
     toproject (item) {
       this.$router.push({
         name: 'toproject',

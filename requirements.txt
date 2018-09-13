@@ -1,7 +1,7 @@
 Django==1.11.5
 xlrd==1.0.0
 lxml==4.1.0
-svn==0.3.45
+svn==0.3.46
 requests==2.11.1
 Tenjin==1.1.1
 GitPython==2.1.7

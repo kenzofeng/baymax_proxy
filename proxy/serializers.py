@@ -1,4 +1,4 @@
-from models import Project, Test_Map, Node, Job, Job_Test
+from models import Project, Test_Map, Node, Job, Job_Test, Node
 from rest_framework import serializers
 import pytz
 
@@ -10,7 +10,7 @@ class JobTestSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Job_Test
-        fields = ('id', 'log', 'name', 'app','robot_parameter', 'status', 'revision_number')
+        fields = ('id', 'log', 'name', 'app', 'robot_parameter', 'status', 'revision_number')
 
     def get_log(self, obj):
         return obj.job_test_result.id
@@ -27,7 +27,7 @@ class JobSerializer(serializers.ModelSerializer):
         fields = ('pk', 'project', 'servers', 'start_time', 'end_time', 'status', 'job_test_set')
 
     def get_servers(self, obj):
-        return obj.servers.split(":")
+        return [{"name": server, "ip": Node.objects.get(name=server).host} for server in obj.servers.split(":")]
 
     def get_start_time(self, obj):
         return obj.start_time.astimezone(sh).strftime("%Y-%m-%d %H:%M:%S") if obj.start_time is not None else ""
