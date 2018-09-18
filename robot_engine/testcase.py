@@ -13,7 +13,7 @@ from testrun import TestRun
 
 def distribute_test_script(nodes, test):
     testpath = os.path.join(env.test, test.name)
-    testrun = TestRun(len(nodes), testpath)
+    testrun = TestRun(len(nodes), testpath,test.robot_parameter)
     for ts_case in testrun.RunCase:
         if len(ts_case) != 0:
             test_ds = Job_Test_Distributed_Result()
@@ -24,10 +24,7 @@ def distribute_test_script(nodes, test):
             test_ds.save()
             utility.mkdir(os.path.join(env.tmp, utility.gettoday()))
             utility.mkdir(os.path.join(env.report, utility.gettoday()))
-            if test.robot_parameter != "":
-                testparameter.create_argfile_parameter(testpath, test.robot_parameter)
-            else:
-                testparameter.create_argfile(testpath, ts_case)
+            testparameter.create_argfile(testpath, ts_case)
             utility.zip_file(testpath, os.path.join(env.tmp, "%s.zip" % test_ds.script))
 
 
