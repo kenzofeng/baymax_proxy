@@ -19,7 +19,6 @@ class TestRun(object):
 
     def parse_args(self):
         self.args, e = self.ap.parse_args(self.args.split(" "))
-        self.args['suite'] = [args.split('.')[-1] for args in self.args['suite']]
 
     def get_all_test(self, suite):
         if type(suite) is TestDataDirectory:
@@ -28,7 +27,10 @@ class TestRun(object):
             self.testcasefile = suite.name
         for test in suite.testcase_table:
             if self.args['suite']:
-                if self.testcasefile in self.args['suite']:
+                if any([self.testcasefile in mysuite for mysuite in self.args['suite']]):
+                    self.alltests.append("%s.%s.%s" % (self.testdir, self.testcasefile, test.name))
+            elif self.args['test']:
+                if any([all([self.testcasefile in mytest, test.name in mytest]) for mytest in self.args['test']]):
                     self.alltests.append("%s.%s.%s" % (self.testdir, self.testcasefile, test.name))
             else:
                 self.alltests.append("%s.%s.%s" % (self.testdir, self.testcasefile, test.name))
