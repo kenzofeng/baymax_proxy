@@ -12,6 +12,7 @@ from proxy import env
 from proxy.models import Project
 from Baymax_Proxy.jobs import scheduler
 import datetime
+
 logger = logging.getLogger('django')
 mswindows = (sys.platform == "win32")
 
@@ -37,7 +38,8 @@ class Execute():
         try:
             r = requests.post(
                 "http://{}:{}/{}/{}/start".format(node.host, node.port, test_ds.job_test.name, test_ds.pk),
-                data={"filename": "%s_%s.zip" % (test_ds.job_test.name, test_ds.pk),"app":test_ds.job_test.app}, files={
+                data={"filename": "%s_%s.zip" % (test_ds.job_test.name, test_ds.pk), "app": test_ds.job_test.app},
+                files={
                     "script": open(os.path.join(env.tmp, "%s.zip" % test_ds.script), 'rb')})
             download_zip = os.path.join(env.tmp, utility.gettoday(), "report_%s.zip" % r.headers["filename"])
             open(download_zip, 'wb').write(r.content)
@@ -81,13 +83,23 @@ class Execute():
             node.host = public_ip
             node.save()
 
+    def checknodestatus(self, nodes):
+        newnodes = []
+        for node in nodes:
+            try:
+                requests.get('http://{}:{}/status'.format(node.host, node.port))
+                newnodes.append(node)
+            except Exception as e:
+                pass
+        return newnodes
+
     def check_use_node_server(self):
         p = Project.objects.get(name=self.job.project)
         nodes = p.node_set.all()
         if len(nodes) == 0:
             raise Exception("There is no node server to use")
         self.updatenodes(nodes)
-        self.nodes = nodes
+        self.nodes = self.checknodestatus(nodes)
         while True:
             p = Project.objects.get(name=self.job.project)
             nodes = p.node_set.all()
