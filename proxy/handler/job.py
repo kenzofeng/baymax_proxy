@@ -25,7 +25,7 @@ def stop(project):
             rs.append(utility.stop_job(ip))
         return rs
     except Exception as e:
-        return e
+        raise Exception(e)
 
 
 def init_job(project):
