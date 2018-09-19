@@ -1,41 +1,40 @@
-from robot.api import TestData, TestDataDirectory, TestCaseFile
-from robot.utils.argumentparser import ArgumentParser
-from robot.rebot import USAGE
+from robot.api import TestSuiteBuilder
+from robot.run import RobotFramework
+from robot.conf import RobotSettings
 
 
 class TestRun(object):
     def __init__(self, servercount=1, source='', args=""):
-        self.ap = ArgumentParser(USAGE)
+        self.source = source
         self.args = args
+        self.suite = None
         self.servercount = servercount
         self.RunCase = [[] for row in range(self.servercount)]
         self.alltests = []
-        self.TestSuit = TestData(source=source)
         self.testdir = ''
         self.testcasefile = ''
-        self.parse_args()
-        self.get_all_test(self.TestSuit)
+        self.init_rb()
+        self.get_all_test(self.suite)
         self.distribut_test()
 
-    def parse_args(self):
-        self.args, e = self.ap.parse_args(self.args.split(" "))
+    def init_rb(self):
+        rb = RobotFramework()
+        options, datasources = rb._parse_arguments("{} {}".format(self.args, self.source).split(" "))
+        settings = RobotSettings(options)
+        suite = TestSuiteBuilder(settings['SuiteNames'],
+                                 settings['WarnOnSkipped'],
+                                 settings['Extension']).build(*datasources)
+        suite.configure(**settings.suite_config)
+        self.suite = suite
 
     def get_all_test(self, suite):
-        if type(suite) is TestDataDirectory:
-            self.testdir = suite.name
-        elif type(suite) is TestCaseFile:
-            self.testcasefile = suite.name
-        for test in suite.testcase_table:
-            if self.args['suite']:
-                if any([self.testcasefile in mysuite for mysuite in self.args['suite']]):
-                    self.alltests.append("%s.%s.%s" % (self.testdir, self.testcasefile, test.name))
-            elif self.args['test']:
-                if any([all([self.testcasefile in mytest, test.name in mytest]) for mytest in self.args['test']]):
-                    self.alltests.append("%s.%s.%s" % (self.testdir, self.testcasefile, test.name))
+        for csuite in suite.suites:
+            if csuite.suites:
+                self.get_all_test(csuite)
             else:
-                self.alltests.append("%s.%s.%s" % (self.testdir, self.testcasefile, test.name))
-        for child in suite.children:
-            self.get_all_test(child)
+                if csuite.tests:
+                    for ctest in csuite.tests:
+                        self.alltests.append("{}.{}".format(ctest.parent.longname, ctest.name))
 
     def distribut_test(self):
         i = 0
