@@ -13,7 +13,7 @@ class JobTestSerializer(serializers.ModelSerializer):
         fields = ('id', 'log', 'name', 'app', 'robot_parameter', 'status', 'revision_number')
 
     def get_log(self, obj):
-        return obj.job_test_result.id
+        return obj.job_test_result.id if obj.job_test_result is not None else ""
 
 
 class JobSerializer(serializers.ModelSerializer):
