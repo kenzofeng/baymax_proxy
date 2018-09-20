@@ -5,22 +5,26 @@ from robot.conf import RobotSettings
 
 class TestRun(object):
     def __init__(self, servercount=1, source='', args=""):
-        self.source = source
-        self.args = args
-        self.suite = None
-        self.servercount = servercount
-        self.RunCase = [[] for row in range(self.servercount)]
-        self.alltests = []
-        self.testdir = ''
-        self.testcasefile = ''
-        self.init_rb()
-        self.get_all_test(self.suite)
-        self.distribut_test()
+        try:
+            self.source = source
+            self.args = args
+            self.suite = None
+            self.servercount = servercount
+            self.RunCase = [[] for row in range(self.servercount)]
+            self.alltests = []
+            self.testdir = ''
+            self.testcasefile = ''
+            self.init_rb()
+            self.get_all_test(self.suite)
+            self.distribut_test()
+        except Exception as e:
+            raise Exception(e)
 
     def init_rb(self):
         rb = RobotFramework()
         options, datasources = rb._parse_arguments(
-            "{}".format(self.source).split(" ") if self.args == "" else "{} {}".format(self.args, self.source).split(
+            "{}".format(self.source).split(" ") if self.args == "" else "{} {}".format(self.args,
+                                                                                       self.source).split(
                 " "))
         settings = RobotSettings(options)
         suite = TestSuiteBuilder(settings['SuiteNames'],
@@ -28,6 +32,7 @@ class TestRun(object):
                                  settings['Extension']).build(*datasources)
         suite.configure(**settings.suite_config)
         self.suite = suite
+
 
     def get_all_test(self, suite):
         for csuite in suite.suites:
