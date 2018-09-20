@@ -53,6 +53,7 @@ class Execute():
     def send_test(self, test):
         request_threads = []
         test_ds_all = test.job_test_distributed_result_set.all()
+        logger.error('send test')
         for test_ds, node in zip(test_ds_all, self.nodes):
             node.status = 'Running'
             node.save()
@@ -101,7 +102,6 @@ class Execute():
         self.updatenodes(nodes)
         self.nodes = self.checknodestatus(nodes)
         while True:
-            logger.error('1111111111111')
             p = Project.objects.get(name=self.job.project)
             nodes = p.node_set.all()
             status = all([True if node.status == 'Done' else False for node in nodes])
@@ -117,6 +117,7 @@ class Execute():
             test.save()
             testcase.checkout_script(test)
             testcase.distribute_test_script(self.nodes, test)
+            logger.error('distribute_test_script complited')
             self.send_test(test)
             self.merge_test_report(test)
             test.status = utility.get_result_fromxml(
