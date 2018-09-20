@@ -6,8 +6,8 @@ from robot.conf import RobotSettings
 class TestRun(object):
     def __init__(self, servercount=1, source='', args=""):
         try:
-            self.source = source
-            self.args = args
+            self.source = source.strip()
+            self.args = args.strip()
             self.suite = None
             self.servercount = servercount
             self.RunCase = [[] for row in range(self.servercount)]
