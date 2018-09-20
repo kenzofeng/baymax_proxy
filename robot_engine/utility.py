@@ -214,7 +214,7 @@ def send_email(test, host):
         password = env.PWD
         msg = MIMEText(set_email(test, host), 'html')
         msg['Subject'] = subject
-        smtp = smtplib.SMTP_SSL(smtpserver)
+        smtp = smtplib.SMTP_SSL(smtpserver, env.email_port)
         smtp.login(username, password)
         smtp.sendmail(sender, receiver, msg.as_string())
         smtp.quit()

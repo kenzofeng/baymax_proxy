@@ -26,6 +26,7 @@ email = os.path.join(BASE_DIR, project, 'email.xml')
 
 
 SENDER = "Baymax@derbygroupmail.com"
-SMPT = 'mail.derbygroupmail.com'
-USERNAME = "warrior@derbygroupmail.com"
-PWD = 'oWpR7svZHm3rxapF'
+SMPT = 'mail.dbaws.net'
+USERNAME = "warrior@dbaws.net"
+PWD = 'dDpWhhq8M4ogg__B8yZinzwahh'
+email_port=465
