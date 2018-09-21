@@ -25,7 +25,6 @@ class Execute():
         self.nodes = None
 
     def run(self):
-        # testcase.jot_test_init(self.job)
         self.do_job()
 
     def do_job(self):
@@ -53,7 +52,6 @@ class Execute():
     def send_test(self, test):
         request_threads = []
         test_ds_all = test.job_test_distributed_result_set.all()
-        logger.error('send test')
         for test_ds, node in zip(test_ds_all, self.nodes):
             node.status = 'Running'
             node.save()
@@ -117,7 +115,6 @@ class Execute():
             test.save()
             testcase.checkout_script(test)
             testcase.distribute_test_script(self.nodes, test)
-            logger.error('distribute_test_script complited')
             self.send_test(test)
             self.merge_test_report(test)
             test.status = utility.get_result_fromxml(
