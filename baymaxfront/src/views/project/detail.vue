@@ -11,7 +11,7 @@
         </div>
         <h4 class="ui teal dividing header">Servers</h4>
         <div class="fields">
-            <multidrop  :items="nodes" :value="item.nodes" @changeselected="changeselected" :isfluid="true"></multidrop>
+            <multidrop  :items="nodes" :default="item.nodes" @changeselected="changeselected" :isfluid="true"></multidrop>
         </div>
         <h4 class="ui teal header">Test Automation</h4>
         <div>
@@ -37,7 +37,7 @@
 </template>
 <script>
 import {getdetail, saveproject} from '@/api/project'
-import {getList} from '@/api/node'
+import {nodeList} from '@/api/node'
 import testauto from './testauto'
 import multidrop from '@/components/multidropdown'
 import model from '@/components/model'
@@ -45,7 +45,7 @@ export default {
   name: 'detail',
   data () {
     return {
-      item: {},
+      item: {name: '', email: '', nodes: [], maps: []},
       nodes: [],
       savem: 'save',
       notify: 'notify',
@@ -55,8 +55,8 @@ export default {
   },
   components: {testauto, multidrop, model},
   created () {
-    this.fetchData()
     this.fetchNodes()
+    this.fetchData()
   },
   methods: {
     changeselected (nodes) {
@@ -74,7 +74,7 @@ export default {
       })
     },
     fetchNodes () {
-      getList(null).then(response => {
+      nodeList(null).then(response => {
         this.nodes = response.data
       })
     },

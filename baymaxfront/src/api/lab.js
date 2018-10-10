@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 
-export function getList (params) {
+export function labList (params) {
   return request({
     url: '/api/lab/getall',
     method: 'get',

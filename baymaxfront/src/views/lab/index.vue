@@ -15,7 +15,7 @@
           <td>
               <div class="ui aligned divided list">
                 <div class="item" v-for="node in tp.nodes" :key="node" >
-                <i class="orange server icon"></i>
+                <i :class="iconcss(node)" class="server icon"></i>
                 <div class="content">
                     <div class="header">{{node}}</div>
                 </div>
@@ -60,7 +60,8 @@
 </template>
 <script>
 import model from '@/components/model'
-import {getList} from '@/api/lab'
+import {labList} from '@/api/lab'
+import {nodeList} from '@/api/node'
 import {startjob} from '@/api/job'
 export default {
   name: 'lab',
@@ -75,13 +76,22 @@ export default {
       project: this.$route.params.name,
       runitem: '',
       response: '',
-      false: false
+      false: false,
+      nodes: [{title: '', icon: ''}]
     }
   },
   created () {
+    this.fetchNodes()
     this.fetchData()
   },
   methods: {
+    iconcss (node) {
+      for (let n in this.nodes) {
+        if (node === this.nodes[n].title) {
+          return this.nodes[n].icon
+        }
+      }
+    },
     toproject (item) {
       this.$router.push({name: 'toproject', params: {name: item}})
     },
@@ -96,9 +106,14 @@ export default {
       }
     },
     fetchData () {
-      getList(this.params).then(response => {
+      labList(this.params).then(response => {
         this.projects = response.data
         this.filterproject()
+      })
+    },
+    fetchNodes () {
+      nodeList(null).then(response => {
+        this.nodes = response.data
       })
     },
     runshow (tp) {

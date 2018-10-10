@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 
-export function getList (params) {
+export function nodeList (params) {
   return request({
     url: '/api/node/list/',
     method: 'get',

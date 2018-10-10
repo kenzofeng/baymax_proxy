@@ -1,7 +1,7 @@
 <template>
-    <select  multiple="" :class="{fluid:isfluid}"  class="ui search dropdown" :value="value" v-model="selected">
+    <select  multiple="" :class="{fluid:isfluid}"  class="ui search dropdown" v-model="selected">
         <option value=""></option>
-        <option v-for="item in items" :value="item" :key="item">{{item}}</option>
+        <option v-for="item in items" :value="item.title" :key="item.title"><i :class="iconcss(item)"></i>{{item.title}}</option>
     </select >
 </template>
 <script>
@@ -12,20 +12,30 @@ export default {
       selected: []
     }
   },
-  props: {items: null, value: null, isfluid: false},
+  props: {items: null, default: null, isfluid: false},
   mounted () {
-    $('.dropdown').dropdown()
+    $(this.$el).dropdown()
   },
   watch: {
-    value (val) {
-      $('.dropdown').dropdown('clear')
-      val.forEach(function (val) {
-        $('.dropdown').dropdown('set selected', val)
-      })
-      this.selected = val
+    default: {
+      handler (newval, oldval) {
+        let _dropdwon = this
+        $(_dropdwon.$el).dropdown('clear')
+        if (newval !== undefined) {
+          newval.forEach(function (val) {
+            $(_dropdwon.$el).dropdown('set selected', val)
+          })
+          _dropdwon.selected = newval
+        }
+      }
     },
     selected (val) {
       this.$emit('changeselected', val)
+    }
+  },
+  methods: {
+    iconcss (item) {
+      return item.icon + ' server icon'
     }
   }
 }
