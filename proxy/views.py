@@ -45,9 +45,10 @@ def project_getall(request):
     return JsonResponse(list_project, safe=False)
 
 
-def project_getallnodes(request):
+def getallnodes(request):
     nodes = Node.objects.all()
-    nodelist = [node.name for node in nodes]
+    nodelist = [{"title":node.name,"icon":"blue"} if node.status == "Done" else {"title":node.name,"icon":"grey"} for node in nodes]
+    # nodelist = [node.name for node in nodes]
     return JsonResponse(nodelist, safe=False)
 
 

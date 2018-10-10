@@ -5,7 +5,7 @@ from proxy import views
 
 urlpatterns = [
                   url(r'^project/getall$', views.project_getall),
-                  url(r'^node/list/$', views.project_getallnodes),
+                  url(r'^node/list/$', views.getallnodes),
                   url(r'^project/getdetail$', views.project_getdetail),
                   url(r'^project/save$', views.project_save),
                   url(r'^project/new$', views.project_add),

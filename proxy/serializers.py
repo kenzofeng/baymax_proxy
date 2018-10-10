@@ -13,7 +13,7 @@ class JobTestSerializer(serializers.ModelSerializer):
         fields = ('id', 'log', 'name', 'app', 'robot_parameter', 'status', 'revision_number')
 
     def get_log(self, obj):
-        return obj.job_test_result.id if hasattr(obj,"job_test_result") else ""
+        return obj.job_test_result.id if hasattr(obj, "job_test_result") else ""
 
 
 class JobSerializer(serializers.ModelSerializer):
@@ -27,7 +27,8 @@ class JobSerializer(serializers.ModelSerializer):
         fields = ('pk', 'project', 'servers', 'start_time', 'end_time', 'status', 'job_test_set')
 
     def get_servers(self, obj):
-        return [{"name": server, "ip": Node.objects.get(name=server).host} for server in obj.servers.split(":")]
+        return [{"name": server, "ip": Node.objects.get(name=server).host} if Node.objects.filter(
+            name=server).first() else {"name": server, "ip": ""} for server in obj.servers.split(":")]
 
     def get_start_time(self, obj):
         return obj.start_time.astimezone(sh).strftime("%Y-%m-%d %H:%M:%S") if obj.start_time is not None else ""
