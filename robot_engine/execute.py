@@ -14,7 +14,6 @@ from Baymax_Proxy.jobs import scheduler
 import datetime
 
 logger = logging.getLogger('django')
-mswindows = (sys.platform == "win32")
 
 
 class Execute():
@@ -28,10 +27,11 @@ class Execute():
         self.do_job()
 
     def do_job(self):
-        self.check_use_node_server()
-        job_tests = self.job.job_test_set.all()
-        for test in job_tests:
-            self.execute(test)
+        status = self.check_use_node_server()
+        if status:
+            job_tests = self.job.job_test_set.all()
+            for test in job_tests:
+                self.execute(test)
 
     def request_test(self, test_ds, node):
         try:
@@ -102,12 +102,16 @@ class Execute():
         while True:
             p = Project.objects.get(name=self.job.project)
             nodes = p.node_set.all()
-            status = all([True if node.status == 'Done' else False for node in nodes])
+            status = any([node.status == 'Error' for node in nodes])
+            if status:
+                logger.error("Test Node Status is Error")
+                return False
+            status = all([node.status == 'Done' for node in nodes])
             if status:
                 break
-            time.sleep(2)
         self.job.status = 'Running'
         self.job.save()
+        return True
 
     def execute(self, test):
         try:
