@@ -2,6 +2,7 @@ import logging
 from datetime import datetime
 
 import requests
+from requests.exceptions import ConnectTimeout
 from apscheduler.schedulers.background import BackgroundScheduler
 
 from proxy.models import Node
@@ -25,6 +26,8 @@ def sync_server():
                 node.status = "Done"
             else:
                 node.status = "Error"
+        except ConnectTimeout:
+            node.status = "Error"
         except Exception as e:
             node.status = "Error"
             logger.error('Sync server error:{},ip:{},name:{}'.format(e, public_ip, node.name))

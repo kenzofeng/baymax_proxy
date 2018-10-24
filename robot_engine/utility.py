@@ -12,6 +12,7 @@ import requests
 import tenjin
 from lxml import etree
 from django.utils import timezone
+from django.conf import settings
 from proxy import env
 import json
 import paramiko
@@ -37,7 +38,7 @@ def stop_job(host):
 
 
 def getip(instance_id):
-    res = requests.get("https://devops.dbaws.net/aws/getip/{}/".format(instance_id))
+    res = requests.get("{}/api/getip/{}/".format(settings.DEVOPS, instance_id))
     if res.status_code == 200:
         instance = json.loads(res.content)
         return instance['public_ip'], instance['private_ip']
