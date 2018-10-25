@@ -82,6 +82,19 @@ export default new Router({
     }]
   },
   {
+    path: '/server',
+    name: 'Server',
+    component: Layout,
+    icon: 'server',
+    redirect: '/server/index',
+    menu: true,
+    children: [{
+      path: 'index',
+      component: () =>
+          import('@/views/server/index')
+    }]
+  },
+  {
     path: '*',
     redirect: '/404',
     hidden: true
