@@ -41,7 +41,7 @@ def job_stop(request, project):
 
 def project_getall(request):
     list_project = Project.objects.all()
-    list_project = [project.pk for project in list_project]
+    list_project = [{"title": project.pk} for project in list_project]
     return JsonResponse(list_project, safe=False)
 
 

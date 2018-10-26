@@ -124,6 +124,9 @@ export default {
   created () {
     this.fetchData()
   },
+  watch: {
+    '$route': ['fetchData']
+  },
   mounted () {
     this.Interval()
   },
@@ -178,6 +181,7 @@ export default {
       this.$refs.notifymodelcomponent.$emit('show')
     },
     fetchData () {
+      this.params = this.$route.query
       getall(this.params).then(response => {
         this.jobs = response.data
       })

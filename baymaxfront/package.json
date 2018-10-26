@@ -13,7 +13,7 @@
   "dependencies": {
     "axios": "^0.18.0",
     "jquery": "^3.3.1",
-    "semantic-ui-css": "^2.3.3",
+    "semantic-ui-css": "^2.4.1",
     "vue": "^2.5.2",
     "vue-clipboard2": "^0.2.1",
     "vue-router": "^3.0.1"

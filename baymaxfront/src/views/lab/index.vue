@@ -80,6 +80,9 @@ export default {
       nodes: [{title: '', icon: ''}]
     }
   },
+  watch: {
+    '$route': ['fetchNodes', 'fetchData']
+  },
   created () {
     this.fetchNodes()
     this.fetchData()
@@ -106,6 +109,7 @@ export default {
       }
     },
     fetchData () {
+      this.project = this.$route.params.name
       labList(this.params).then(response => {
         this.projects = response.data
         this.filterproject()

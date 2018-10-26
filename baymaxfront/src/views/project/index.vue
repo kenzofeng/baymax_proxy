@@ -2,13 +2,10 @@
   <div class="ui internally celled grid">
     <div class="row">
       <div class="twelve wid column">
-        <div class="ui action input">
-          <multidrop :items="selectitems" @changeselected="changeselected"></multidrop>
           <button class="ui teal button" @click="show">
             <i class="clipboard list icon"></i>
             Project
           </button>
-        </div>
       </div>
     </div>
     <div class="row">
@@ -40,8 +37,7 @@ export default {
   name: 'project',
   data () {
     return {
-      selectitems: {},
-      items: {},
+      items: [],
       deletem: 'delete',
       notify: 'indexnotify',
       ditem: '',
@@ -70,16 +66,8 @@ export default {
     },
     fetchData () {
       getList(null).then(response => {
-        this.selectitems = response.data
         this.items = response.data
       })
-    },
-    changeselected (val) {
-      if (val.length === 0) {
-        this.items = this.selectitems
-      } else {
-        this.items = val
-      }
     },
     show () {
       this.$refs.actionmodelcomponent.$emit('show')

@@ -1,6 +1,6 @@
 <template>
         <div class="ui large divided aligned selection list">
-            <item v-for="item in items" :key="item" :item="item" @deleteproject="deleteproject"> </item>
+            <item v-for="item in items" :key="item.title" :item="item.title" @deleteproject="deleteproject"> </item>
         </div>
 </template>
 
