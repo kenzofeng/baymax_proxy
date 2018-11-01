@@ -44,6 +44,9 @@
               <button class="ui icon button blue" @click="runshow(tp)">
                 <i class="play icon"></i>
                 </button>
+              <button class="ui icon button yellow" @click="url(tp)">
+                <i class="paper plane icon"></i>
+                </button>
           </td>
         </tr>
       </tbody>
@@ -51,6 +54,10 @@
     <model  ref="runmodelcomponent" @yes="runproject" :name="run">
       <div slot="header">Run Project</div>
       <div slot="content">Are you sure run project?</div>
+    </model>
+    <model  ref="urlcomponent"  :name="URL">
+      <div slot="header">URl</div>
+      <div slot="content" v-html="urlresponse"></div>
     </model>
     <model  ref="jobmodelcomponent" @yes="tojob" :name="job" :noshow="false">
       <div slot="header">Status</div>
@@ -73,9 +80,11 @@ export default {
       projects: [],
       run: 'run',
       job: 'job',
+      URL: 'URL',
       project: this.$route.params.name,
       runitem: '',
       response: '',
+      urlresponse: '',
       false: false,
       nodes: [{title: '', icon: ''}]
     }
@@ -123,6 +132,10 @@ export default {
     runshow (tp) {
       this.runitem = tp.name
       this.$refs.runmodelcomponent.$emit('show')
+    },
+    url (tp) {
+      this.urlresponse = 'curl http://baymax.ds.com:8080/api/job/' + tp.name + '/start'
+      this.$refs.urlcomponent.$emit('show')
     },
     runproject () {
       this.response = '<i class="spinner loading icon"></i>'
