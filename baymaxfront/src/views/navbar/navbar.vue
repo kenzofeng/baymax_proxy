@@ -46,6 +46,7 @@ export default {
     },
     changeselected (project) {
       let p = this.$route.fullPath.split('/')[1]
+      this.$store.dispatch('setProjectName', project)
       if (project !== '') {
         if (p === 'project') {
           this.$router.push({name: 'toproject', params: {name: project}})
