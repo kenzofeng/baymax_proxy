@@ -10,6 +10,7 @@
         <drop :items="selectitems" @changeselected="changeselected"></drop>
       </div>
     </div>
+    <a class="item" target='_blank' href="http://10.200.106.2:8080/"><i class="large black jenkins icon"></i>jenkins</a>
     <a class="item" target='_blank' href="http://35.160.71.185/aws?account=sandbox-test&region=us-west-2&search=Function"><i class="cloud icon"></i>EMS</a>
     <a class="item" target='_blank' href="http://54.218.22.41/"><i class="wrench icon"></i>TestRailTool</a>
     <a class="item" target='_blank' href="https://warrior.testrail.io/index.php?/dashboard"><i class="industry icon"></i>TestRail</a>
