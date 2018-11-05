@@ -33,6 +33,7 @@ def stop_job(host):
     ssh.connect(host, 22, upload, upload_pwd, timeout=10.0)
     stdin, stdout, stderr = ssh.exec_command("ps -ef|grep 'python -m' |awk '{print $2}'|xargs sudo kill -9")
     stdin, stdout, stderr = ssh.exec_command("ps -ef|grep 'java -jar' |awk '{print $2}'|xargs sudo kill -9")
+    stdin, stdout, stderr = ssh.exec_command("sudo supervisorctl restart baymax")
     ssh.close()
     return "scuess"
 
