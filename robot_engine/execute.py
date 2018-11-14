@@ -85,7 +85,7 @@ class Execute():
         newnodes = []
         for node in nodes:
             try:
-                requests.get('http://{}:{}/status'.format(node.host, node.port))
+                requests.get('http://{}:{}/status'.format(node.host, node.port), timeout=10)
                 newnodes.append(node)
             except Exception as e:
                 pass

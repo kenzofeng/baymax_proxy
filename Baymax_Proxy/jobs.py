@@ -22,7 +22,7 @@ def sync_server():
         public_ip, private_ip = utility.getip(node.aws_instance_id)
         try:
             if public_ip:
-                requests.get('http://{}:{}/status'.format(public_ip, node.port), timeout=5)
+                requests.get('http://{}:{}/status'.format(public_ip, node.port), timeout=10)
                 node.status = "Done"
             else:
                 node.status = "Error"
