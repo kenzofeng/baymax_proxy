@@ -28,10 +28,9 @@ class Execute():
 
     def do_job(self):
         status = self.check_use_node_server()
-        if status:
-            job_tests = self.job.job_test_set.all()
-            for test in job_tests:
-                self.execute(test)
+        job_tests = self.job.job_test_set.all()
+        for test in job_tests:
+            self.execute(test, status)
 
     def request_test(self, test_ds, node):
         try:
@@ -107,7 +106,7 @@ class Execute():
                 logger.error("Test Node Status is Error")
                 self.job.status = 'Error'
                 self.job.save()
-                raise Exception("All Servers Status is Error")
+                return False
             status = all([node.status == 'Done' for node in nodes])
             if status:
                 break
@@ -115,19 +114,25 @@ class Execute():
         self.job.save()
         return True
 
-    def execute(self, test):
+    def execute(self, test, status):
         try:
-            test.status = 'Running'
-            test.save()
-            testcase.checkout_script(test)
-            testcase.distribute_test_script(self.nodes, test)
-            self.send_test(test)
-            self.merge_test_report(test)
-            test.status = utility.get_result_fromxml(
-                os.path.join(env.report, test.job_test_result.report, env.output_xml))
-            test.save()
-            scheduler.add_job(utility.send_email, 'date',
-                              run_date=datetime.datetime.now() + datetime.timedelta(seconds=2), args=[test, self.ip])
+            if status:
+                test.status = 'Running'
+                test.save()
+                testcase.checkout_script(test)
+                testcase.distribute_test_script(self.nodes, test)
+                self.send_test(test)
+                self.merge_test_report(test)
+                test.status = utility.get_result_fromxml(
+                    os.path.join(env.report, test.job_test_result.report, env.output_xml))
+                test.save()
+                scheduler.add_job(utility.send_email, 'date',
+                                  run_date=datetime.datetime.now() + datetime.timedelta(seconds=2),
+                                  args=[test, self.ip])
+            else:
+                test.status = 'Error'
+                test.save()
+                raise Exception("All Servers Status is Error")
         except Exception, e:
             logger.error("execute error:{}".format(e))
             test.status = 'Error'
