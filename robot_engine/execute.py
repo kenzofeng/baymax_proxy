@@ -105,7 +105,9 @@ class Execute():
             status = any([node.status == 'Error' for node in nodes])
             if status:
                 logger.error("Test Node Status is Error")
-                return False
+                self.job.status = 'Error'
+                self.job.save()
+                raise Exception("All Servers Status is Error")
             status = all([node.status == 'Done' for node in nodes])
             if status:
                 break
