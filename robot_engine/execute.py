@@ -103,9 +103,6 @@ class Execute():
             nodes = p.node_set.all()
             status = any([node.status == 'Error' for node in nodes])
             if status:
-                logger.error("Test Node Status is Error")
-                self.job.status = 'Error'
-                self.job.save()
                 return False
             status = all([node.status == 'Done' for node in nodes])
             if status:
