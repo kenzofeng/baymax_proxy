@@ -145,8 +145,8 @@ def download(request, jobid):
     job_tests = job.job_test_set.all()
     reports = ((test.name, os.path.join(env.report, test.job_test_result.report)) for test in job_tests)
     zip_buffer = zipreport(*reports)
-    response = StreamingHttpResponse(zip_buffer)
-    response['Content-Type'] = 'application/zip'
+    response = HttpResponse(zip_buffer.getvalue())
+    response['Content-Type'] = 'application/x-zip-compressed'
     response['Content-Disposition'] = 'attachment;filename="report.zip"'
     return response
 

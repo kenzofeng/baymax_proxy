@@ -16,7 +16,7 @@ from django.conf import settings
 from proxy import env
 import json
 import paramiko
-import io
+import StringIO
 
 logger = logging.getLogger('django')
 tenjin.set_template_encoding("utf-8")
@@ -242,8 +242,9 @@ def zip_file(sourcefile, targetfile):
     except Exception, e:
         logger.error(e)
 
+
 def zipreport(*sourcefile):
-    zip_buffer = io.BytesIO()
+    zip_buffer = StringIO.StringIO()
     with zipfile.ZipFile(zip_buffer, "a", zipfile.ZIP_DEFLATED) as zip_file:
         for testname, sfile in sourcefile:
             for root, dirs, files in os.walk(sfile):
