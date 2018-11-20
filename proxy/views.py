@@ -129,9 +129,9 @@ def test_run_log(request, logid):
     return HttpResponse(joblog, content_type='text/html')
 
 
-def test_log(request, jobid):
+def test_log(request, logid):
     result = ""
-    test = Job_Test.objects.get(pk=jobid)
+    test = Job_Test.objects.get(pk=logid)
     path = os.path.join(env.report, test.job_test_result.report, env.log_html)
     if os.path.exists(path):
         f = open(path)
