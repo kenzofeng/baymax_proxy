@@ -242,7 +242,6 @@ def zip_file(sourcefile, targetfile):
     except Exception, e:
         logger.error(e)
 
-
 def zipreport(*sourcefile):
     zip_buffer = io.BytesIO()
     with zipfile.ZipFile(zip_buffer, "a", zipfile.ZIP_DEFLATED) as zip_file:
@@ -252,7 +251,7 @@ def zipreport(*sourcefile):
                     f = os.path.join(root, name)
                     dirname = f[len(sfile):]
                     zip_file.write(f, testname + "/" + dirname)
-    return zip_buffer.getvalue()
+    return zip_buffer
 
 
 def extract_zip(source, target):

@@ -4,7 +4,7 @@ import zlib
 
 from serializers import ProjectSerializer, JobSerializer
 from django.shortcuts import render, HttpResponse
-from django.http import JsonResponse, FileResponse
+from django.http import JsonResponse, FileResponse, StreamingHttpResponse
 from django.views.decorators.csrf import csrf_exempt
 
 import env
@@ -145,7 +145,7 @@ def download(request, jobid):
     job_tests = job.job_test_set.all()
     reports = ((test.name, os.path.join(env.report, test.job_test_result.report)) for test in job_tests)
     zip_buffer = zipreport(*reports)
-    response = FileResponse(zip_buffer)
+    response = StreamingHttpResponse(zip_buffer)
     response['Content-Type'] = 'application/zip'
     response['Content-Disposition'] = 'attachment;filename="report.zip"'
     return response
