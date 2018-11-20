@@ -5,9 +5,10 @@ from proxy import views
 
 urlpatterns = [url(r'^test/log/(?P<logid>\d+)/$', views.test_run_log),
                url(r'^report/(?P<logid>\d+)/$', views.test_log),
-               url(r'^report/(?P<logid>\d+)/log.html$', views.test_log),
-               url(r'^report/(?P<logid>\d+)/report.html$', views.test_report),
-               url(r'^report/(?P<logid>\d+)/output.xml$', views.test_xml),
+               url(r'^report/(?P<jobid>\d+)/download$', views.download),
+               url(r'^report/(?P<jobid>\d+)/log.html$', views.test_log),
+               url(r'^report/(?P<jobid>\d+)/report.html$', views.test_report),
+               url(r'^report/(?P<jobid>\d+)/output.xml$', views.test_xml),
                url(r'^report/(?P<logid>\d+)/cache/(?P<cid>\d+\.\d+\.txt)$', views.test_cache),
                url(r'^report/(?P<logid>\d+)/cache/(?P<cid>\d+.txt)$', views.test_cache),
                url(r'^report/(?P<logid>\d+)/compare/(?P<cid>\d+\.\d+\.html)$', views.test_compare),

@@ -155,7 +155,7 @@ export default {
       return 'result/report/' + id
     },
     downloadxml (id) {
-      return 'result/report/' + id + '/output.xml'
+      return 'result/report/' + id + '/download'
     },
     stopshow (item) {
       this.sproject = item

@@ -13,6 +13,7 @@ from models import Project, Job, Job_Test_Result, Job_Test, Node, Test_Map
 import requests
 from Baymax_Proxy.jobs import scheduler
 import datetime
+from robot_engine.utility import zipreport
 
 
 def job_start(request, project):
@@ -128,9 +129,9 @@ def test_run_log(request, logid):
     return HttpResponse(joblog, content_type='text/html')
 
 
-def test_log(request, logid):
+def test_log(request, jobid):
     result = ""
-    test = Job_Test.objects.get(pk=logid)
+    test = Job_Test.objects.get(pk=jobid)
     path = os.path.join(env.report, test.job_test_result.report, env.log_html)
     if os.path.exists(path):
         f = open(path)
@@ -139,20 +140,44 @@ def test_log(request, logid):
     return HttpResponse(result, content_type='text/html')
 
 
-def test_report(request, logid):
-    test = Job_Test.objects.get(pk=logid)
+def download(request, jobid):
+    job = Job.objects.get(pk=jobid)
+    job_tests = job.job_test_set.all()
+    reports = ((test.name, os.path.join(env.report, test.job_test_result.report)) for test in job_tests)
+    zip_buffer = zipreport(*reports)
+    response = FileResponse(zip_buffer)
+    response['Content-Type'] = 'application/zip'
+    response['Content-Disposition'] = 'attachment;filename="report.zip"'
+    return response
+
+
+def test_report(request, jobid):
+    test = Job_Test.objects.get(pk=jobid)
     path = os.path.join(env.report, test.job_test_result.report, env.report_html)
     f = open(path)
     return HttpResponse(f.read(), content_type='text/html')
 
+    # test = Job_Test.objects.get(pk=logid)
+    # path = os.path.join(env.report, test.job_test_result.report, env.report_html)
+    # f = open(path)
+    # return HttpResponse(f.read(), content_type='text/html')
 
-def test_xml(request, logid):
-    test = Job_Test.objects.get(pk=logid)
-    path = os.path.join(env.report, test.job_test_result.report, env.output_xml)
+
+def test_xml(request, jobid):
+    job = Job.objects.get(pk=jobid)
+
+    path = os.path.join(env.report, job.job_test_result.report, env.output_xml)
     response = FileResponse(open(path, 'rb'))
     response['Content-Type'] = 'application/xml'
     response['Content-Disposition'] = 'attachment;filename="{}"'.format(env.output_xml)
     return response
+
+    # test = Job_Test.objects.get(pk=jobid)
+    # path = os.path.join(env.report, test.job_test_result.report, env.output_xml)
+    # response = FileResponse(open(path, 'rb'))
+    # response['Content-Type'] = 'application/xml'
+    # response['Content-Disposition'] = 'attachment;filename="{}"'.format(env.output_xml)
+    # return response
 
 
 def test_cache(request, logid, cid):
