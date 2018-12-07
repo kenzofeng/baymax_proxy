@@ -3,17 +3,15 @@ import os
 import svn.local
 import svn.remote
 
-import autobuild
-import testparameter
-import utility
 from proxy import env
 from proxy.models import Job_Test_Distributed_Result
-from testrun import TestRun
+from . import testparameter, utility
+from .testrun import TestRun
 
 
 def distribute_test_script(nodes, test):
     testpath = os.path.join(env.test, test.name)
-    testrun = TestRun(len(nodes), testpath,test.robot_parameter)
+    testrun = TestRun(len(nodes), testpath, test.robot_parameter)
     for ts_case in testrun.RunCase:
         if len(ts_case) != 0:
             test_ds = Job_Test_Distributed_Result()
@@ -41,32 +39,6 @@ def delete_distribute_test_report(test):
     for reprot in test_ds_reports:
         utility.remove_file("%s.zip" % reprot)
         utility.remove_file(reprot)
-
-
-def run_autobuild(test, **parameter):
-    oldpath = os.getcwd()
-    status = False
-    try:
-        autobuild.logname = test.name
-        test_app_autobuid = os.path.join(env.test, test.name, 'app', 'config.ini')
-        test_app_autobuild_autobuid = os.path.join(env.test, test.name, 'app', 'autobuild', 'config.ini')
-        if os.path.exists(test_app_autobuid, ):
-            sha, branch = autobuild.build(test_app_autobuid, **parameter)
-            status = True
-        elif os.path.exists(test_app_autobuild_autobuid):
-            sha, branch = autobuild.build(test_app_autobuild_autobuid, **parameter)
-            status = True
-        else:
-            utility.job_test_log(test.name, "Can't found autobuild config.ini to build your app")
-            return True
-        test.project_sha = sha
-        test.project_branch = branch
-        test.save()
-        return status
-    except Exception, e:
-        raise Exception("Autobuild Error:%s" % e)
-    finally:
-        os.chdir(oldpath)
 
 
 def checkout_script(test):

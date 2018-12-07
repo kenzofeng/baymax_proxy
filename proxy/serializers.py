@@ -1,6 +1,7 @@
-from models import Project, Test_Map, Node, Job, Job_Test, Node
-from rest_framework import serializers
 import pytz
+from rest_framework import serializers
+
+from .models import Project, Test_Map, Job, Job_Test, Node
 
 sh = pytz.timezone('Asia/Shanghai')
 

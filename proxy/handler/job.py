@@ -113,7 +113,7 @@ def start(request, project):
         return get_results(request, job)
     except ObjectDoesNotExist:
         raise Exception("%s doesn't exist,please config in Baymax System!" % (project))
-    except Exception, e:
+    except Exception as e:
         job.end_time = utility.gettime()
         job.status = 'Error'
         job.save()
@@ -134,7 +134,7 @@ def rerun(request, jobpk):
         job.save()
         utility.save_log(job)
         return get_results(request, job)
-    except Exception, e:
+    except Exception as e:
         job.end_time = utility.gettime()
         job.status = 'Error'
         job.save()

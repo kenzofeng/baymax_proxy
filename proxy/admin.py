@@ -1,9 +1,6 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-
 from django.contrib import admin
 
-from .models import Svn, Project, Job, Job_Test, Node,Job_Log
+from .models import Svn, Project, Job, Job_Test, Node, Job_Log
 
 
 class SvnAdmin(admin.ModelAdmin):
@@ -28,8 +25,9 @@ class JobTestsAdmin(admin.ModelAdmin):
 
 
 class JobAdmin(admin.ModelAdmin):
-    list_display = ['pk','project', 'status', 'start_time', 'end_time']
+    list_display = ['pk', 'project', 'status', 'start_time', 'end_time']
     inlines = [job_test_Inline]
+
 
 class Job_LogAdmin(admin.ModelAdmin):
     list_display = ['job']

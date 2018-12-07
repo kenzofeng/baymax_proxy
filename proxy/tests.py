@@ -16,4 +16,6 @@ suite = TestSuiteBuilder(settings['SuiteNames'],
 suite.configure(**settings.suite_config)
 suite = suite
 
-RobotFramework().execute_cli("--test Hilton_adapter.modifyReservation(json)-commit.TC02.167 D:\workspace\baymax_proxy\project\test_automation\Hilton_adapter", exit=exit)
+RobotFramework().execute_cli(
+    "--test Hilton_adapter.modifyReservation(json)-commit.TC02.167 D:\workspace\baymax_proxy\project\test_automation\Hilton_adapter",
+    exit=exit)

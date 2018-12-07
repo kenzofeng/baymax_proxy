@@ -1,19 +1,19 @@
+import datetime
 import json
 import os
 import zlib
 
-from serializers import ProjectSerializer, JobSerializer
+import requests
+from django.http import JsonResponse, FileResponse
 from django.shortcuts import render, HttpResponse
-from django.http import JsonResponse, FileResponse, StreamingHttpResponse
 from django.views.decorators.csrf import csrf_exempt
 
-import env
-from handler import job as job_handler
-from models import Project, Job, Job_Test_Result, Job_Test, Node, Test_Map
-import requests
 from Baymax_Proxy.jobs import scheduler
-import datetime
 from robot_engine.utility import zipreport
+from . import env
+from .handler import job as job_handler
+from .models import Project, Job, Job_Test_Result, Job_Test, Node, Test_Map
+from .serializers import ProjectSerializer, JobSerializer
 
 
 def job_start(request, project):
@@ -122,9 +122,9 @@ def test_run_log(request, logid):
                 try:
                     r = requests.get("http://%s/test/log/%s" % (test_ds.host, test_ds.pk), timeout=5)
                     joblog = joblog + r.content
-                except Exception, e:
+                except Exception as e:
                     joblog = joblog + str(e)
-        except Exception, e:
+        except Exception as e:
             return HttpResponse(e)
     return HttpResponse(joblog, content_type='text/html')
 

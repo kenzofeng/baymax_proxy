@@ -1,22 +1,24 @@
+import json
+import logging
 import os
 import random
 import re
+import shutil
 import signal
 import smtplib
 import zipfile
 import zlib
 from email.mime.text import MIMEText
-import logging
-import shutil
+from io import StringIO
+
+import paramiko
 import requests
 import tenjin
-from lxml import etree
-from django.utils import timezone
 from django.conf import settings
+from django.utils import timezone
+from lxml import etree
+
 from proxy import env
-import json
-import paramiko
-import StringIO
 
 logger = logging.getLogger('django')
 tenjin.set_template_encoding("utf-8")
@@ -112,7 +114,7 @@ def logmsgs(logpath, msgs):
         f.writelines(msgs)
         f.write('\n')
         f.close()
-    except Exception, e:
+    except Exception as e:
         logger.error(e)
     finally:
         f.close()
@@ -124,7 +126,7 @@ def logmsg(logpath, msg):
         f.write(msg)
         f.write('\n')
         f.close()
-    except Exception, e:
+    except Exception as e:
         logger.error(e)
     finally:
         f.close()
@@ -169,14 +171,14 @@ def save_test_log(test):
             try:
                 r = requests.get("http://%s/test/log/%s" % (test_ds.host, test_ds.pk), timeout=5)
                 fstr = fstr + r.content
-            except Exception, e:
+            except Exception as e:
                 fstr = fstr + str(e)
         gzipstr = zlib.compress(fstr)
         test.job_test_result.log = gzipstr.encode("base64")
         test.job_test_result.save()
         remove_file(log_path)
-    except Exception, e:
-        print e
+    except Exception as e:
+        print(e)
 
 
 def save_log(job):
@@ -239,7 +241,7 @@ def zip_file(sourcefile, targetfile):
             arcname = tar[len(sourcefile):]
             zf.write(tar, arcname)
         zf.close()
-    except Exception, e:
+    except Exception as e:
         logger.error(e)
 
 

@@ -1,17 +1,14 @@
+import datetime
 import logging
 import os
-import sys
 import threading
-import time
+
 import requests
 
-import testcase
-import testresult
-import utility
+from Baymax_Proxy.jobs import scheduler
 from proxy import env
 from proxy.models import Project
-from Baymax_Proxy.jobs import scheduler
-import datetime
+from . import testcase, testresult, utility
 
 logger = logging.getLogger('django')
 
@@ -42,7 +39,7 @@ class Execute():
             download_zip = os.path.join(env.tmp, utility.gettoday(), "report_%s.zip" % r.headers["filename"])
             open(download_zip, 'wb').write(r.content)
             utility.extract_zip(download_zip, os.path.join(env.tmp, test_ds.report))
-        except Exception, e:
+        except Exception as e:
             logger.error("test error:{}".format(e))
         finally:
             node.status = "Done"
@@ -130,7 +127,7 @@ class Execute():
                 test.status = 'Error'
                 test.save()
                 raise Exception("Project Servers Status is Error")
-        except Exception, e:
+        except Exception as e:
             logger.error("execute error:{}".format(e))
             test.status = 'Error'
             test.save()
