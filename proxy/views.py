@@ -14,7 +14,7 @@ from . import env
 from .handler import job as job_handler
 from .models import Project, Job, Job_Test_Result, Job_Test, Node, Test_Map
 from .serializers import ProjectSerializer, JobSerializer
-
+import json
 
 def job_start(request, project):
     myrequest = job_handler.Myrequest(request)
@@ -38,7 +38,16 @@ def job_stop(request, project):
         return JsonResponse({"status": rs}, safe=False)
     except Exception as e:
         return HttpResponse(e)
-
+@csrf_exempt
+def job_comments(request):
+    try:
+        data = json.loads(request.body)
+        job =Job.objects.get(pk=data['id'])
+        job.comments = data['comments']
+        job.save()
+        return JsonResponse({"status": "scuess"}, safe=False)
+    except Exception as e:
+        return HttpResponse(e)
 
 def project_getall(request):
     list_project = Project.objects.all()
@@ -205,9 +214,9 @@ def job_getall(request):
     number = request.GET['number']
     if 'project' in request.GET:
         project = request.GET['project']
-        jobs = Job.objects.filter(project=project).order_by('-pk')[:number]
+        jobs = Job.objects.filter(project=project).order_by('-pk')[:int(number)]
     else:
-        jobs = Job.objects.all().order_by('-pk')[:number]
+        jobs = Job.objects.all().order_by('-pk')[:int(number)]
     job_s = JobSerializer.setup_eager_loading(jobs)
     return JsonResponse(JobSerializer(job_s, many=True, read_only=True).data, safe=False)
 

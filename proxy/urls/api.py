@@ -15,5 +15,6 @@ urlpatterns = [
                   url(r'^job/(?P<project>[\w-]*)/start', views.job_start),
                   url(r'^job/(?P<project>[\w-]*)/stop', views.job_stop),
                   url(r'^job/(?P<jobpk>[\w-]*)/rerun', views.job_rerun),
+                  url(r'^job/comments/', views.job_comments),
                   url(r'^lab/getall$', views.lab_getall),
               ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

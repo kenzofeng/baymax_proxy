@@ -1,6 +1,6 @@
 <template>
   <div>
-    <table class="ui compact selectable celled striped teal table">
+    <table class="ui fixed compact selectable celled striped teal table" >
       <thead>
         <tr>
           <th class="one wide">Project</th>
@@ -8,7 +8,8 @@
           <th class="one wide">Status</th>
           <th class="one wide">Start Date</th>
           <th class="one wide">End Date</th>
-          <th class="ten wide">Test Automation</th>
+          <th class="eight wide">Test Automation</th>
+          <th class="one wide">Comments</th>
           <th class="one wide">Atction</th>
         </tr>
       </thead>
@@ -32,7 +33,7 @@
           <td>{{job.start_time}}</td>
           <td>{{job.end_time}}</td>
           <td>
-            <table class="ui small table very compact">
+            <table class="ui small very compact table">
               <thead>
           <th class="two wide">Test</th>
           <th class="one wide">Version</th>
@@ -63,8 +64,11 @@
       </tbody>
     </table>
     </td>
+    <td class="collapsing" @dblclick="editcomments(job.comments,job.pk)">
+      {{job.comments}}
+    </td>
     <td>
-      <div class="ui large buttons">
+      <div class="ui icon buttons">
         <button class="ui icon button red" :class="buttonclass(job.status)" @click="stopshow(job.project)">
           <i class="stop icon"></i>
         </button>
@@ -92,19 +96,18 @@
       <div slot="header">Status</div>
       <div slot="content" v-html="response"></div>
     </model>
+    <writepopup ref="writepopup" @savecomments="savecomments"></writepopup>
   </div>
 </template>
 <script>
-import {
-  getall,
-  stopjob,
-  rerunjob
-} from '@/api/job'
+import {getall, stopjob, rerunjob, savecomment} from '@/api/job'
 import model from '@/components/model'
+import writepopup from '@/components/writepopup'
 export default {
   name: 'job',
   components: {
-    model
+    model,
+    writepopup
   },
   data () {
     return {
@@ -134,6 +137,17 @@ export default {
     clearInterval(this.interval_id)
   },
   methods: {
+    editcomments (comments, pk) {
+      this.$refs.writepopup.show(comments, pk)
+    },
+    savecomments (comments, pk) {
+      savecomment({id: pk, comments: comments})
+      for (let job of this.jobs) {
+        if (job.pk === pk) {
+          job.comments = comments
+        }
+      }
+    },
     onCopy (e) {
       alert('You just copied: ' + e.text)
     },

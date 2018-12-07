@@ -1,7 +1,7 @@
 <template>
   <div class="ui teal inverted huge menu">
     <div class="header item">
-      Baymax System
+      Baymax
     </div>
     <navitem v-for="router in routes" :key=" router.name" :item="router"></navitem>
     <div class="right menu">

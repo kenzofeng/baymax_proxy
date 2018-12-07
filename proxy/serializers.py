@@ -25,7 +25,7 @@ class JobSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Job
-        fields = ('pk', 'project', 'servers', 'start_time', 'end_time', 'status', 'job_test_set')
+        fields = ('pk', 'project', 'servers', 'start_time', 'end_time', 'status', 'job_test_set', 'comments')
 
     def get_servers(self, obj):
         return [{"name": server, "ip": Node.objects.get(name=server).host} if Node.objects.filter(

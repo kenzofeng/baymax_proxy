@@ -28,3 +28,11 @@ export function rerunjob (jobpk) {
     method: 'get'
   })
 }
+
+export function savecomment (params) {
+  return request({
+    url: '/api/job/comments/',
+    method: 'post',
+    data: params
+  })
+}

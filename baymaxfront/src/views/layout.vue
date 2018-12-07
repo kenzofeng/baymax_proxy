@@ -1,7 +1,7 @@
 <template>
-    <div>
+    <div class='ui fluid container'>
     <navbar></navbar>
-    <router-view></router-view>
+      <router-view></router-view>
     </div>
 </template>
 
