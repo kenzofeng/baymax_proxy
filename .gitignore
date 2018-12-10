@@ -5,5 +5,6 @@ project/log
 project/report
 project/tmp
 project/test_automation
+baymaxfront/dist
 /db.sqlite3
 /proxy/migrations/
