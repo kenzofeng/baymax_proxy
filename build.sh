@@ -1,5 +1,5 @@
-cd baymaxfron
+cd baymaxfront
 npm run build
 cd  ..
-rm -rf baymax.tar.gz
-tar -zcvf  baymax.tar.gz ./Baymax_Proxy/*.py ./baymaxfront/dist/ ./robot_engine/*.py
+rm -rf baymaxproxy.tar.gz
+tar -zcvf  baymaxproxy.tar.gz ./Baymax_Proxy/*.py ./baymaxfront/dist/ ./robot_engine/*.py
