@@ -23,9 +23,9 @@ class TestRun(object):
     def init_rb(self):
         rb = RobotFramework()
         options, datasources = rb._parse_arguments(
-            "{}".format(self.source).split(" ") if self.args == "" else "{} {}".format(self.args,
+            list(filter(None,"{}".format(self.source).split(" ") if self.args == "" else "{} {}".format(self.args,
                                                                                        self.source).split(
-                " "))
+                " "))))
         settings = RobotSettings(options)
         suite = TestSuiteBuilder(settings['SuiteNames'],
                                  settings['WarnOnSkipped'],
