@@ -10,7 +10,7 @@ import zipfile
 import zlib
 from email.mime.text import MIMEText
 from io import StringIO
-
+import base64
 import paramiko
 import requests
 import tenjin
@@ -187,7 +187,7 @@ def save_log(job):
     fstr = f.read()
     f.close()
     gzipstr = zlib.compress(fstr)
-    job.job_log.text = gzipstr.encode("base64")
+    job.job_log.text = str(base64.b64encode(gzipstr))
     job.job_log.save()
     remove_file(log_path)
 

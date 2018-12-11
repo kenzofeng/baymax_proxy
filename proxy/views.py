@@ -134,7 +134,7 @@ def test_run_log(request, logid):
             for test_ds in test_ds_all:
                 try:
                     r = requests.get("http://%s/test/log/%s" % (test_ds.host, test_ds.pk), timeout=5)
-                    joblog = joblog + r.content
+                    joblog = joblog + r.content.decode('utf-8')
                 except Exception as e:
                     joblog = joblog + str(e)
         except Exception as e:

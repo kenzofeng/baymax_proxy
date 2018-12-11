@@ -10,20 +10,23 @@ from .testrun import TestRun
 
 
 def distribute_test_script(nodes, test):
-    testpath = os.path.join(env.test, test.name)
-    testrun = TestRun(len(nodes), testpath, test.robot_parameter)
-    for ts_case in testrun.RunCase:
-        if len(ts_case) != 0:
-            test_ds = Job_Test_Distributed_Result()
-            test_ds.job_test = test
-            test_ds.save()
-            test_ds.script = "%s/%s_%s" % (utility.gettoday(), test.name, test_ds.pk)
-            test_ds.report = "%s/report_%s_%s" % (utility.gettoday(), test.name, test_ds.pk)
-            test_ds.save()
-            utility.mkdir(os.path.join(env.tmp, utility.gettoday()))
-            utility.mkdir(os.path.join(env.report, utility.gettoday()))
-            testparameter.create_argfile(testpath, ts_case)
-            utility.zip_file(testpath, os.path.join(env.tmp, "%s.zip" % test_ds.script))
+    try:
+        testpath = os.path.join(env.test, test.name)
+        testrun = TestRun(len(nodes), testpath, test.robot_parameter)
+        for ts_case in testrun.RunCase:
+            if len(ts_case) != 0:
+                test_ds = Job_Test_Distributed_Result()
+                test_ds.job_test = test
+                test_ds.save()
+                test_ds.script = "{}/{}_{}".format(utility.gettoday(), test.name, test_ds.pk)
+                test_ds.report = "{}/report_{}_{}".format(utility.gettoday(), test.name, test_ds.pk)
+                test_ds.save()
+                utility.mkdir(os.path.join(env.tmp, utility.gettoday()))
+                utility.mkdir(os.path.join(env.report, utility.gettoday()))
+                testparameter.create_argfile(testpath, ts_case)
+                utility.zip_file(testpath, os.path.join(env.tmp, "{}.zip".format(test_ds.script)))
+    except Exception as e:
+        raise Exception("distribute_test_script error:{}".format(e))
 
 
 def delete_distribute_test_script(test):

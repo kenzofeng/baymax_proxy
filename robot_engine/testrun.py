@@ -18,21 +18,23 @@ class TestRun(object):
             self.get_all_test(self.suite)
             self.distribut_test()
         except Exception as e:
-            raise Exception(e)
+            raise Exception("TestRun __init__ error:{}".format(e))
 
     def init_rb(self):
-        rb = RobotFramework()
-        options, datasources = rb._parse_arguments(
-            list(filter(None,"{}".format(self.source).split(" ") if self.args == "" else "{} {}".format(self.args,
-                                                                                       self.source).split(
-                " "))))
-        settings = RobotSettings(options)
-        suite = TestSuiteBuilder(settings['SuiteNames'],
-                                 settings['WarnOnSkipped'],
-                                 settings['Extension']).build(*datasources)
-        suite.configure(**settings.suite_config)
-        self.suite = suite
-
+        try:
+            rb = RobotFramework()
+            options, datasources = rb._parse_arguments(
+                list(filter(None, "{}".format(self.source).split(" ") if self.args == "" else "{} {}".format(self.args,
+                                                                                                             self.source).split(
+                    " "))))
+            settings = RobotSettings(options)
+            suite = TestSuiteBuilder(settings['SuiteNames'],
+                                     settings['WarnOnSkipped'],
+                                     settings['Extension']).build(*datasources)
+            suite.configure(**settings.suite_config)
+            self.suite = suite
+        except Exception as e:
+            raise Exception("TestRun init_rb error:{}".format(e))
 
     def get_all_test(self, suite):
         for csuite in suite.suites:

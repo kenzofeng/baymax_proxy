@@ -48,6 +48,7 @@ def copy_job(job_pk):
     job.status = 'Waiting'
     job.start_time = utility.gettime()
     job.end_time = None
+    job.comments = ""
     job.save()
     log = Job_Log()
     log.job = job
@@ -119,7 +120,7 @@ def start(request, project):
         job.save()
         utility.logmsg(job.job_log.path, str(e))
         utility.save_log(job)
-        raise Exception(e)
+        raise Exception("start job error:{}".format(e))
 
 
 def rerun(request, jobpk):
@@ -140,7 +141,7 @@ def rerun(request, jobpk):
         job.save()
         utility.logmsg(job.job_log.path, str(e))
         utility.save_log(job)
-        raise Exception(e)
+        raise Exception("rerun job error:{}".format(e))
 
 
 def get_results(request, job):
