@@ -1,3 +1,4 @@
+import base64
 import datetime
 import json
 import os
@@ -14,7 +15,7 @@ from . import env
 from .handler import job as job_handler
 from .models import Project, Job, Job_Test_Result, Job_Test, Node, Test_Map
 from .serializers import ProjectSerializer, JobSerializer
-import json
+
 
 def job_start(request, project):
     myrequest = job_handler.Myrequest(request)
@@ -38,16 +39,19 @@ def job_stop(request, project):
         return JsonResponse({"status": rs}, safe=False)
     except Exception as e:
         return HttpResponse(e)
+
+
 @csrf_exempt
 def job_comments(request):
     try:
         data = json.loads(request.body)
-        job =Job.objects.get(pk=data['id'])
+        job = Job.objects.get(pk=data['id'])
         job.comments = data['comments']
         job.save()
         return JsonResponse({"status": "scuess"}, safe=False)
     except Exception as e:
         return HttpResponse(e)
+
 
 def project_getall(request):
     list_project = Project.objects.all()
@@ -113,7 +117,7 @@ def test_run_log(request, logid):
     log = job_test_result.log
     joblog = ''
     if log is not None:
-        log = zlib.decompress(log.decode("base64"))
+        log = str(zlib.decompress(base64.b64decode(log)))
         for l in log.split('\n'):
             joblog = joblog + "<span>%s</span><br/>" % (l)
         return HttpResponse(joblog, content_type='text/html')
@@ -166,11 +170,6 @@ def test_report(request, jobid):
     f = open(path)
     return HttpResponse(f.read(), content_type='text/html')
 
-    # test = Job_Test.objects.get(pk=logid)
-    # path = os.path.join(env.report, test.job_test_result.report, env.report_html)
-    # f = open(path)
-    # return HttpResponse(f.read(), content_type='text/html')
-
 
 def test_xml(request, jobid):
     job = Job.objects.get(pk=jobid)
@@ -180,13 +179,6 @@ def test_xml(request, jobid):
     response['Content-Type'] = 'application/xml'
     response['Content-Disposition'] = 'attachment;filename="{}"'.format(env.output_xml)
     return response
-
-    # test = Job_Test.objects.get(pk=jobid)
-    # path = os.path.join(env.report, test.job_test_result.report, env.output_xml)
-    # response = FileResponse(open(path, 'rb'))
-    # response['Content-Type'] = 'application/xml'
-    # response['Content-Disposition'] = 'attachment;filename="{}"'.format(env.output_xml)
-    # return response
 
 
 def test_cache(request, logid, cid):
