@@ -109,7 +109,7 @@ class Execute():
         self.updatenodes(nodes)
         self.nodes = self.checknodestatus(nodes)
         while True:
-            if self.check_job_status():
+            if self.check_job_status(jobnodes):
                 break
             time.sleep(1)
         # while True:
