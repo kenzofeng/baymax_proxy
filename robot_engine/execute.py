@@ -97,7 +97,7 @@ class Execute():
         self.updatenodes(nodes)
         self.nodes = self.checknodestatus(nodes)
         while True:
-            last_job = Job.objects.get(servers=jobnodes).order_by('-pk')[:2]
+            last_job = Job.objects.filter(servers=jobnodes).order_by('-pk')[:2]
             if len(last_job) > 1:
                 if last_job[1].status in ['Done', 'Error']:
                     break
