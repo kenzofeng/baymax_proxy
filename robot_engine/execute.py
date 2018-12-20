@@ -88,6 +88,18 @@ class Execute():
                 pass
         return newnodes
 
+    def check_job_status(self, jobnodes):
+        last_job = Job.objects.filter(servers=jobnodes).order_by('-pk')[:20]
+        if len(last_job) > 1:
+            for i, j in enumerate(last_job):
+                if j.pk == self.job.pk:
+                    if last_job[i + 1].status in ['Done', 'Error']:
+                        return True
+                    else:
+                        return False
+        else:
+            return True
+
     def check_use_node_server(self):
         p = Project.objects.get(name=self.job.project)
         nodes = p.node_set.all()
@@ -97,11 +109,7 @@ class Execute():
         self.updatenodes(nodes)
         self.nodes = self.checknodestatus(nodes)
         while True:
-            last_job = Job.objects.filter(servers=jobnodes).order_by('-pk')[:2]
-            if len(last_job) > 1:
-                if last_job[1].status in ['Done', 'Error']:
-                    break
-            else:
+            if self.check_job_status():
                 break
             time.sleep(1)
         # while True:

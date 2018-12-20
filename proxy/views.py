@@ -3,6 +3,8 @@ import datetime
 import json
 import os
 import zlib
+from concurrent.futures import wait
+from concurrent.futures.thread import ThreadPoolExecutor
 
 import requests
 from django.http import JsonResponse, FileResponse
@@ -15,9 +17,6 @@ from . import env
 from .handler import job as job_handler
 from .models import Project, Job, Job_Test_Result, Job_Test, Node, Test_Map
 from .serializers import ProjectSerializer, JobSerializer
-from concurrent.futures.thread import ThreadPoolExecutor
-from concurrent.futures import wait
-import threading
 
 executers = ThreadPoolExecutor(max_workers=20)
 
