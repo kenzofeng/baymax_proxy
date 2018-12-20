@@ -1,6 +1,6 @@
 <template>
   <div>
-    <table class="ui fixed compact selectable celled striped teal table" >
+    <table class="ui selectable celled striped teal table">
       <thead>
         <tr>
           <th class="one wide">Project</th>
@@ -17,17 +17,14 @@
         <tr v-for="job in jobs" :class="lineclass(job.status)" :key="job.pk">
           <td @click="toproject(job.project)">{{job.project}}</td>
           <td>
-            <div class="ui aligned divided list">
-              <div class="item" v-for="server in job.servers" :key="server.name">
-                <i class="orange server link icon" v-clipboard:copy="server.ip" v-clipboard:success="onCopy"></i>
-                <div class="content" :data-tooltip="server.ip">
-                  <div class="header">{{server.name}}</div>
-                </div>
-              </div>
-            </div>
+            <span
+              class="ui span"
+              :data-tooltip="job.servers"
+              data-position="right center"
+            >{{showdata(job.servers)}}</span>
           </td>
           <td>
-            <i class='icon' :class="statusclass(job.status)"></i>
+            <i class="icon" :class="statusclass(job.status)"></i>
             <span>{{job.status}}</span>
           </td>
           <td>{{job.start_time}}</td>
@@ -35,54 +32,61 @@
           <td>
             <table class="ui small very compact table">
               <thead>
-          <th class="two wide">Test</th>
-          <th class="one wide">Version</th>
-          <th class="four wide">App Log</th>
-          <th class="six wide">Robot Parameter</th>
-          <th class="one wide">Status</th>
-          <th class="one wide">RunTime</th>
-          <th class="one wide">Report</th>
-          </thead>
-      <tbody>
-        <tr v-for="test in job.job_test_set" :key="test.id">
-          <td>{{test.name}}</td>
-          <td>{{test.revision_number}}</td>
-          <td>{{test.app}}</td>
-          <td>{{test.robot_parameter}}</td>
-          <td :class="resultclass(test.status)">{{test.status}}</td>
-          <td>
-            <a target='_blank' :href="testlog(test.log)">
-              <i class='large file text outline icon'></i>
-            </a>
+                <th class="two wide">Test</th>
+                <th class="one wide">Version</th>
+                <th class="four wide">App Log</th>
+                <th class="six wide">Robot Parameter</th>
+                <th class="one wide">Status</th>
+                <th class="one wide">RunTime</th>
+                <th class="one wide">Report</th>
+              </thead>
+              <tbody>
+                <tr v-for="test in job.job_test_set" :key="test.id">
+                  <td>{{test.name}}</td>
+                  <td>{{test.revision_number}}</td>
+                  <td>{{test.app}}</td>
+                  <td>{{test.robot_parameter}}</td>
+                  <td :class="resultclass(test.status)">{{test.status}}</td>
+                  <td>
+                    <a target="_blank" :href="testlog(test.log)">
+                      <i class="large file text outline icon"></i>
+                    </a>
+                  </td>
+                  <td>
+                    <a target="_blank" :href="testreport(test.id)">
+                      <i class="large file text outline icon"></i>
+                    </a>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </td>
+          <td class="collapsing" @dblclick="editcomments(job.comments,job.pk)">
+            <span
+              class="ui span"
+              :data-tooltip="job.comments"
+              data-position="top right"
+            >{{showdata(job.comments)}}</span>
           </td>
           <td>
-            <a target='_blank' :href="testreport(test.id)">
-              <i class='large file text outline icon'></i>
-            </a>
+            <div class="ui icon buttons">
+              <button
+                class="ui icon button red"
+                :class="buttonclass(job.status)"
+                @click="stopshow(job.project)"
+              >
+                <i class="stop icon"></i>
+              </button>
+              <button class="ui icon button olive" @click="rerunshow(job.pk,job.project)">
+                <i class="undo icon"></i>
+              </button>
+              <a class="ui icon button" target="_blank" :href="downloadxml(job.pk)">
+                <i class="download icon"></i>
+              </a>
+            </div>
           </td>
         </tr>
       </tbody>
-    </table>
-    </td>
-    <td class="collapsing" @dblclick="editcomments(job.comments,job.pk)">
-      {{job.comments}}
-    </td>
-    <td>
-      <div class="ui icon buttons">
-        <button class="ui icon button red" :class="buttonclass(job.status)" @click="stopshow(job.project)">
-          <i class="stop icon"></i>
-        </button>
-        <button class="ui icon button olive" @click="rerunshow(job.pk,job.project)">
-          <i class="undo icon"></i>
-        </button>
-        <a class="ui icon button" target='_blank' :href="downloadxml(job.pk)">
-          <i class="download icon">
-          </i>
-        </a>
-      </div>
-    </td>
-    </tr>
-    </tbody>
     </table>
     <model ref="stopmodelcomponent" @yes="stopproject" :name="stopm">
       <div slot="header">Stop Project:{{sproject}}</div>
@@ -92,7 +96,7 @@
       <div slot="header">ReRun Project:{{rproject}}</div>
       <div slot="content">Are you sure rerun project?</div>
     </model>
-    <model ref="notifymodelcomponent" :name="notify" :noshow='false'>
+    <model ref="notifymodelcomponent" :name="notify" :noshow="false">
       <div slot="header">Status</div>
       <div slot="content" v-html="response"></div>
     </model>
@@ -100,146 +104,153 @@
   </div>
 </template>
 <script>
-import {getall, stopjob, rerunjob, savecomment} from '@/api/job'
-import model from '@/components/model'
-import writepopup from '@/components/writepopup'
+import { getall, stopjob, rerunjob, savecomment } from "@/api/job";
+import model from "@/components/model";
+import writepopup from "@/components/writepopup";
 export default {
-  name: 'job',
+  name: "job",
   components: {
     model,
     writepopup
   },
-  data () {
+  data() {
     return {
       jobs: null,
       params: this.$route.query,
-      interval_id: '',
-      stopm: 'stopm',
-      rerunm: 'rerunm',
-      notify: 'notifym',
+      interval_id: "",
+      stopm: "stopm",
+      rerunm: "rerunm",
+      notify: "notifym",
       false: false,
-      sproject: '',
-      rproject: '',
-      rjob: '',
+      sproject: "",
+      rproject: "",
+      rjob: "",
       response: null
-    }
+    };
   },
-  created () {
-    this.fetchData()
+  created() {
+    this.fetchData();
   },
   watch: {
-    '$route': ['fetchData']
+    $route: ["fetchData"]
   },
-  mounted () {
-    this.Interval()
+  mounted() {
+    this.Interval();
   },
-  beforeDestroy () {
-    clearInterval(this.interval_id)
+  beforeDestroy() {
+    clearInterval(this.interval_id);
   },
   methods: {
-    editcomments (comments, pk) {
-      this.$refs.writepopup.show(comments, pk)
+    showdata(data) {
+      if (data != null) {
+        if (data.length > 12) {
+          return data.slice(0, 12) + "...";
+        }
+      }
+      return data;
     },
-    savecomments (comments, pk) {
-      savecomment({id: pk, comments: comments})
+    editcomments(comments, pk) {
+      this.$refs.writepopup.show(comments, pk);
+    },
+    savecomments(comments, pk) {
+      savecomment({ id: pk, comments: comments });
       for (let job of this.jobs) {
         if (job.pk === pk) {
-          job.comments = comments
+          job.comments = comments;
         }
       }
     },
-    onCopy (e) {
-      alert('You just copied: ' + e.text)
+    onCopy(e) {
+      alert("You just copied: " + e.text);
     },
-    toproject (item) {
+    toproject(item) {
       this.$router.push({
-        name: 'toproject',
+        name: "toproject",
         params: {
           name: item
         }
-      })
+      });
     },
-    Interval () {
-      this.interval_id = setInterval(this.fetchData, 5000)
+    Interval() {
+      this.interval_id = setInterval(this.fetchData, 5000);
     },
-    testlog (id) {
-      return 'result/test/log/' + id
+    testlog(id) {
+      return "result/test/log/" + id;
     },
-    testreport (id) {
-      return 'result/report/' + id
+    testreport(id) {
+      return "result/report/" + id;
     },
-    downloadxml (id) {
-      return 'result/report/' + id + '/download'
+    downloadxml(id) {
+      return "result/report/" + id + "/download";
     },
-    stopshow (item) {
-      this.sproject = item
-      this.$refs.stopmodelcomponent.$emit('show')
+    stopshow(item) {
+      this.sproject = item;
+      this.$refs.stopmodelcomponent.$emit("show");
     },
-    rerunshow (pk, project) {
-      this.rproject = project
-      this.rjob = pk
-      this.$refs.rerunmodelcomponent.$emit('show')
+    rerunshow(pk, project) {
+      this.rproject = project;
+      this.rjob = pk;
+      this.$refs.rerunmodelcomponent.$emit("show");
     },
-    stopproject () {
-      this.response = '<i class="spinner loading icon"></i>'
+    stopproject() {
+      this.response = '<i class="spinner loading icon"></i>';
       stopjob(this.sproject).then(response => {
-        this.response = response.data
-      })
-      this.$refs.notifymodelcomponent.$emit('show')
+        this.response = response.data;
+      });
+      this.$refs.notifymodelcomponent.$emit("show");
     },
-    rerunproject () {
-      this.response = '<i class="spinner loading icon"></i>'
+    rerunproject() {
+      this.response = '<i class="spinner loading icon"></i>';
       rerunjob(this.rjob).then(response => {
-        this.response = response.data
-      })
-      this.$refs.notifymodelcomponent.$emit('show')
+        this.response = response.data;
+      });
+      this.$refs.notifymodelcomponent.$emit("show");
     },
-    fetchData () {
-      this.params = this.$route.query
+    fetchData() {
+      this.params = this.$route.query;
       getall(this.params).then(response => {
-        this.jobs = response.data
-      })
+        this.jobs = response.data;
+      });
     },
-    lineclass (i) {
+    lineclass(i) {
       switch (i) {
-        case 'Done':
-          return 'positive'
-        case 'Error':
-          return 'error'
-        case 'Running':
-        case 'Waiting':
-          return 'warning'
+        case "Done":
+          return "positive";
+        case "Error":
+          return "error";
+        case "Running":
+        case "Waiting":
+          return "warning";
       }
     },
-    statusclass (i) {
+    statusclass(i) {
       switch (i) {
-        case 'Done':
-          return 'green checkmark'
-        case 'Error':
-          return 'red close'
-        case 'Running':
-          return 'spinner loading'
-        case 'Waiting':
-          return 'sync loading'
+        case "Done":
+          return "green checkmark";
+        case "Error":
+          return "red close";
+        case "Running":
+          return "spinner loading";
+        case "Waiting":
+          return "sync loading";
       }
     },
-    resultclass (i) {
+    resultclass(i) {
       switch (i) {
-        case 'PASS':
-          return 'positive'
-        case 'Running':
-          return 'warning'
-        case 'FAIL':
-        case 'Error':
-          return 'error'
+        case "PASS":
+          return "positive";
+        case "Running":
+          return "warning";
+        case "FAIL":
+        case "Error":
+          return "error";
       }
     },
-    buttonclass (i) {
-      if (i !== 'Running') {
-        return 'disabled'
+    buttonclass(i) {
+      if (i !== "Running") {
+        return "disabled";
       }
     }
   }
-}
-
+};
 </script>

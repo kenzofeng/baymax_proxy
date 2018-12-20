@@ -2,12 +2,12 @@ import datetime
 import logging
 import os
 import threading
-
+import time
 import requests
 
 from Baymax_Proxy.jobs import scheduler
 from proxy import env
-from proxy.models import Project
+from proxy.models import Project, Job
 from . import testcase, testresult, utility
 
 logger = logging.getLogger('django')
@@ -95,6 +95,14 @@ class Execute():
             raise Exception("There is no node server to use")
         self.updatenodes(nodes)
         self.nodes = self.checknodestatus(nodes)
+        # while True:
+        #     last_job = Job.objects.get(name=self.job.project).order_by('-pk')[:2]
+        #     if len(last_job) > 1:
+        #         if last_job[1].status in ['Done', 'Error']:
+        #             break
+        #     else:
+        #         break
+        #     time.sleep(1)
         while True:
             p = Project.objects.get(name=self.job.project)
             nodes = p.node_set.all()
@@ -104,6 +112,7 @@ class Execute():
             status = all([node.status == 'Done' for node in nodes])
             if status:
                 break
+            time.sleep(1)
         self.job.status = 'Running'
         self.job.save()
         return True

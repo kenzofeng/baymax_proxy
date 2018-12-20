@@ -19,17 +19,12 @@ class JobTestSerializer(serializers.ModelSerializer):
 
 class JobSerializer(serializers.ModelSerializer):
     job_test_set = JobTestSerializer(many=True, read_only=True)
-    servers = serializers.SerializerMethodField()
     start_time = serializers.SerializerMethodField()
     end_time = serializers.SerializerMethodField()
 
     class Meta:
         model = Job
         fields = ('pk', 'project', 'servers', 'start_time', 'end_time', 'status', 'job_test_set', 'comments')
-
-    def get_servers(self, obj):
-        return [{"name": server, "ip": Node.objects.get(name=server).host} if Node.objects.filter(
-            name=server).first() else {"name": server, "ip": ""} for server in obj.servers.split(":")]
 
     def get_start_time(self, obj):
         return obj.start_time.astimezone(sh).strftime("%Y-%m-%d %H:%M:%S") if obj.start_time is not None else ""

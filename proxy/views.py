@@ -210,10 +210,10 @@ def job_getall(request):
     else:
         jobs = Job.objects.all().order_by('-pk')[:int(number)]
     job_s = JobSerializer.setup_eager_loading(jobs)
-    return JsonResponse(JobSerializer(job_s, many=True, read_only=True).data, safe=False)
+    return JsonResponse(JobSerializer(job_s, many=True).data, safe=False)
 
 
 def lab_getall(request):
     p = Project.objects.all()
     ps = ProjectSerializer.setup_eager_loading(p)
-    return JsonResponse(ProjectSerializer(ps, many=True, read_only=True).data, safe=False)
+    return JsonResponse(ProjectSerializer(ps, many=True).data, safe=False)
