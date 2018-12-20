@@ -28,6 +28,9 @@ export default {
     this.$on('show', () => {
       $('.ui.modal.' + this.name).modal({
         observeChanges: true,
+        dimmerSettings: {
+          opacity: 0
+        },
         onApprove () {
           _model.$emit('yes', 'yes')
         }

@@ -15,6 +15,10 @@ from . import env
 from .handler import job as job_handler
 from .models import Project, Job, Job_Test_Result, Job_Test, Node, Test_Map
 from .serializers import ProjectSerializer, JobSerializer
+from concurrent.futures.thread import ThreadPoolExecutor
+from concurrent.futures import wait
+
+executers = ThreadPoolExecutor(max_workers=30)
 
 
 def job_start(request, project):
@@ -24,6 +28,7 @@ def job_start(request, project):
     # rs = job_handler.start(myrequest, project)
     return JsonResponse({"status": "Job added successfully"}, safe=False)
 
+
 @csrf_exempt
 def job_rerun(request, jobpk):
     myrequest = job_handler.Myrequest(request)
@@ -31,6 +36,7 @@ def job_rerun(request, jobpk):
                       args=[myrequest, jobpk])
     # rs = job_handler.rerun(myrequest, jobpk)
     return JsonResponse({"status": "Job added successfully"}, safe=False)
+
 
 @csrf_exempt
 def job_stop(request, project):
@@ -111,6 +117,14 @@ def job_project(request, project):
     return render(request, 'proxy/job_project.html', {"project": project})
 
 
+def get_job(joblog, host, pk):
+    try:
+        r = requests.get("http://%s/test/log/%s" % (host, pk), timeout=5)
+        joblog + r.content.decode('utf-8')
+    except Exception as e:
+        joblog += str(e)
+
+
 def test_run_log(request, logid):
     job_test_result = Job_Test_Result.objects.get(pk=logid)
     job_test = job_test_result.job_test
@@ -131,12 +145,8 @@ def test_run_log(request, logid):
                 for l in fst.split('\n'):
                     joblog = joblog + "<span>%s</span><br/>" % (l)
             test_ds_all = job_test.job_test_distributed_result_set.all()
-            for test_ds in test_ds_all:
-                try:
-                    r = requests.get("http://%s/test/log/%s" % (test_ds.host, test_ds.pk), timeout=5)
-                    joblog = joblog + r.content.decode('utf-8')
-                except Exception as e:
-                    joblog = joblog + str(e)
+            tasks = [executers.submit(get_job, joblog, test_ds.host, test_ds.pk) for test_ds in test_ds_all]
+            wait(tasks)
         except Exception as e:
             return HttpResponse(e)
     return HttpResponse(joblog, content_type='text/html')
