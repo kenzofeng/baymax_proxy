@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Svn, Project, Job, Job_Test, Node, Job_Log
+from .models import Svn, Project, Job, Job_Test, Node, Job_Log,Job_Test_Distributed_Result,Job_Test_Result
 
 
 class SvnAdmin(admin.ModelAdmin):
@@ -39,3 +39,5 @@ admin.site.register(Job, JobAdmin)
 admin.site.register(Job_Test, JobTestsAdmin)
 admin.site.register(Node, NodeAdmin)
 admin.site.register(Job_Log, Job_LogAdmin)
+admin.site.register(Job_Test_Distributed_Result)
+admin.site.register(Job_Test_Result)
