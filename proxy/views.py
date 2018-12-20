@@ -17,9 +17,9 @@ from .models import Project, Job, Job_Test_Result, Job_Test, Node, Test_Map
 from .serializers import ProjectSerializer, JobSerializer
 from concurrent.futures.thread import ThreadPoolExecutor
 from concurrent.futures import wait
-from queue import Queue
+import threading
 
-executers = ThreadPoolExecutor(max_workers=30)
+executers = ThreadPoolExecutor(max_workers=20)
 
 
 def job_start(request, project):
@@ -118,15 +118,15 @@ def job_project(request, project):
     return render(request, 'proxy/job_project.html', {"project": project})
 
 
-def get_job(q, host, pk):
+def get_job(host, pk):
     try:
-        joblog = q.get()
+        joblog = ""
         r = requests.get("http://%s/test/log/%s" % (host, pk), timeout=5)
-        joblog + r.content.decode('utf-8')
+        joblog += r.content.decode('utf-8')
     except Exception as e:
         joblog += str(e)
     finally:
-        q.put(joblog)
+        return joblog
 
 
 def test_run_log(request, logid):
@@ -134,8 +134,6 @@ def test_run_log(request, logid):
     job_test = job_test_result.job_test
     log = job_test_result.log
     joblog = ''
-    q = Queue()
-    q.put(joblog)
     if log is not None:
         log = str(zlib.decompress(base64.b64decode(log)))
         for l in log.split('\n'):
@@ -151,8 +149,10 @@ def test_run_log(request, logid):
                 for l in fst.split('\n'):
                     joblog = joblog + "<span>%s</span><br/>" % (l)
             test_ds_all = job_test.job_test_distributed_result_set.all()
-            tasks = [executers.submit(get_job, q, test_ds.host, test_ds.pk) for test_ds in test_ds_all]
+            tasks = [executers.submit(get_job, test_ds.host, test_ds.pk) for test_ds in test_ds_all]
             wait(tasks)
+            for task in tasks:
+                joblog += task.result()
         except Exception as e:
             return HttpResponse(e)
     return HttpResponse(joblog, content_type='text/html')
