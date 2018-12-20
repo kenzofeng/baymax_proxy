@@ -77,7 +77,7 @@
               >
                 <i class="stop icon"></i>
               </button>
-              <button class="ui icon button olive" @click="rerunshow(job.pk,job.project)">
+              <button class="ui icon button olive" @click="rerunshow(job)">
                 <i class="undo icon"></i>
               </button>
               <a class="ui icon button" target="_blank" :href="downloadxml(job.pk)">
@@ -94,7 +94,24 @@
     </model>
     <model ref="rerunmodelcomponent" @yes="rerunproject" :name="rerunm">
       <div slot="header">ReRun Project:{{rproject}}</div>
-      <div slot="content">Are you sure rerun project?</div>
+      <div slot="content">
+        <div class="ui form">
+          <table class="ui small very compact table">
+            <thead>
+              <th class="two wide">Test</th>
+              <th class="six wide">Robot Parameter</th>
+            </thead>
+            <tbody>
+              <tr v-for="test in form.job.job_test_set" :key="test.id">
+                <td>{{test.name}}</td>
+                <td>
+                  <input type="text" v-model="test.robot_parameter">
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </model>
     <model ref="notifymodelcomponent" :name="notify" :noshow="false">
       <div slot="header">Status</div>
@@ -125,7 +142,8 @@ export default {
       sproject: "",
       rproject: "",
       rjob: "",
-      response: null
+      response: null,
+      form: { job: { job_test_set: [] } }
     };
   },
   created() {
@@ -187,9 +205,10 @@ export default {
       this.sproject = item;
       this.$refs.stopmodelcomponent.$emit("show");
     },
-    rerunshow(pk, project) {
-      this.rproject = project;
-      this.rjob = pk;
+    rerunshow(job) {
+      this.rproject = job.project;
+      this.rjob = job.pk;
+      this.form.job = job;
       this.$refs.rerunmodelcomponent.$emit("show");
     },
     stopproject() {
@@ -201,7 +220,7 @@ export default {
     },
     rerunproject() {
       this.response = '<i class="spinner loading icon"></i>';
-      rerunjob(this.rjob).then(response => {
+      rerunjob(this.rjob, this.form.job).then(response => {
         this.response = response.data;
       });
       this.$refs.notifymodelcomponent.$emit("show");

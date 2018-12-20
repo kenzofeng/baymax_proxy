@@ -4,11 +4,12 @@ from datetime import datetime
 import requests
 from requests.exceptions import ConnectTimeout
 from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.executors.pool import ThreadPoolExecutor
 
 from proxy.models import Node
 from robot_engine import utility
 
-scheduler = BackgroundScheduler()
+scheduler = BackgroundScheduler(executors={'default': ThreadPoolExecutor(40)})
 
 scheduler.start()
 logger = logging.getLogger('django')

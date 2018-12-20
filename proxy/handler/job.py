@@ -13,6 +13,15 @@ class Myrequest:
     def __init__(self, request):
         self.host = request.get_host()
         self.GET = request.GET
+        self.job_test_set = None
+        self.set_data(request)
+
+    def set_data(self, request):
+        if request.body:
+            data = json.loads(request.body)
+            self.job_test_set = data['job_test_set']
+        for test in self.job_test_set:
+            setattr(self, test['name'], {'robot_parameter': test['robot_parameter']})
 
 
 def stop(project):
@@ -58,14 +67,14 @@ def copy_job(job_pk):
     return job
 
 
-def copy_job_test(job, jobpk):
+def copy_job_test(request, job, jobpk):
     oldjob = Job.objects.get(pk=jobpk)
     old_job_test_set = oldjob.job_test_set.all()
     for m in old_job_test_set:
         job_test = Job_Test()
         job_test.job = job
         job_test.status = 'Waiting'
-        job_test.robot_parameter = m.robot_parameter
+        job_test.robot_parameter = getattr(request, m.name)['robot_parameter']
         job_test.testurl = m.testurl
         job_test.name = m.name
         job_test.app = m.app
@@ -127,7 +136,7 @@ def rerun(request, jobpk):
     try:
         utility.mkdir(os.path.join(env.log, utility.gettoday()))
         job = copy_job(jobpk)
-        copy_job_test(job, jobpk)
+        copy_job_test(request, job, jobpk)
         execute = Execute(job, request.host, request)
         execute.run()
         job.status = 'Done'
