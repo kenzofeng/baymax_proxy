@@ -93,26 +93,27 @@ class Execute():
         nodes = p.node_set.all()
         if len(nodes) == 0:
             raise Exception("There is no node server to use")
+        jobnodes = ':'.join([node.name for node in nodes])
         self.updatenodes(nodes)
         self.nodes = self.checknodestatus(nodes)
-        # while True:
-        #     last_job = Job.objects.get(name=self.job.project).order_by('-pk')[:2]
-        #     if len(last_job) > 1:
-        #         if last_job[1].status in ['Done', 'Error']:
-        #             break
-        #     else:
-        #         break
-        #     time.sleep(1)
         while True:
-            p = Project.objects.get(name=self.job.project)
-            nodes = p.node_set.all()
-            status = any([node.status == 'Error' for node in nodes])
-            if status:
-                return False
-            status = all([node.status == 'Done' for node in nodes])
-            if status:
+            last_job = Job.objects.get(servers=jobnodes).order_by('-pk')[:2]
+            if len(last_job) > 1:
+                if last_job[1].status in ['Done', 'Error']:
+                    break
+            else:
                 break
             time.sleep(1)
+        # while True:
+        #     p = Project.objects.get(name=self.job.project)
+        #     nodes = p.node_set.all()
+        #     status = any([node.status == 'Error' for node in nodes])
+        #     if status:
+        #         return False
+        #     status = all([node.status == 'Done' for node in nodes])
+        #     if status:
+        #         break
+        #     time.sleep(1)
         self.job.status = 'Running'
         self.job.save()
         return True

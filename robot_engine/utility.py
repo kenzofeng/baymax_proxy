@@ -17,7 +17,7 @@ import tenjin
 from django.conf import settings
 from django.utils import timezone
 from lxml import etree
-
+import time
 from proxy import env
 
 logger = logging.getLogger('django')
@@ -34,11 +34,12 @@ def stop_job(host):
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     ssh.connect(host, 22, upload, upload_pwd, timeout=10.0)
-    stdin, stdout, stderr = ssh.exec_command("ps -ef|grep 'python -m' |awk '{print $2}'|xargs sudo kill -9")
-    stdin, stdout, stderr = ssh.exec_command("ps -ef|grep 'java -jar' |awk '{print $2}'|xargs sudo kill -9")
-    stdin, stdout, stderr = ssh.exec_command("sudo supervisorctl restart baymax")
+    ssh.exec_command("ps -ef|grep 'python -m' |awk '{print $2}'|xargs sudo kill -9")
+    ssh.exec_command("ps -ef|grep 'java -jar' |awk '{print $2}'|xargs sudo kill -9")
+    ssh.exec_command("sudo supervisorctl stop baymax")
+    time.sleep(5)
+    ssh.exec_command("sudo supervisorctl start baymax")
     ssh.close()
-    return "scuess"
 
 
 def getip(instance_id):

@@ -7,6 +7,10 @@ from proxy import env
 from proxy.models import Job, Project, Job_Log, Test_Map, Job_Test, Job_Test_Result
 from robot_engine import utility
 from robot_engine.execute import Execute
+from concurrent.futures.thread import ThreadPoolExecutor
+from concurrent.futures import wait
+
+pool = ThreadPoolExecutor(10)
 
 
 class Myrequest:
@@ -25,14 +29,11 @@ class Myrequest:
 
 
 def stop(project):
-    rs = []
     try:
         p = Project.objects.get(name=project)
         nodes = p.node_set.all()
-        for node in nodes:
-            ip = node.host
-            rs.append(utility.stop_job(ip))
-        return rs
+        tasks = [pool.submit(utility.stop_job, node.host) for node in nodes]
+        wait(tasks)
     except Exception as e:
         raise Exception(e)
 
