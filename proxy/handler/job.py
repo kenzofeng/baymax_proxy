@@ -23,9 +23,10 @@ class Myrequest:
     def set_data(self, request):
         if request.body:
             data = json.loads(request.body)
-            self.job_test_set = data['job_test_set']
-        for test in self.job_test_set:
-            setattr(self, test['name'], {'robot_parameter': test['robot_parameter']})
+            if "job_test_set" in data:
+                self.job_test_set = data['job_test_set']
+                for test in self.job_test_set:
+                    setattr(self, test['name'], {'robot_parameter': test['robot_parameter']})
 
 
 def stop(project):
@@ -75,7 +76,7 @@ def copy_job_test(request, job, jobpk):
         job_test = Job_Test()
         job_test.job = job
         job_test.status = 'Waiting'
-        job_test.robot_parameter = getattr(request, m.name)['robot_parameter']
+        job_test.robot_parameter = getattr(request, m.name)['robot_parameter'] or m.robot_parameter
         job_test.testurl = m.testurl
         job_test.name = m.name
         job_test.app = m.app
