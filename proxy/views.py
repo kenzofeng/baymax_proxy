@@ -93,7 +93,7 @@ def project_save(request):
 
 @csrf_exempt
 def project_add(request):
-    name = request.body
+    name = request.body.decode('utf-8')
     if name != "":
         p = Project()
         p.name = name
@@ -103,7 +103,7 @@ def project_add(request):
 
 @csrf_exempt
 def project_delete(request):
-    p = request.body
+    p = request.body.decode('utf-8')
     project = Project.objects.get(pk=p)
     maps = Test_Map.objects.filter(project=project.pk)
     for m in maps:
