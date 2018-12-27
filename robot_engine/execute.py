@@ -29,7 +29,7 @@ class Execute():
     def do_job(self):
         status = self.check_use_node_server()
         job_tests = self.job.job_test_set.all()
-        self.get_project_version()
+        pool.submit(self.get_project_version)
         for test in job_tests:
             self.execute(test, status)
 
