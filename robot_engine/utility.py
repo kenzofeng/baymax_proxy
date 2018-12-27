@@ -1,3 +1,4 @@
+import base64
 import json
 import logging
 import os
@@ -6,18 +7,19 @@ import re
 import shutil
 import signal
 import smtplib
+import time
 import zipfile
 import zlib
 from email.mime.text import MIMEText
 from io import StringIO
-import base64
+
 import paramiko
 import requests
 import tenjin
 from django.conf import settings
 from django.utils import timezone
 from lxml import etree
-import time
+
 from proxy import env
 
 logger = logging.getLogger('django')
@@ -40,6 +42,16 @@ def stop_job(host):
     time.sleep(5)
     ssh.exec_command("sudo supervisorctl start baymax")
     ssh.close()
+
+
+def cat_version(host, version_path):
+    ssh = paramiko.SSHClient()
+    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    ssh.connect(host, 22, upload, upload_pwd, timeout=10.0)
+    stdin, stdout, stderr = ssh.exec_command("cat {}".format(version_path))
+    catstr = stdout.read()
+    ssh.close()
+    return catstr
 
 
 def getip(instance_id):

@@ -4,7 +4,6 @@ import json
 import os
 import zlib
 from concurrent.futures import wait
-from concurrent.futures.thread import ThreadPoolExecutor
 
 import requests
 from django.http import JsonResponse, FileResponse
@@ -12,13 +11,12 @@ from django.shortcuts import render, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 
 from Baymax_Proxy.jobs import scheduler
+from robot_engine.pool import pool
 from robot_engine.utility import zipreport
 from . import env
 from .handler import job as job_handler
 from .models import Project, Job, Job_Test_Result, Job_Test, Node, Test_Map
 from .serializers import ProjectSerializer, JobSerializer
-
-executers = ThreadPoolExecutor(max_workers=20)
 
 
 def job_start(request, project):
@@ -148,7 +146,7 @@ def test_run_log(request, logid):
                 for l in fst.split('\n'):
                     joblog = joblog + "<span>%s</span><br/>" % (l)
             test_ds_all = job_test.job_test_distributed_result_set.all()
-            tasks = [executers.submit(get_job, test_ds.host, test_ds.pk) for test_ds in test_ds_all]
+            tasks = [pool.submit(get_job, test_ds.host, test_ds.pk) for test_ds in test_ds_all]
             wait(tasks)
             for task in tasks:
                 joblog += task.result()

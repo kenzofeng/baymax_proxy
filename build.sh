@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 #cd baymaxfront
 #npm run build
 #cd  ..

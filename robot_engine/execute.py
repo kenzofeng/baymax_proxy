@@ -1,14 +1,16 @@
 import datetime
 import logging
 import os
-import threading
 import time
+from concurrent.futures import wait
+
 import requests
 
 from Baymax_Proxy.jobs import scheduler
 from proxy import env
 from proxy.models import Project, Job
 from . import testcase, testresult, utility
+from .pool import pool
 
 logger = logging.getLogger('django')
 
@@ -46,7 +48,7 @@ class Execute():
             node.save()
 
     def send_test(self, test):
-        request_threads = []
+        request_tasks = []
         test_ds_all = test.job_test_distributed_result_set.all()
         for test_ds, node in zip(test_ds_all, self.nodes):
             node.status = 'Running'
@@ -54,12 +56,14 @@ class Execute():
             test_ds.host = "{}:{}".format(node.host, node.port)
             test_ds.save()
             # self.request_test(test_ds,node)
-            rt = threading.Thread(target=self.request_test, args=(test_ds, node))
-            rt.setDaemon(True)
-            rt.start()
-            request_threads.append(rt)
-        for rq in request_threads:
-            rq.join()
+            request_tasks.append(pool.submit(self.request_test, test_ds, node))
+            # rt = threading.Thread(target=self.request_test, args=(test_ds, node))
+            # rt.setDaemon(True)
+            # rt.start()
+            # request_threads.append(rt)
+        # for rq in request_threads:
+        #     rq.join()
+        wait(request_tasks)
 
     def merge_test_report(self, test):
         test_report = os.path.join(env.report, test.job_test_result.report)
@@ -80,13 +84,23 @@ class Execute():
 
     def checknodestatus(self, nodes):
         newnodes = []
-        for node in nodes:
-            try:
-                requests.get('http://{}:{}/status'.format(node.host, node.port), timeout=10)
-                newnodes.append(node)
-            except Exception as e:
-                pass
+        tasks = [pool.submit(self.requeststatus, node.host, node.port) for node in nodes]
+        wait(tasks)
+        for t in tasks:
+            h, s = t.result()
+            if s:
+                for node in nodes:
+                    if node.host == h:
+                        newnodes.append(node)
+                        break
         return newnodes
+
+    def requeststatus(self, host, port):
+        try:
+            requests.get('http://{}:{}/status'.format(host, port), timeout=10)
+            return host, True
+        except Exception:
+            return host, False
 
     def check_job_status(self, jobnodes):
         last_job = Job.objects.filter(servers=jobnodes).order_by('-pk')[:20]
@@ -106,22 +120,22 @@ class Execute():
         if len(nodes) == 0:
             raise Exception("There is no node server to use")
         jobnodes = ':'.join([node.name for node in nodes])
-        self.updatenodes(nodes)
-        self.nodes = self.checknodestatus(nodes)
         while True:
             if self.check_job_status(jobnodes):
                 break
             time.sleep(1)
-        # while True:
-        #     p = Project.objects.get(name=self.job.project)
-        #     nodes = p.node_set.all()
-        #     status = any([node.status == 'Error' for node in nodes])
-        #     if status:
-        #         return False
-        #     status = all([node.status == 'Done' for node in nodes])
-        #     if status:
-        #         break
-        #     time.sleep(1)
+        # self.updatenodes(nodes)
+        self.nodes = self.checknodestatus(nodes)
+        while True:
+            p = Project.objects.get(name=self.job.project)
+            nodes = p.node_set.all()
+            status = any([node.status == 'Error' for node in nodes])
+            if status:
+                return False
+            status = all([node.status == 'Done' for node in nodes])
+            if status:
+                break
+            time.sleep(1)
         self.job.status = 'Running'
         self.job.save()
         return True
