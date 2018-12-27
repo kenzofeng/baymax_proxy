@@ -48,13 +48,13 @@ def cat_version(host, version_paths):
     result_str = ""
     paths = version_paths.split(";")
     for path in paths:
-        result_str += path + '\n'
+        result_str = path + '\n'
         ssh = paramiko.SSHClient()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         ssh.connect(host, 22, upload, upload_pwd, timeout=10.0)
         stdin, stdout, stderr = ssh.exec_command("grep -E 'git.branch|git.commit.id=' {}".format(path))
         catstr = stdout.read()
-        result_str += catstr
+        result_str += catstr.decode('utf-8')
     ssh.close()
     return result_str
 

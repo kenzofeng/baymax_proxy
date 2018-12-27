@@ -5,6 +5,6 @@
 # print (r.content)
 
 
-a = "" or "sfdsdfsdf"
+a = b'sdfsfsdf'
 
 print (a)
