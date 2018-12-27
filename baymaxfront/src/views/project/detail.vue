@@ -9,6 +9,9 @@
                 <label>Email:</label>
                 <input type="text" name="email" placeholder="aaa@derbysoft.com;bbb@derbysoft.com" v-model="item.email"></div>
         </div>
+        <div class="field">
+                <label>Version:</label>
+                <input type="text" name="version" placeholder="/project1/git.properties;/project2/git.properties" v-model="item.version"></div>
         <h4 class="ui teal dividing header">Servers</h4>
         <div class="fields">
             <multidrop  :items="nodes" :default="item.nodes" @changeselected="changeselected" :isfluid="true"></multidrop>
@@ -45,7 +48,7 @@ export default {
   name: 'detail',
   data () {
     return {
-      item: {name: '', email: '', nodes: [], maps: []},
+      item: {name: '', email: '',version:'', nodes: [], maps: []},
       nodes: [],
       savem: 'save',
       notify: 'notify',

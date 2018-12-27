@@ -76,7 +76,7 @@ def copy_job_test(request, job, jobpk):
         job_test = Job_Test()
         job_test.job = job
         job_test.status = 'Waiting'
-        job_test.robot_parameter = getattr(request, m.name)['robot_parameter'] or m.robot_parameter
+        job_test.robot_parameter = getattr(request, m.name)['robot_parameter']
         job_test.testurl = m.testurl
         job_test.name = m.name
         job_test.app = m.app

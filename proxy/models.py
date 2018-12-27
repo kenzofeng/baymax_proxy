@@ -18,6 +18,7 @@ class Svn(models.Model):
 class Project(models.Model):
     name = models.CharField(max_length=50, primary_key=True)
     email = models.CharField(max_length=250)
+    version = models.CharField(max_length=500)
 
     def __unicode__(self):
         return self.name
@@ -49,6 +50,7 @@ class Test_Map(models.Model):
 
 class Job(models.Model):
     project = models.CharField(max_length=50)
+    project_version = models.TextField()
     servers = models.CharField(max_length=100)
     status = models.CharField(max_length=20, choices=Run_Status)
     start_time = models.DateTimeField(blank=True, null=True)
@@ -69,8 +71,6 @@ class Job_Log(models.Model):
 
 class Job_Test(models.Model):
     job = models.ForeignKey(Job, on_delete=models.CASCADE)
-    project_sha = models.CharField(max_length=60)
-    project_branch = models.CharField(max_length=60)
     testurl = models.CharField(max_length=250)
     robot_parameter = models.CharField(max_length=250, blank=True, null=True, default='')
     app = models.CharField(max_length=250, blank=True, null=True, default='')

@@ -24,7 +24,7 @@ class JobSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Job
-        fields = ('pk', 'project', 'servers', 'start_time', 'end_time', 'status', 'job_test_set', 'comments')
+        fields = ('pk', 'project', 'servers', 'start_time', 'end_time', 'status', 'job_test_set', 'comments','project_version')
 
     def get_start_time(self, obj):
         return obj.start_time.astimezone(sh).strftime("%Y-%m-%d %H:%M:%S") if obj.start_time is not None else ""
@@ -44,7 +44,7 @@ class ProjectSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Project
-        fields = ('pk', 'name', 'email', 'nodes', 'maps')
+        fields = ('pk', 'name', 'email', 'version','nodes', 'maps')
 
     def get_nodes(self, obj):
         return [node.name for node in obj.node_set.all()]
@@ -59,6 +59,7 @@ class ProjectSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         instance.email = validated_data.get('email')
+        instance.version = validated_data.get('version')
         maps = Test_Map.objects.filter(project=instance.pk)
         for m in maps:
             m.delete()

@@ -19,6 +19,7 @@ class Execute():
     def __init__(self, job, ip, request):
         self.ip = ip
         self.job = job
+        self.project = None
         self.GET = request.GET
         self.nodes = None
 
@@ -28,6 +29,7 @@ class Execute():
     def do_job(self):
         status = self.check_use_node_server()
         job_tests = self.job.job_test_set.all()
+        self.get_project_version()
         for test in job_tests:
             self.execute(test, status)
 
@@ -46,6 +48,11 @@ class Execute():
         finally:
             node.status = "Done"
             node.save()
+
+    def get_project_version(self):
+        version = utility.cat_version(self.nodes[0].host, self.project.version)
+        self.job.project_version = version
+        self.job.save()
 
     def send_test(self, test):
         request_tasks = []
@@ -115,8 +122,8 @@ class Execute():
             return True
 
     def check_use_node_server(self):
-        p = Project.objects.get(name=self.job.project)
-        nodes = p.node_set.all()
+        self.project = Project.objects.get(name=self.job.project)
+        nodes = self.project.node_set.all()
         if len(nodes) == 0:
             raise Exception("There is no node server to use")
         jobnodes = ':'.join([node.name for node in nodes])

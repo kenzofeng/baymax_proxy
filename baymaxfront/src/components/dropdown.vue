@@ -37,7 +37,7 @@ export default {
   },
   methods: {
     iconcss (item) {
-      return item.icon + ' server icon'
+      return item.icon
     }
   }
 }

@@ -1,21 +1,27 @@
 <template>
   <div>
+    <div class="ui checkbox">
+      <input v-model="version" type="checkbox" name="Version">
+      <label>Version</label>
+    </div>
     <table class="ui selectable celled striped teal table">
       <thead>
         <tr>
           <th class="one wide">Project</th>
+          <th v-if="version" class="one wide">Version</th>
           <th class="one wide">Servers</th>
           <th class="one wide">Status</th>
           <th class="one wide">Start Date</th>
           <th class="one wide">End Date</th>
-          <th class="eight wide">Test Automation</th>
-          <th class="one wide">Comments</th>
+          <th class="seven wide">Test Automation</th>
+          <!-- <th class="one wide">Comments</th> -->
           <th class="one wide">Atction</th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="job in jobs" :class="lineclass(job.status)" :key="job.pk">
-          <td @click="toproject(job.project)">{{job.project}}</td>
+          <td>{{job.project}}</td>
+          <td v-if="version">{{job.project_version}}</td>
           <td>
             <span
               class="ui span"
@@ -61,13 +67,13 @@
               </tbody>
             </table>
           </td>
-          <td class="collapsing" @dblclick="editcomments(job.comments,job.pk)">
+          <!-- <td class="collapsing" @dblclick="editcomments(job.comments,job.pk)">
             <span
               class="ui span"
               :data-tooltip="job.comments"
               data-position="top right"
             >{{showdata(job.comments)}}</span>
-          </td>
+          </td>-->
           <td>
             <div class="ui icon buttons">
               <button
@@ -143,7 +149,9 @@ export default {
       rproject: "",
       rjob: "",
       response: null,
-      form: { job: { job_test_set: [] } }
+      form: { job: { job_test_set: [] } },
+      activejob: {},
+      version:false
     };
   },
   created() {
