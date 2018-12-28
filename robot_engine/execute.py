@@ -133,6 +133,8 @@ class Execute():
             time.sleep(1)
         # self.updatenodes(nodes)
         self.nodes = self.checknodestatus(nodes)
+        self.job.servers = ":".join([n.name for n in self.nodes])
+        self.job.save()
         while True:
             p = Project.objects.get(name=self.job.project)
             nodes = p.node_set.all()
