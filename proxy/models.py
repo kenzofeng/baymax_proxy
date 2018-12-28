@@ -18,7 +18,7 @@ class Svn(models.Model):
 class Project(models.Model):
     name = models.CharField(max_length=50, primary_key=True)
     email = models.CharField(max_length=250)
-    version = models.CharField(max_length=500)
+    version = models.CharField(max_length=500,blank=True,default="")
 
     def __unicode__(self):
         return self.name
@@ -50,7 +50,7 @@ class Test_Map(models.Model):
 
 class Job(models.Model):
     project = models.CharField(max_length=50)
-    project_version = models.TextField()
+    project_version = models.TextField(default="")
     servers = models.CharField(max_length=100)
     status = models.CharField(max_length=20, choices=Run_Status)
     start_time = models.DateTimeField(blank=True, null=True)

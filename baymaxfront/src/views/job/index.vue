@@ -1,15 +1,25 @@
 <template>
   <div>
-    <div class="ui checkbox">
-      <input v-model="version" type="checkbox" name="Version">
-      <label>Version</label>
+    <div class="ui form">
+      <div class="fields">
+        <div class="field">
+          <div class="ui checkbox">
+            <input v-model="version" type="checkbox" name="Version">
+            <label>Version</label>
+          </div>
+           <div class="ui checkbox">
+            <input v-model="servers" type="checkbox" name="Servers">
+            <label>Servers</label>
+          </div>
+        </div>
+      </div>
     </div>
     <table class="ui selectable celled striped teal table">
       <thead>
         <tr>
           <th class="one wide">Project</th>
           <th v-if="version" class="one wide">Version</th>
-          <th class="one wide">Servers</th>
+          <th v-if="servers" class="one wide">Servers</th>
           <th class="one wide">Status</th>
           <th class="one wide">Start Date</th>
           <th class="one wide">End Date</th>
@@ -22,12 +32,8 @@
         <tr v-for="job in jobs" :class="lineclass(job.status)" :key="job.pk">
           <td>{{job.project}}</td>
           <td v-if="version">{{job.project_version}}</td>
-          <td>
-            <span
-              class="ui span"
-              :data-tooltip="job.servers"
-              data-position="right center"
-            >{{showdata(job.servers)}}</span>
+          <td v-if="servers">
+            <div v-for="s in jobServers(job.servers)" :key="s">{{s}}</div>
           </td>
           <td>
             <i class="icon" :class="statusclass(job.status)"></i>
@@ -151,7 +157,8 @@ export default {
       response: null,
       form: { job: { job_test_set: [] } },
       activejob: {},
-      version:false
+      version: false,
+      servers:false
     };
   },
   created() {
@@ -167,13 +174,9 @@ export default {
     clearInterval(this.interval_id);
   },
   methods: {
-    showdata(data) {
-      if (data != null) {
-        if (data.length > 12) {
-          return data.slice(0, 12) + "...";
-        }
-      }
-      return data;
+    jobServers(data) {
+      let servers = data.split(":")
+      return servers
     },
     editcomments(comments, pk) {
       this.$refs.writepopup.show(comments, pk);
