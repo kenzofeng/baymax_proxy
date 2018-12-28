@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Svn, Project, Job, Job_Test, Node, Job_Log,Job_Test_Distributed_Result,Job_Test_Result
+from .models import Svn, Project, Job, Job_Test, Node, Job_Log, Job_Test_Distributed_Result, Job_Test_Result
 
 
 class SvnAdmin(admin.ModelAdmin):
@@ -9,6 +9,9 @@ class SvnAdmin(admin.ModelAdmin):
 
 class NodeAdmin(admin.ModelAdmin):
     list_display = ['name', 'host', 'status']
+
+    def Set_Status_Donw(self, request, queryset):
+        queryset.update(status='Donw')
 
 
 class ProjectAdmin(admin.ModelAdmin):
