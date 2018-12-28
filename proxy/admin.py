@@ -9,9 +9,10 @@ class SvnAdmin(admin.ModelAdmin):
 
 class NodeAdmin(admin.ModelAdmin):
     list_display = ['name', 'host', 'status']
+    actions = ['Set_Status_Done']
 
-    def Set_Status_Donw(self, request, queryset):
-        queryset.update(status='Donw')
+    def Set_Status_Done(self, request, queryset):
+        queryset.update(status='Done')
 
 
 class ProjectAdmin(admin.ModelAdmin):
