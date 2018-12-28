@@ -42,7 +42,7 @@ def stop(project):
 def init_job(project):
     p = Project.objects.get(pk=project)
     job = Job(project=project, status='Waiting', start_time=utility.gettime(),
-              job_number="", email=p.email)
+              job_number="", email=p.email, servers=":".join([n.name for n in p.node_set.all()]))
     job.save()
     log = Job_Log()
     log.job = job
