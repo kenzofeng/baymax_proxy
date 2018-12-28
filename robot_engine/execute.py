@@ -64,12 +64,6 @@ class Execute():
             test_ds.save()
             # self.request_test(test_ds,node)
             request_tasks.append(pool.submit(self.request_test, test_ds, node))
-            # rt = threading.Thread(target=self.request_test, args=(test_ds, node))
-            # rt.setDaemon(True)
-            # rt.start()
-            # request_threads.append(rt)
-        # for rq in request_threads:
-        #     rq.join()
         wait(request_tasks)
 
     def merge_test_report(self, test):
