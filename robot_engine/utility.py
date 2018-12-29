@@ -10,6 +10,7 @@ import smtplib
 import time
 import zipfile
 import zlib
+from datetime import datetime
 from email.mime.text import MIMEText
 from io import BytesIO
 
@@ -215,7 +216,8 @@ def set_email(test, host):
     email_failed_file = env.email_failed
     emailfile = email_success_file if test.status == 'PASS' else email_failed_file
     context = {
-        "run_time": str(test.job.start_time),
+        "start_time": str(test.job.start_time),
+        "duartion": "{}".format((datetime.now() - test.job.start_time) / 60),
         #                "job_number":test.job.job_number,
         "project": test.job.project,
         "project_version": test.job.project_version,

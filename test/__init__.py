@@ -5,6 +5,10 @@
 # print (r.content)
 
 
-a = b'sdfsfsdf'
+from datetime import datetime
+import time
 
-print (a)
+
+date1 = datetime.now()
+time.sleep(2)
+print ((datetime.now()-date1).minute)
