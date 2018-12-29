@@ -193,7 +193,7 @@ def save_test_log(test):
             except Exception as e:
                 fstr = fstr + e
         gzipstr = zlib.compress(fstr)
-        test.job_test_result.log = str(base64.b64encode(gzipstr))
+        test.job_test_result.log = base64.b64encode(gzipstr).decode('utf-8')
         test.job_test_result.save()
         remove_file(log_path)
     except Exception as e:
@@ -206,7 +206,7 @@ def save_log(job):
     fstr = f.read()
     f.close()
     gzipstr = zlib.compress(fstr)
-    job.job_log.text = str(base64.b64encode(gzipstr))
+    job.job_log.text = base64.b64encode(gzipstr).decode('utf-8')
     job.job_log.save()
     remove_file(log_path)
 

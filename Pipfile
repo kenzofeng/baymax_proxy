@@ -17,6 +17,7 @@ django-cors-headers = "==2.4.0"
 Django = "==2.1.4"
 Tenjin = "==1.1.1"
 APScheduler = "==3.5.3"
+gunicorn = "*"
 
 [requires]
 python_version = "3.6"
