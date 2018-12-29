@@ -22,11 +22,11 @@ log_html = 'log.html'
 report_html = 'report.html'
 output_xml = 'output.xml'
 deps = 'deps'
-email = os.path.join(BASE_DIR, project, 'email.xml')
-
+email_success = os.path.join(BASE_DIR, 'templates', 'email-success.html')
+email_failed = os.path.join(BASE_DIR, 'templates', 'email-failed.html')
 
 SENDER = "Baymax@derbygroupmail.com"
 SMPT = 'mail.dbaws.net'
 USERNAME = "warrior@dbaws.net"
 PWD = 'dDpWhhq8M4ogg__B8yZinzwahh'
-email_port=465
+email_port = 465

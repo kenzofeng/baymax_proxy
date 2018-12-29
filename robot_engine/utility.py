@@ -211,16 +211,18 @@ def save_log(job):
 
 
 def set_email(test, host):
-    emailfile = env.email
+    email_success_file = env.email_success
+    email_failed_file = env.email_failed
+    emailfile = email_success_file if test.status == 'PASS' else email_failed_file
     context = {
         "run_time": str(test.job.start_time),
         #                "job_number":test.job.job_number,
         "project": test.job.project,
         "Automation": test.name,
-        'log': 'http://%s/job/test/log/%s' % (host, test.job_test_result.id),
+        'log': 'http://%s/job/result/test/log/%s' % (host, test.job_test_result.id),
         'test_version': test.revision_number,
         'result': test.status,
-        'reportlink': 'http://%s/job/report/%s' % (host, test.id)}
+        'reportlink': 'http://%s/job/result/report/%s' % (host, test.id)}
     path = '\\'.join((emailfile.split('\\'))[:-1])
     engine = tenjin.Engine(path=[path], cache=tenjin.MemoryCacheStorage())
     emailstring = engine.render(emailfile, context)
