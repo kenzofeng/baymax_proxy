@@ -10,7 +10,7 @@ import smtplib
 import time
 import zipfile
 import zlib
-from datetime import datetime
+from datetime import datetime, timezone
 from email.mime.text import MIMEText
 from io import BytesIO
 
@@ -189,11 +189,11 @@ def save_test_log(test):
         for test_ds in test_ds_all:
             try:
                 r = requests.get("http://%s/test/log/%s" % (test_ds.host, test_ds.pk), timeout=5)
-                fstr = fstr + r.content
+                fstr = fstr + r.content.decode('utf-8')
             except Exception as e:
                 fstr = fstr + str(e)
         gzipstr = zlib.compress(fstr)
-        test.job_test_result.log = gzipstr.encode("base64")
+        test.job_test_result.log = str(base64.b64encode(gzipstr))
         test.job_test_result.save()
         remove_file(log_path)
     except Exception as e:
@@ -224,7 +224,7 @@ def set_email(test, host):
     emailfile = email_success_file if test.status == 'PASS' else email_failed_file
     context = {
         "start_time": str(test.job.start_time),
-        "duration": strfdelta((datetime.now() - test.job.start_time), '{hours}h{minutes}m{seconds}s'),
+        "duration": strfdelta((datetime.now(timezone.utc) - test.job.start_time), '{hours}h{minutes}m{seconds}s'),
         "project": test.job.project,
         "project_version": test.job.project_version,
         "Automation": test.name,
