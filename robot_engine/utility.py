@@ -11,7 +11,7 @@ import time
 import zipfile
 import zlib
 from email.mime.text import MIMEText
-from io import StringIO
+from io import BytesIO
 
 import paramiko
 import requests
@@ -264,7 +264,7 @@ def zip_file(sourcefile, targetfile):
 
 
 def zipreport(*sourcefile):
-    zip_buffer = StringIO.StringIO()
+    zip_buffer = BytesIO()
     with zipfile.ZipFile(zip_buffer, "a", zipfile.ZIP_DEFLATED) as zip_file:
         for testname, sfile in sourcefile:
             for root, dirs, files in os.walk(sfile):
