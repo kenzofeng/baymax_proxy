@@ -155,9 +155,7 @@ class Execute():
                 test.status = utility.get_result_fromxml(
                     os.path.join(env.report, test.job_test_result.report, env.output_xml))
                 test.save()
-                scheduler.add_job(utility.send_email, 'date',
-                                  run_date=datetime.datetime.now() + datetime.timedelta(seconds=2),
-                                  args=[test, self.ip])
+                pool.submit(utility.send_email, test, self.ip)
             else:
                 test.status = 'Error'
                 test.save()

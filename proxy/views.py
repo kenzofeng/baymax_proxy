@@ -21,8 +21,9 @@ from .serializers import ProjectSerializer, JobSerializer
 
 def job_start(request, project):
     myrequest = job_handler.Myrequest(request)
-    scheduler.add_job(job_handler.start, 'date', run_date=datetime.datetime.now() + datetime.timedelta(seconds=1),
-                      args=[myrequest, project])
+    pool.submit(job_handler.start,myrequest,project)
+    # scheduler.add_job(job_handler.start, 'date', run_date=datetime.datetime.now() + datetime.timedelta(seconds=1),
+    #                   args=[myrequest, project])
     # rs = job_handler.start(myrequest, project)
     return JsonResponse({"status": "Job added successfully"}, safe=False)
 
@@ -30,8 +31,9 @@ def job_start(request, project):
 @csrf_exempt
 def job_rerun(request, jobpk):
     myrequest = job_handler.Myrequest(request)
-    scheduler.add_job(job_handler.rerun, 'date', run_date=datetime.datetime.now() + datetime.timedelta(seconds=1),
-                      args=[myrequest, jobpk])
+    pool.submit(job_handler.rerun, myrequest, jobpk)
+    # scheduler.add_job(job_handler.rerun, 'date', run_date=datetime.datetime.now() + datetime.timedelta(seconds=1),
+    #                   args=[myrequest, jobpk])
     # rs = job_handler.rerun(myrequest, jobpk)
     return JsonResponse({"status": "Job added successfully"}, safe=False)
 
