@@ -4,6 +4,11 @@
 #
 # print (r.content)
 
+def strfdelta(tdelta, fmt):
+    d = {"days": tdelta.days}
+    d["hours"], rem = divmod(tdelta.seconds, 3600)
+    d["minutes"], d["seconds"] = divmod(rem, 60)
+    return fmt.format(**d)
 
 from datetime import datetime
 import time
@@ -11,4 +16,4 @@ import time
 
 date1 = datetime.now()
 time.sleep(2)
-print ((datetime.now()-date1).minute)
+print (strfdelta((datetime.now()-date1),'{hours}h {minutes}m {seconds}s'))

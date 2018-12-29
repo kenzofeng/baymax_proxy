@@ -211,14 +211,20 @@ def save_log(job):
     remove_file(log_path)
 
 
+def strfdelta(tdelta, fmt):
+    d = {"days": tdelta.days}
+    d["hours"], rem = divmod(tdelta.seconds, 3600)
+    d["minutes"], d["seconds"] = divmod(rem, 60)
+    return fmt.format(**d)
+
+
 def set_email(test, host):
     email_success_file = env.email_success
     email_failed_file = env.email_failed
     emailfile = email_success_file if test.status == 'PASS' else email_failed_file
     context = {
         "start_time": str(test.job.start_time),
-        "duartion": "{}".format((datetime.now() - test.job.start_time) / 60),
-        #                "job_number":test.job.job_number,
+        "duartion": strfdelta((datetime.now() - test.job.start_time), '{hours}h {minutes}m {seconds}s'),
         "project": test.job.project,
         "project_version": test.job.project_version,
         "Automation": test.name,

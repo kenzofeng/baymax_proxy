@@ -1,6 +1,6 @@
 from robot_engine.utility import cat_version, zipreport, send_email
 from collections import namedtuple
-
+from datetime import datetime
 # print(cat_version('54.184.212.50', '/usr/local/webapps/expedia-pusher/WEB-INF/classes/git.properties'))
 
 
@@ -13,7 +13,7 @@ jts = job_test_result('1')
 Job = namedtuple('job',
                  ['email', 'start_time', 'project', 'project_version', 'id'])
 
-job = Job('daniel.liu@derbysoft.com', '2018-12-29 05:46:05.891763+00:00', 'ShopStorage',
+job = Job('daniel.liu@derbysoft.com',datetime.now(), 'ShopStorage',
           '/usr/local/applications/shop-storage-dswitch/git.properties git.branch= git.commit.id=5a91b4b5ec504d48fc1552f1140c2bff35b7efc7 /usr/local/applications/shop-storage-save-ari/git.properties git.branch= git.commit.id=5a91b4b5ec504d48fc1552f1140c2bff35b7efc7',
           '1')
 
