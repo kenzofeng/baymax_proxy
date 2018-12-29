@@ -13,6 +13,8 @@ def distribute_test_script(nodes, test):
     try:
         testpath = os.path.join(env.test, test.name)
         testrun = TestRun(len(nodes), testpath, test.robot_parameter)
+        test.count = testrun.count
+        test.save()
         for ts_case in testrun.RunCase:
             if len(ts_case) != 0:
                 test_ds = Job_Test_Distributed_Result()

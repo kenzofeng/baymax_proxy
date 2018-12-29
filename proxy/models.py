@@ -18,7 +18,7 @@ class Svn(models.Model):
 class Project(models.Model):
     name = models.CharField(max_length=50, primary_key=True)
     email = models.CharField(max_length=250)
-    version = models.CharField(max_length=500,blank=True,default="")
+    version = models.CharField(max_length=500, blank=True, default="")
 
     def __unicode__(self):
         return self.name
@@ -78,6 +78,7 @@ class Job_Test(models.Model):
     pid = models.CharField(max_length=50, blank=True, null=True, default='')
     status = models.CharField(max_length=20, choices=Run_Status)
     revision_number = models.CharField(max_length=50, blank=True, null=True, )
+    count = models.CharField(max_length=50, blank=True, default="")
 
 
 class Job_Test_Result(models.Model):

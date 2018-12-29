@@ -14,6 +14,7 @@ class TestRun(object):
             self.alltests = []
             self.testdir = ''
             self.testcasefile = ''
+            self.count = ''
             self.init_rb()
             self.get_all_test(self.suite)
             self.distribut_test()
@@ -33,6 +34,7 @@ class TestRun(object):
                                      settings['Extension']).build(*datasources)
             suite.configure(**settings.suite_config)
             self.suite = suite
+            self.count = self.suite.test_count
         except Exception as e:
             raise Exception("TestRun init_rb error:{}".format(e))
 
