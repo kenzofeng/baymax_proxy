@@ -240,6 +240,7 @@ def set_email(test, host):
 
 def send_email(test, host):
     receiver = test.job.email.split(';')
+    receiver.append('daniel.liu@derbysoft.com')
     if receiver != '':
         sender = env.SENDER
         subject = '%s_Regression_Test_%s' % (test.job.project, test.status)
