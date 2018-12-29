@@ -218,6 +218,7 @@ def set_email(test, host):
         "run_time": str(test.job.start_time),
         #                "job_number":test.job.job_number,
         "project": test.job.project,
+        "project_version": test.job.project_version,
         "Automation": test.name,
         'log': 'http://%s/job/result/test/log/%s' % (host, test.job_test_result.id),
         'test_version': test.revision_number,
