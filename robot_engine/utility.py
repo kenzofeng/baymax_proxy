@@ -189,9 +189,9 @@ def save_test_log(test):
         for test_ds in test_ds_all:
             try:
                 r = requests.get("http://%s/test/log/%s" % (test_ds.host, test_ds.pk), timeout=5)
-                fstr = fstr + r.content.decode('utf-8')
+                fstr = fstr + r.content
             except Exception as e:
-                fstr = fstr + str(e)
+                fstr = fstr + e
         gzipstr = zlib.compress(fstr)
         test.job_test_result.log = str(base64.b64encode(gzipstr))
         test.job_test_result.save()
