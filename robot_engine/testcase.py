@@ -24,6 +24,7 @@ def distribute_test_script(nodes, test):
                 utility.mkdir(os.path.join(env.tmp, utility.gettoday()))
                 utility.mkdir(os.path.join(env.report, utility.gettoday()))
                 testparameter.create_argfile(testpath, ts_case)
+                testparameter.set_robot_paramenter_to_argfile(testpath, test.robot_parameter)
                 utility.zip_file(testpath, os.path.join(env.tmp, "{}.zip".format(test_ds.script)))
     except Exception as e:
         raise Exception("distribute_test_script error:{}".format(e))

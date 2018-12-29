@@ -15,6 +15,23 @@ def create_argfile(testpath, runtests):
         raise Exception("create_argfile error:{}".format(e))
 
 
+def set_robot_paramenter_to_argfile(testpath, parameter):
+    try:
+        argfiel_path = os.path.join(testpath, 'argfile.txt')
+        useages = ['-v', '--variable']
+        parameter = parameter.strip()
+        ps = list(filter(None,parameter.split(" ")))
+        f = open(argfiel_path, 'a')
+        for i in range(0, len(ps), 2):
+            if ps[i] in useages:
+                f.write(ps[i])
+                f.write('\n')
+                f.write(ps[i + 1])
+        f.close()
+    except Exception as e:
+        raise Exception("set_robot_paramenter_to_argfile error:{}".format(e))
+
+
 def create_argfile_parameter(testpath, robot_parameter):
     try:
         argfiel_path = os.path.join(testpath, 'argfile.txt')
