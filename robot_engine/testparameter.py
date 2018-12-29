@@ -24,6 +24,7 @@ def set_robot_paramenter_to_argfile(testpath, parameter):
         f = open(argfiel_path, 'a')
         for i in range(0, len(ps), 2):
             if ps[i] in useages:
+                f.write('\n')
                 f.write(ps[i])
                 f.write('\n')
                 f.write(ps[i + 1])
