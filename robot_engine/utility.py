@@ -216,10 +216,10 @@ def save_test_log(test):
 
 def save_log(job):
     log_path = os.path.join(env.log, job.job_log.path)
-    f = open(log_path, 'rb')
+    f = open(log_path, 'r')
     fstr = f.read()
     f.close()
-    gzipstr = zlib.compress(fstr)
+    gzipstr = zlib.compress(fstr.encode("utf-8"))
     job.job_log.text = base64.b64encode(gzipstr).decode('utf-8')
     job.job_log.save()
     remove_file(log_path)
