@@ -8,7 +8,7 @@ class SvnAdmin(admin.ModelAdmin):
 
 
 class NodeAdmin(admin.ModelAdmin):
-    list_display = ['name', 'host', 'status']
+    list_display = ['name', 'host', 'port', 'status']
     actions = ['Set_Status_Done']
 
     def Set_Status_Done(self, request, queryset):

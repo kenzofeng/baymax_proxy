@@ -1,18 +1,15 @@
 import base64
-import datetime
 import json
 import os
 import zlib
 from concurrent.futures import wait
 
-import requests
 from django.http import JsonResponse, FileResponse
 from django.shortcuts import render, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 
-from Baymax_Proxy.jobs import scheduler
 from robot_engine.pool import pool
-from robot_engine.utility import zipreport
+from robot_engine.utility import zipreport, get_job
 from . import env
 from .handler import job as job_handler
 from .models import Project, Job, Job_Test_Result, Job_Test, Node, Test_Map
@@ -21,7 +18,7 @@ from .serializers import ProjectSerializer, JobSerializer
 
 def job_start(request, project):
     myrequest = job_handler.Myrequest(request)
-    pool.submit(job_handler.start,myrequest,project)
+    pool.submit(job_handler.start, myrequest, project)
     # scheduler.add_job(job_handler.start, 'date', run_date=datetime.datetime.now() + datetime.timedelta(seconds=1),
     #                   args=[myrequest, project])
     # rs = job_handler.start(myrequest, project)
@@ -74,6 +71,15 @@ def getallnodes(request):
     return JsonResponse(nodelist, safe=False)
 
 
+def getallnodes_by_project(request):
+    nodes = Node.objects.all()
+    nodelist = [
+        {"title": node.name, "id": node.aws_instance_id, "ip": node.host, "icon": "blue"} if node.status in ["Done",
+                                                                                                             "Running"] else {
+            "title": node.name, "id": node.aws_instance_id, "ip": node.host, "icon": "grey"} for node in nodes]
+    return JsonResponse(nodelist, safe=False)
+
+
 def project_getdetail(request):
     tid = request.GET['tid']
     p = Project.objects.get(pk=tid)
@@ -115,17 +121,6 @@ def project_delete(request):
 
 def job_project(request, project):
     return render(request, 'proxy/job_project.html', {"project": project})
-
-
-def get_job(host, pk):
-    try:
-        joblog = ""
-        r = requests.get("http://%s/test/log/%s" % (host, pk), timeout=5)
-        joblog += r.content.decode('utf-8')
-    except Exception as e:
-        joblog += str(e)
-    finally:
-        return joblog
 
 
 def test_run_log(request, logid):

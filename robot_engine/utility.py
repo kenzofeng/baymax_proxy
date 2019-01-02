@@ -10,7 +10,7 @@ import smtplib
 import time
 import zipfile
 import zlib
-from datetime import datetime, timezone
+from datetime import timezone
 from email.mime.text import MIMEText
 from io import BytesIO
 
@@ -27,6 +27,8 @@ logger = logging.getLogger('django')
 tenjin.set_template_encoding("utf-8")
 from tenjin.helpers import *
 import sys
+from .pool import pool
+from concurrent.futures import wait
 
 mswindows = (sys.platform == "win32")
 upload = 'upload'
@@ -61,12 +63,15 @@ def cat_version(host, version_paths):
 
 
 def getip(instance_id):
-    res = requests.get("{}/api/getip/{}/".format(settings.DEVOPS, instance_id))
-    if res.status_code == 200:
-        instance = json.loads(res.content)
-        return instance['public_ip'], instance['private_ip']
-    else:
-        return "", ""
+    try:
+        res = requests.get("{}/api/getip/{}/".format(settings.DEVOPS, instance_id))
+        if res.status_code == 200:
+            instance = json.loads(res.content)
+            return instance['public_ip'], instance['private_ip']
+        else:
+            return "", ""
+    except Exception as e:
+        raise ("Get Devops Ip error:{}".format(e))
 
 
 def newlogger(name, logfilename):
@@ -179,20 +184,29 @@ def remove_dir(path):
         os.system('rm -rf %s' % path)
 
 
+def get_job(host, pk):
+    try:
+        joblog = ""
+        r = requests.get("http://%s/test/log/%s" % (host, pk), timeout=5)
+        joblog += r.content.decode('utf-8')
+    except Exception as e:
+        joblog += str(e)
+    finally:
+        return joblog
+
+
 def save_test_log(test):
     try:
         log_path = os.path.join(env.log, test.job_test_result.log_path)
-        f = open(log_path, 'rb')
+        f = open(log_path, 'r')
         fstr = f.read()
         f.close()
         test_ds_all = test.job_test_distributed_result_set.all()
-        for test_ds in test_ds_all:
-            try:
-                r = requests.get("http://%s/test/log/%s" % (test_ds.host, test_ds.pk), timeout=5)
-                fstr = fstr + r.content
-            except Exception as e:
-                fstr = fstr + e
-        gzipstr = zlib.compress(fstr)
+        tasks = [pool.submit(get_job, test_ds.host, test_ds.pk) for test_ds in test_ds_all]
+        wait(tasks)
+        for task in tasks:
+            fstr += task.result()
+        gzipstr = zlib.compress(fstr.encode("utf-8"))
         test.job_test_result.log = base64.b64encode(gzipstr).decode('utf-8')
         test.job_test_result.save()
         remove_file(log_path)

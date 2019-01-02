@@ -129,7 +129,7 @@ def start(request, project):
         job.end_time = utility.gettime()
         job.status = 'Error'
         job.save()
-        utility.logmsg(job.job_log.path, str(e))
+        utility.logmsg(job.job_log.path, "{}".format(e))
         utility.save_log(job)
         raise Exception("start job error:{}".format(e))
 
@@ -150,7 +150,7 @@ def rerun(request, jobpk):
         job.end_time = utility.gettime()
         job.status = 'Error'
         job.save()
-        utility.logmsg(job.job_log.path, str(e))
+        utility.logmsg(job.job_log.path, "{}".format(e))
         utility.save_log(job)
         raise Exception("rerun job error:{}".format(e))
 
