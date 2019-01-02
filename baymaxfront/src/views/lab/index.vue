@@ -26,14 +26,18 @@
             <table class="ui small table very compact">
               <thead>
                 <th class="two wide">Test</th>
-                <th class="six wide">URL</th>
+                <th class="one wide">Type</th>
+                <th class="five wide">URL</th>
+                <th class="two wide">Branch</th>
                 <th class="two wide">App Log</th>
                 <th>Robot Parameter</th>
               </thead>
               <tbody>
                 <tr v-for="map in tp.maps" :key="map.test" v-if="map.use">
                   <td>{{map.test}}</td>
-                  <td>{{map.testurl}}</td>
+                  <td>{{map.source_type}}</td>
+                  <td>{{map.source_url}}</td>
+                  <td>{{map.source_branch}}</td>
                   <td>{{map.app}}</td>
                   <td>{{map.robot_parameter}}</td>
                 </tr>

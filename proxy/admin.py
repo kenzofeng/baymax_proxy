@@ -1,10 +1,6 @@
 from django.contrib import admin
 
-from .models import Svn, Project, Job, Job_Test, Node, Job_Log, Job_Test_Distributed_Result, Job_Test_Result, Test_Map
-
-
-class SvnAdmin(admin.ModelAdmin):
-    list_display = ['name']
+from .models import Project, Job, Job_Test, Node, Job_Log, Job_Test_Distributed_Result, Job_Test_Result, Test_Map
 
 
 class NodeAdmin(admin.ModelAdmin):
@@ -41,7 +37,6 @@ class Test_Map_Admin(admin.ModelAdmin):
     list_display = ['project', 'test', 'use', 'robot_parameter']
 
 
-admin.site.register(Svn, SvnAdmin)
 admin.site.register(Project, ProjectAdmin)
 admin.site.register(Job, JobAdmin)
 admin.site.register(Job_Test, JobTestsAdmin)

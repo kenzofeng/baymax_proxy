@@ -69,7 +69,7 @@ export default {
       this.item.maps.pop()
     },
     addauto () {
-      this.item.maps.push({project: '', robot_parameter: '', test: '', testurl: '', app: '', use: true})
+      this.item.maps.push({project: '', robot_parameter: '', test: '', source_type: 'Git',source_url:'',source_branch:'master', app: '', use: true})
     },
     fetchData () {
       getdetail({tid: this.$route.params.name}).then(response => {

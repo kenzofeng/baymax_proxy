@@ -15,11 +15,6 @@ Source_type = (
 )
 
 
-class Svn(models.Model):
-    name = models.CharField(max_length=50, primary_key=True)
-    password = models.CharField(max_length=50)
-
-
 class Project(models.Model):
     name = models.CharField(max_length=50, primary_key=True)
     email = models.CharField(max_length=250)
@@ -43,7 +38,7 @@ class Test_Map(models.Model):
     test = models.CharField(max_length=50)
     source_type = models.CharField(max_length=20, choices=Source_type)
     source_url = models.CharField(max_length=250)
-    source_branch = models.CharField(max_length=250)
+    source_branch = models.CharField(max_length=250, default='master')
     robot_parameter = models.CharField(max_length=250, blank=True, null=True, default='')
     app = models.CharField(max_length=250)
     use = models.BooleanField(default=True)

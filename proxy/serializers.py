@@ -93,4 +93,5 @@ class ProjectSerializer(serializers.ModelSerializer):
 class TestMapSerializer(serializers.ModelSerializer):
     class Meta:
         model = Test_Map
-        fields = ('pk', 'project', 'test', 'source_type','source_url','source_branch','robot_parameter', 'app', 'use')
+        fields = (
+        'pk', 'project', 'test', 'source_type', 'source_url', 'source_branch', 'robot_parameter', 'app', 'use')
