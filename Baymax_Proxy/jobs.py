@@ -1,6 +1,6 @@
 import logging
-from datetime import datetime
 
+from django.conf import settings
 import requests
 from apscheduler.schedulers.background import BackgroundScheduler
 from requests.exceptions import ConnectTimeout
@@ -29,6 +29,10 @@ def sync_server():
         except Exception as e:
             node.status = "Error"
             logger.error('Sync server error:{},ip:{},name:{}'.format(e, private_ip, node.name))
+        if settings.HOST.lower() == 'private':
+            node.host = private_ip
+        elif settings.HOST.lower() == 'public':
+            node.host = public_ip
         node.public_ip = public_ip
         node.private_ip = private_ip
         node.save()
