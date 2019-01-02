@@ -71,6 +71,8 @@ class Job_Log(models.Model):
 
 class Job_Test(models.Model):
     job = models.ForeignKey(Job, on_delete=models.CASCADE)
+    start_time = models.DateTimeField(blank=True, null=True)
+    end_time = models.DateTimeField(blank=True, null=True)
     testurl = models.CharField(max_length=250)
     robot_parameter = models.CharField(max_length=250, blank=True, null=True, default='')
     app = models.CharField(max_length=250, blank=True, null=True, default='')

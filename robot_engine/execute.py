@@ -1,4 +1,3 @@
-import datetime
 import logging
 import os
 import time
@@ -6,7 +5,6 @@ from concurrent.futures import wait
 
 import requests
 
-from Baymax_Proxy.jobs import scheduler
 from proxy import env
 from proxy.models import Project, Job
 from . import testcase, testresult, utility
@@ -147,14 +145,17 @@ class Execute():
         try:
             if status:
                 test.status = 'Running'
+                test.start_time = utility.getnow()
                 test.save()
                 testcase.checkout_script(test)
                 testcase.distribute_test_script(self.nodes, test)
                 self.send_test(test)
+                test.end_time = utility.getnow()
                 self.merge_test_report(test)
                 test.status = utility.get_result_fromxml(
                     os.path.join(env.report, test.job_test_result.report, env.output_xml))
                 test.save()
+
                 pool.submit(utility.send_email, test, self.ip)
             else:
                 test.status = 'Error'
