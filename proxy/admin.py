@@ -4,7 +4,7 @@ from .models import Project, Job, Job_Test, Node, Job_Log, Job_Test_Distributed_
 
 
 class NodeAdmin(admin.ModelAdmin):
-    list_display = ['name', 'host', 'port', 'status']
+    list_display = ['name', 'public_ip', 'private_ip', 'port', 'status']
     actions = ['Set_Status_Done']
 
     def Set_Status_Done(self, request, queryset):

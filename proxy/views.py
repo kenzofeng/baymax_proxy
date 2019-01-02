@@ -65,18 +65,19 @@ def project_getall(request):
 def getallnodes(request):
     nodes = Node.objects.all()
     nodelist = [
-        {"title": node.name, "id": node.aws_instance_id, "ip": node.host, "icon": "blue"} if node.status in ["Done",
-                                                                                                             "Running"] else {
-            "title": node.name, "id": node.aws_instance_id, "ip": node.host, "icon": "grey"} for node in nodes]
+        {"title": node.name, "id": node.aws_instance_id, "ip": node.public_ip, "icon": "blue"} if node.status in [
+            "Done",
+            "Running"] else {
+            "title": node.name, "id": node.aws_instance_id, "ip": node.public_ip, "icon": "grey"} for node in nodes]
     return JsonResponse(nodelist, safe=False)
 
 
 def getallnodes_by_project(request):
     nodes = Node.objects.all()
     nodelist = [
-        {"title": node.name, "id": node.aws_instance_id, "ip": node.host, "icon": "blue"} if node.status in ["Done",
+        {"title": node.name, "id": node.aws_instance_id, "ip": node.public_ip, "icon": "blue"} if node.status in ["Done",
                                                                                                              "Running"] else {
-            "title": node.name, "id": node.aws_instance_id, "ip": node.host, "icon": "grey"} for node in nodes]
+            "title": node.name, "id": node.aws_instance_id, "ip": node.public_ip, "icon": "grey"} for node in nodes]
     return JsonResponse(nodelist, safe=False)
 
 

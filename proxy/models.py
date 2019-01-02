@@ -27,8 +27,10 @@ class Project(models.Model):
 class Node(models.Model):
     name = models.CharField(max_length=100, primary_key=True)
     projects = models.ManyToManyField(Project, blank=True)
-    aws_instance_id = models.CharField(max_length=100, blank=True, null=True)
-    host = models.CharField(max_length=50, blank=True, null=True)
+    aws_instance_id = models.CharField(max_length=100, blank=True, default="")
+    host = models.CharField(max_length=50, blank=True, default="")
+    public_ip = models.CharField(max_length=50, blank=True, default="")
+    private_ip = models.CharField(max_length=50, blank=True, default="")
     port = models.CharField(max_length=50, default="51234")
     status = models.CharField(max_length=20, choices=Run_Status)
 

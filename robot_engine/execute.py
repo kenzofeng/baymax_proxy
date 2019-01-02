@@ -74,13 +74,6 @@ class Execute():
         test_ds_reports = tuple([os.path.join(ds_report, env.output_xml) for ds_report in test_ds_reports])
         testresult.merge_report(test_report, *test_ds_reports)
 
-    def updatenodes(self, nodes):
-        for node in nodes:
-            instantce_id = node.aws_instance_id
-            public_ip, private_ip = utility.getip(instantce_id)
-            node.host = public_ip
-            node.save()
-
     def checknodestatus(self, nodes):
         newnodes = []
         tasks = [pool.submit(self.requeststatus, node.host, node.port) for node in nodes]

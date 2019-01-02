@@ -20,7 +20,7 @@ def sync_server():
         public_ip, private_ip = utility.getip(node.aws_instance_id)
         try:
             if public_ip:
-                requests.get('http://{}:{}/status'.format(public_ip, node.port), timeout=10)
+                requests.get('http://{}:{}/status'.format(private_ip, node.port), timeout=10)
                 node.status = "Done"
             else:
                 node.status = "Error"
@@ -28,6 +28,7 @@ def sync_server():
             node.status = "Error"
         except Exception as e:
             node.status = "Error"
-            logger.error('Sync server error:{},ip:{},name:{}'.format(e, public_ip, node.name))
-        node.host = public_ip
+            logger.error('Sync server error:{},ip:{},name:{}'.format(e, private_ip, node.name))
+        node.public_ip = public_ip
+        node.private_ip = private_ip
         node.save()
