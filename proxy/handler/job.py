@@ -57,7 +57,7 @@ def copy_job(job_pk):
     job.pk = None
     job.save()
     job.status = 'Waiting'
-    job.project_version=""
+    job.project_version = ""
     job.start_time = utility.gettime()
     job.end_time = None
     job.comments = ""

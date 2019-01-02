@@ -145,12 +145,12 @@ class Execute():
         try:
             if status:
                 test.status = 'Running'
-                test.start_time = utility.getnow()
+                test.start_time = utility.gettime()
                 test.save()
                 testcase.checkout_script(test)
                 testcase.distribute_test_script(self.nodes, test)
                 self.send_test(test)
-                test.end_time = utility.getnow()
+                test.end_time = utility.gettime()
                 self.merge_test_report(test)
                 test.status = utility.get_result_fromxml(
                     os.path.join(env.report, test.job_test_result.report, env.output_xml))
