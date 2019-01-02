@@ -24,7 +24,9 @@ class JobSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Job
-        fields = ('pk', 'project', 'servers', 'start_time', 'end_time', 'status', 'job_test_set', 'comments','project_version')
+        fields = (
+            'pk', 'project', 'servers', 'start_time', 'end_time', 'status', 'job_test_set', 'comments',
+            'project_version')
 
     def get_start_time(self, obj):
         return obj.start_time.astimezone(sh).strftime("%Y-%m-%d %H:%M:%S") if obj.start_time is not None else ""
@@ -44,7 +46,7 @@ class ProjectSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Project
-        fields = ('pk', 'name', 'email', 'version','nodes', 'maps')
+        fields = ('pk', 'name', 'email', 'version', 'nodes', 'maps')
 
     def get_nodes(self, obj):
         return [node.name for node in obj.node_set.all()]
@@ -67,7 +69,9 @@ class ProjectSerializer(serializers.ModelSerializer):
             m = Test_Map()
             m.project = instance.pk
             m.test = map['test']
-            m.testurl = map['testurl']
+            m.source_type = map['source_type']
+            m.source_url = map['source_url']
+            m.source_branch = map['source_branch']
             m.robot_parameter = map['robot_parameter']
             m.app = map['app']
             m.use = map['use']
@@ -89,4 +93,4 @@ class ProjectSerializer(serializers.ModelSerializer):
 class TestMapSerializer(serializers.ModelSerializer):
     class Meta:
         model = Test_Map
-        fields = ('pk', 'project', 'test', 'testurl', 'robot_parameter', 'app', 'use')
+        fields = ('pk', 'project', 'test', 'source_type','source_url','source_branch','robot_parameter', 'app', 'use')

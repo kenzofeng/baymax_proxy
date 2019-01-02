@@ -2,20 +2,17 @@ import logging
 from datetime import datetime
 
 import requests
-from requests.exceptions import ConnectTimeout
 from apscheduler.schedulers.background import BackgroundScheduler
-from apscheduler.executors.pool import ThreadPoolExecutor
+from requests.exceptions import ConnectTimeout
 
 from proxy.models import Node
 from robot_engine import utility
 
-scheduler = BackgroundScheduler(executors={'default': ThreadPoolExecutor(40)})
-
+scheduler = BackgroundScheduler()
 scheduler.start()
 logger = logging.getLogger('django')
 
 
-@scheduler.scheduled_job('date', run_date=datetime.now())
 @scheduler.scheduled_job('interval', minutes=5)
 def sync_server():
     nodes = Node.objects.all().exclude(status='Running')

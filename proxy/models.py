@@ -9,6 +9,11 @@ Run_Status = (
     ('PASS', 'PASS'),
 )
 
+Source_type = (
+    ('SVN', 'SVN'),
+    ('Git', 'Git'),
+)
+
 
 class Svn(models.Model):
     name = models.CharField(max_length=50, primary_key=True)
@@ -36,7 +41,9 @@ class Node(models.Model):
 class Test_Map(models.Model):
     project = models.CharField(max_length=50)
     test = models.CharField(max_length=50)
-    testurl = models.CharField(max_length=250)
+    source_type = models.CharField(max_length=20, choices=Source_type)
+    source_url = models.CharField(max_length=250)
+    source_branch = models.CharField(max_length=250)
     robot_parameter = models.CharField(max_length=250, blank=True, null=True, default='')
     app = models.CharField(max_length=250)
     use = models.BooleanField(default=True)
@@ -46,6 +53,9 @@ class Test_Map(models.Model):
             return 'yes'
         else:
             return 'no'
+
+    def __unicode__(self):
+        return self.test
 
 
 class Job(models.Model):
