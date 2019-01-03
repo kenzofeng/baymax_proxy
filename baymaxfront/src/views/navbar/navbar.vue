@@ -1,8 +1,5 @@
 <template>
   <div class="ui teal inverted huge menu">
-    <div class="header item">
-      Baymax
-    </div>
     <navitem v-for="router in routes" :key=" router.name" :item="router"></navitem>
     <div class="right menu">
       <div class="ui right aligned category search item">
@@ -10,10 +7,11 @@
         <drop :items="selectitems" @changeselected="changeselected"></drop>
       </div>
     </div>
-    <a class="item" target='_blank' href="http://10.200.106.2:8080/"><i class="large black jenkins icon"></i>jenkins</a>
-    <a class="item" target='_blank' href="http://35.160.71.185/aws?account=sandbox-test&region=us-west-2&search=Function"><i class="cloud icon"></i>EMS</a>
-    <a class="item" target='_blank' href="http://54.218.22.41/"><i class="wrench icon"></i>TestRailTool</a>
-    <a class="item" target='_blank' href="https://warrior.testrail.io/index.php?/dashboard"><i class="industry icon"></i>TestRail</a>
+    <a class="item" target='_blank' href="http://10.200.106.2:8080/"><i class="large jenkins icon"></i></a>
+    <a class="item" target='_blank' href="http://52.34.81.222/"><i class="large gitlab icon"></i></a>
+    <a class="item" target='_blank' href="http://35.160.71.185/aws?account=sandbox-test&region=us-west-2&search=Function"><i class="cloud icon"></i></a>
+    <a class="item" target='_blank' href="http://54.218.22.41/"><i class="wrench icon"></i></a>
+    <a class="item" target='_blank' href="https://warrior.testrail.io/index.php?/dashboard"><i class="industry icon"></i></a>
   </div>
   </div>
 </template>
