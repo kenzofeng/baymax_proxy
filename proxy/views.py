@@ -8,11 +8,12 @@ from django.http import JsonResponse, FileResponse
 from django.shortcuts import render, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 
+from Baymax_Proxy.jobs import *
 from robot_engine.pool import pool
 from robot_engine.utility import zipreport, get_job
 from . import env
 from .handler import job as job_handler
-from .models import Project, Job, Job_Test_Result, Job_Test, Node, Test_Map
+from .models import Project, Job, Job_Test_Result, Job_Test, Test_Map
 from .serializers import ProjectSerializer, JobSerializer
 
 
