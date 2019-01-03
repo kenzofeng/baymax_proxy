@@ -42,7 +42,7 @@ class Execute():
             open(download_zip, 'wb').write(r.content)
             utility.extract_zip(download_zip, os.path.join(env.tmp, test_ds.report))
         except Exception as e:
-            logger.error("test error:{}".format(e))
+            logger.error("host:{},test error:{}:".format(node.host,e))
         finally:
             node.status = "Done"
             node.save()

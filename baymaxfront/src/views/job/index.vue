@@ -7,7 +7,7 @@
             <input v-model="version" type="checkbox" name="Version">
             <label>Version</label>
           </div>
-           <div class="ui checkbox">
+          <div class="ui checkbox">
             <input v-model="servers" type="checkbox" name="Servers">
             <label>Servers</label>
           </div>
@@ -55,7 +55,13 @@
               <tbody>
                 <tr v-for="test in job.job_test_set" :key="test.id">
                   <td>{{test.name}}</td>
-                  <td>{{test.revision_number}}</td>
+                  <td>
+                    <span
+                      class="ui span"
+                      :data-tooltip="test.revision_number"
+                      data-position="right center"
+                    >{{showdata(test.revision_number)}}</span>
+                  </td>
                   <td>{{test.app}}</td>
                   <td>{{test.robot_parameter}}</td>
                   <td :class="resultclass(test.status)">{{test.status}}</td>
@@ -158,7 +164,7 @@ export default {
       form: { job: { job_test_set: [] } },
       activejob: {},
       version: false,
-      servers:false
+      servers: false
     };
   },
   created() {
@@ -175,8 +181,16 @@ export default {
   },
   methods: {
     jobServers(data) {
-      let servers = data.split(":")
-      return servers
+      let servers = data.split(":");
+      return servers;
+    },
+    showdata(data) {
+      if (data != null) {
+        if (data.length > 12) {
+          return data.slice(0, 12) + "...";
+        }
+      }
+      return data;
     },
     editcomments(comments, pk) {
       this.$refs.writepopup.show(comments, pk);
