@@ -78,7 +78,9 @@ def copy_job_test(request, job, jobpk):
         job_test.job = job
         job_test.status = 'Waiting'
         job_test.robot_parameter = getattr(request, m.name)['robot_parameter']
-        job_test.testurl = m.testurl
+        job_test.source_type = m.source_type
+        job_test.source_url = m.source_url
+        job_test.source_branch = m.source_branch
         job_test.name = m.name
         job_test.app = m.app
         job_test.save()
@@ -100,7 +102,9 @@ def init_jot_test(job):
         job_test.job = job
         job_test.status = 'Waiting'
         job_test.robot_parameter = m.robot_parameter
-        job_test.testurl = m.testurl
+        job_test.source_type = m.source_type
+        job_test.source_url = m.source_url
+        job_test.source_branch = m.source_branch
         job_test.name = m.test
         job_test.app = m.app
         job_test.save()
