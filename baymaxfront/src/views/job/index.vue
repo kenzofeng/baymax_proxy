@@ -186,8 +186,8 @@ export default {
     },
     showdata(data) {
       if (data != null) {
-        if (data.length > 12) {
-          return data.slice(0, 12) + "...";
+        if (data.length > 8) {
+          return data.slice(0, 8) + "...";
         }
       }
       return data;
