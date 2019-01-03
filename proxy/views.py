@@ -76,8 +76,9 @@ def getallnodes(request):
 def getallnodes_by_project(request):
     nodes = Node.objects.all()
     nodelist = [
-        {"title": node.name, "id": node.aws_instance_id, "ip": node.public_ip, "icon": "blue"} if node.status in ["Done",
-                                                                                                             "Running"] else {
+        {"title": node.name, "id": node.aws_instance_id, "ip": node.public_ip, "icon": "blue"} if node.status in [
+            "Done",
+            "Running"] else {
             "title": node.name, "id": node.aws_instance_id, "ip": node.public_ip, "icon": "grey"} for node in nodes]
     return JsonResponse(nodelist, safe=False)
 
@@ -131,9 +132,9 @@ def test_run_log(request, logid):
     log = job_test_result.log
     joblog = ''
     if log is not None:
-        log = str(zlib.decompress(base64.b64decode(log)))
+        log = zlib.decompress(base64.b64decode(log)).decode('utf-8')
         for l in log.split('\n'):
-            joblog = joblog + "<span>%s</span><br/>" % (l)
+                joblog = joblog + "<span>{}</span><br/>".format(l)
         return HttpResponse(joblog, content_type='text/html')
     else:
         try:
@@ -143,7 +144,7 @@ def test_run_log(request, logid):
                 fst = f.read()
                 f.close()
                 for l in fst.split('\n'):
-                    joblog = joblog + "<span>%s</span><br/>" % (l)
+                    joblog = joblog + "<span>{}</span><br/>".format(l)
             test_ds_all = job_test.job_test_distributed_result_set.all()
             tasks = [pool.submit(get_job, test_ds.host, test_ds.pk) for test_ds in test_ds_all]
             wait(tasks)
