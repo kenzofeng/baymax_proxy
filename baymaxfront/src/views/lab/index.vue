@@ -1,5 +1,8 @@
 <template>
-  <div>
+  <div class="dimmable">
+    <div class="ui inverted dimmer" :class="active">
+      <div class="ui loader"></div>
+    </div>
     <table class="ui compact selectable celled striped teal table">
       <thead>
         <tr>
@@ -81,6 +84,7 @@ export default {
   },
   data () {
     return {
+      active:"active",
       projects: [],
       run: 'run',
       job: 'job',
@@ -126,6 +130,9 @@ export default {
       labList(this.params).then(response => {
         this.projects = response.data
         this.filterproject()
+        this.active=""
+      }).catch(()=>{
+        this.active=""
       })
     },
     fetchNodes () {

@@ -1,5 +1,8 @@
 <template>
-  <div>
+  <div class="dimmable">
+    <div class="ui inverted dimmer" :class="active">
+      <div class="ui loader"></div>
+    </div>
     <div class="ui form">
       <div class="fields">
         <div class="field">
@@ -150,6 +153,7 @@ export default {
   },
   data() {
     return {
+      active: "active",
       jobs: null,
       params: this.$route.query,
       interval_id: "",
@@ -252,9 +256,14 @@ export default {
     },
     fetchData() {
       this.params = this.$route.query;
-      getall(this.params).then(response => {
-        this.jobs = response.data;
-      });
+      getall(this.params)
+        .then(response => {
+          this.jobs = response.data;
+          this.active = "";
+        })
+        .catch(() => {
+          this.active = "";
+        });
     },
     lineclass(i) {
       switch (i) {

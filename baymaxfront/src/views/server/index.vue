@@ -1,5 +1,8 @@
 <template>
-  <div>
+  <div class="dimmable">
+    <div class="ui inverted dimmer" :class="active">
+      <div class="ui loader"></div>
+    </div>
     <table class="ui selectable celled teal table">
       <thead>
         <tr>
@@ -26,6 +29,7 @@ export default {
   name: 'server',
   data () {
     return {
+      active:"active",
       servers: []
     }
   },
@@ -36,6 +40,9 @@ export default {
     fetchData () {
       nodeList(this.params).then(response => {
         this.servers = response.data
+        this.active=""
+      }).catch(()=>{
+        this.active=""
       })
     },
     statuscss (icon) {
