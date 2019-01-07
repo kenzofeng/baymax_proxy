@@ -1,16 +1,20 @@
 import logging
-
-from django.conf import settings
+import os
 import requests
 from apscheduler.schedulers.background import BackgroundScheduler
+from django.conf import settings
 from requests.exceptions import ConnectTimeout
 
 from proxy.models import Node
 from robot_engine import utility
 
-scheduler = BackgroundScheduler()
-scheduler.start()
 logger = logging.getLogger('django')
+scheduler = None
+if os.environ.get("scheduler_lock") == "1":
+    scheduler = BackgroundScheduler()
+    scheduler.start()
+    os.environ["scheduler_lock"] = os.environ.get("scheduler_lock") + "1"
+    logger.info('scheduler started')
 
 
 @scheduler.scheduled_job('interval', minutes=5)
