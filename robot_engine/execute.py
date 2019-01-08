@@ -42,7 +42,7 @@ class Execute():
             open(download_zip, 'wb').write(r.content)
             utility.extract_zip(download_zip, os.path.join(env.tmp, test_ds.report))
         except Exception as e:
-            logger.error("host:{},test error:{}:".format(node.host,e))
+            logger.error("host:{},test error:{}:".format(node.host, e))
         finally:
             node.status = "Done"
             node.save()
@@ -112,10 +112,13 @@ class Execute():
         if len(nodes) == 0:
             raise Exception("There is no node server to use")
         jobnodes = ':'.join([node.name for node in nodes])
-        while True:
-            if self.check_job_status(jobnodes):
-                break
-            time.sleep(1)
+        if jobnodes:
+            while True:
+                if self.check_job_status(jobnodes):
+                    break
+                time.sleep(1)
+        else:
+            return False
         # self.updatenodes(nodes)
         self.nodes = self.checknodestatus(nodes)
         self.job.servers = ":".join([n.name for n in self.nodes])
