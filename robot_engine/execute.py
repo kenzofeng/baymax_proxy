@@ -156,7 +156,7 @@ class Execute():
             else:
                 test.status = 'Error'
                 test.save()
-                raise Exception("Project Servers Status is Error")
+                raise Exception("Project Servers Status is Error or Job Server is Empty")
         except Exception as e:
             logger.error("execute error:{}".format(e))
             test.status = 'Error'
