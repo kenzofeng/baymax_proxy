@@ -52,7 +52,7 @@ def cat_version(host, version_paths):
     paths = version_paths.split(";")
     for path in paths:
         new_paths = path.split(":")
-        cat_host, path = host, new_paths[0] if len(new_paths) == 1 else new_paths[0], new_paths[1]
+        cat_host, path = (host, new_paths[0]) if len(new_paths) == 1 else (new_paths[0], new_paths[1])
         result_str += (path + '\n')
         ssh = paramiko.SSHClient()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
