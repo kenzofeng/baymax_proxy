@@ -25,7 +25,7 @@
         <input
           type="text"
           name="version"
-          placeholder="/project1/git.properties;/project2/git.properties"
+          placeholder="ip:/project1/git.properties;/project2/git.properties"
           v-model="item.version"
         >
       </div>
