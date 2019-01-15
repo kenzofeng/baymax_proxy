@@ -244,11 +244,11 @@ def set_email(test, host):
         "project": test.job.project,
         "project_version": test.job.project_version,
         "Automation": test.name,
-        'log': 'http://%s/job/result/test/log/%s' % (host, test.job_test_result.id),
+        'log': 'http://%s/result/test/log/%s' % (host, test.job_test_result.id),
         'test_version': test.revision_number,
         'test_count': test.count,
         'result': test.status,
-        'reportlink': 'http://%s/job/result/report/%s' % (host, test.id)}
+        'reportlink': 'http://%s/result/report/%s' % (host, test.id)}
     path = '\\'.join((emailfile.split('\\'))[:-1])
     engine = tenjin.Engine(path=[path], cache=tenjin.MemoryCacheStorage())
     emailstring = engine.render(emailfile, context)

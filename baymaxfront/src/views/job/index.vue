@@ -222,13 +222,13 @@ export default {
       this.interval_id = setInterval(this.fetchData, 5000);
     },
     testlog(id) {
-      return "result/test/log/" + id;
+      return "/result/test/log/" + id;
     },
     testreport(id) {
-      return "result/report/" + id;
+      return "/result/report/" + id;
     },
     downloadxml(id) {
-      return "result/report/" + id + "/download";
+      return "/result/report/" + id + "/download";
     },
     stopshow(item) {
       this.sproject = item;
