@@ -21,22 +21,17 @@ if os.environ.get("scheduler_lock") == "1":
 def sync_server():
     nodes = Node.objects.all().exclude(status='Running')
     for node in nodes:
-        public_ip, private_ip = utility.getip(node.aws_instance_id)
+        # public_ip, private_ip = utility.getip(node.aws_instance_id)
+        if settings.HOST.lower() == 'private':
+            node.host = node.private_ip
+        elif settings.HOST.lower() == 'public':
+            node.host = node.public_ip
         try:
-            if public_ip:
-                requests.get('http://{}:{}/status'.format(private_ip, node.port), timeout=10)
-                node.status = "Done"
-            else:
-                node.status = "Error"
+            requests.get('http://{}:{}/status'.format(node.host, node.port), timeout=2)
+            node.status = "Done"
         except ConnectTimeout:
             node.status = "Error"
         except Exception as e:
             node.status = "Error"
-            logger.error('Sync server error:{},ip:{},name:{}'.format(e, private_ip, node.name))
-        if settings.HOST.lower() == 'private':
-            node.host = private_ip
-        elif settings.HOST.lower() == 'public':
-            node.host = public_ip
-        node.public_ip = public_ip
-        node.private_ip = private_ip
+            logger.error('Sync server error:{},ip:{},name:{}'.format(e, node.host, node.name))
         node.save()

@@ -134,7 +134,7 @@ def test_run_log(request, logid):
     if log is not None:
         log = zlib.decompress(base64.b64decode(log)).decode('utf-8')
         for l in log.split('\n'):
-                joblog = joblog + "<span>{}</span><br/>".format(l)
+            joblog = joblog + "<span>{}</span><br/>".format(l)
         return HttpResponse(joblog, content_type='text/html')
     else:
         try:
@@ -230,3 +230,21 @@ def lab_getall(request):
     p = Project.objects.all()
     ps = ProjectSerializer.setup_eager_loading(p)
     return JsonResponse(ProjectSerializer(ps, many=True).data, safe=False)
+
+
+@csrf_exempt
+def register(request):
+    n = json.loads(request.body)
+    node = Node.objects.filter(name=n['name']).first()
+    if node:
+        node.aws_instance_id = n['instance_id']
+        node.public_ip = n['public_ip']
+        node.private_ip = n['private_ip']
+        node.status = "Done"
+        node.save()
+    else:
+        node = Node(name=n['name'], aws_instance_id=n['instance_id'], public_ip=n['public_ip'],
+                    private_ip=n['private_ip'],
+                    status="Done")
+        node.save()
+    return JsonResponse({'status': 'scuess'}, safe=False)
