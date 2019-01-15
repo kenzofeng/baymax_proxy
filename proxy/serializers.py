@@ -11,7 +11,7 @@ class JobTestSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Job_Test
-        fields = ('id', 'log', 'name', 'app', 'robot_parameter', 'status', 'revision_number')
+        fields = ('id', 'log', 'name', 'app', 'duration', 'robot_parameter', 'status', 'count', 'revision_number')
 
     def get_log(self, obj):
         return obj.job_test_result.id if hasattr(obj, "job_test_result") else ""
@@ -20,19 +20,20 @@ class JobTestSerializer(serializers.ModelSerializer):
 class JobSerializer(serializers.ModelSerializer):
     job_test_set = JobTestSerializer(many=True, read_only=True)
     start_time = serializers.SerializerMethodField()
-    end_time = serializers.SerializerMethodField()
+
+    # end_time = serializers.SerializerMethodField()
 
     class Meta:
         model = Job
         fields = (
-            'pk', 'project', 'servers', 'start_time', 'end_time', 'status', 'job_test_set', 'comments',
+            'pk', 'project', 'servers', 'start_time', 'status', 'job_test_set', 'comments',
             'project_version')
 
     def get_start_time(self, obj):
         return obj.start_time.astimezone(sh).strftime("%Y-%m-%d %H:%M:%S") if obj.start_time is not None else ""
 
-    def get_end_time(self, obj):
-        return obj.end_time.astimezone(sh).strftime("%Y-%m-%d %H:%M:%S") if obj.end_time is not None else ""
+    # def get_end_time(self, obj):
+    #     return obj.end_time.astimezone(sh).strftime("%Y-%m-%d %H:%M:%S") if obj.end_time is not None else ""
 
     @staticmethod
     def setup_eager_loading(queryset):
@@ -94,4 +95,4 @@ class TestMapSerializer(serializers.ModelSerializer):
     class Meta:
         model = Test_Map
         fields = (
-        'pk', 'project', 'test', 'source_type', 'source_url', 'source_branch', 'robot_parameter', 'app', 'use')
+            'pk', 'project', 'test', 'source_type', 'source_url', 'source_branch', 'robot_parameter', 'app', 'use')

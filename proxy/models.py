@@ -78,8 +78,9 @@ class Job_Log(models.Model):
 
 class Job_Test(models.Model):
     job = models.ForeignKey(Job, on_delete=models.CASCADE)
-    start_time = models.DateTimeField(blank=True, null=True)
-    end_time = models.DateTimeField(blank=True, null=True)
+    start_time = models.DateTimeField(blank=True, null=True, default="")
+    end_time = models.DateTimeField(blank=True, null=True, default="")
+    duration = models.CharField(max_length=20, blank=True, null=True, default="")
     source_type = models.CharField(max_length=20, choices=Source_type)
     source_url = models.CharField(max_length=250)
     source_branch = models.CharField(max_length=250, default='master')

@@ -147,6 +147,7 @@ class Execute():
                 testcase.distribute_test_script(self.nodes, test)
                 self.send_test(test)
                 test.end_time = utility.gettime()
+                test.duration = utility.strfdelta((test.end_time - test.start_time), '{hours}h{minutes}m{seconds}s'),
                 self.merge_test_report(test)
                 test.status = utility.get_result_fromxml(
                     os.path.join(env.report, test.job_test_result.report, env.output_xml))

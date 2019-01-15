@@ -25,7 +25,7 @@
           <th v-if="servers" class="one wide">Servers</th>
           <th class="one wide">Status</th>
           <th class="one wide">Start Date</th>
-          <th class="one wide">End Date</th>
+          <!-- <th class="one wide">End Date</th> -->
           <th class="seven wide">Test Automation</th>
           <!-- <th class="one wide">Comments</th> -->
           <th class="one wide">Atction</th>
@@ -43,14 +43,16 @@
             <span>{{job.status}}</span>
           </td>
           <td>{{job.start_time}}</td>
-          <td>{{job.end_time}}</td>
+          <!-- <td>{{job.end_time}}</td> -->
           <td>
             <table class="ui small very compact table">
               <thead>
                 <th class="two wide">Test</th>
                 <th class="one wide">Version</th>
+                <th class="one wide">Duration</th>
                 <th class="four wide">App Log</th>
                 <th class="six wide">Robot Parameter</th>
+                <th class="one wide">Count</th>
                 <th class="one wide">Status</th>
                 <th class="one wide">RunTime</th>
                 <th class="one wide">Report</th>
@@ -65,8 +67,10 @@
                       data-position="right center"
                     >{{showdata(test.revision_number)}}</span>
                   </td>
+                  <td>{{test.duration}}</td>
                   <td>{{test.app}}</td>
                   <td>{{test.robot_parameter}}</td>
+                  <td>{{test.count}}</td>
                   <td :class="resultclass(test.status)">{{test.status}}</td>
                   <td>
                     <a target="_blank" :href="testlog(test.log)">

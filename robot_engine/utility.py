@@ -240,7 +240,7 @@ def set_email(test, host):
     emailfile = email_success_file if test.status == 'PASS' else email_failed_file
     context = {
         "start_time": str(test.job.start_time),
-        "duration": strfdelta((test.end_time - test.start_time), '{hours}h{minutes}m{seconds}s'),
+        "duration": test.duration,
         "project": test.job.project,
         "project_version": test.job.project_version,
         "Automation": test.name,
