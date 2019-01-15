@@ -1,5 +1,8 @@
 import json
+import logging
 import os
+from concurrent.futures import wait
+from concurrent.futures.thread import ThreadPoolExecutor
 
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -7,10 +10,9 @@ from proxy import env
 from proxy.models import Job, Project, Job_Log, Test_Map, Job_Test, Job_Test_Result
 from robot_engine import utility
 from robot_engine.execute import Execute
-from concurrent.futures.thread import ThreadPoolExecutor
-from concurrent.futures import wait
 
 pool = ThreadPoolExecutor(10)
+logger = logging.getLogger('django')
 
 
 class Myrequest:
@@ -136,6 +138,7 @@ def start(request, project):
         job.save()
         utility.logmsg(job.job_log.path, "{}".format(e))
         utility.save_log(job)
+        logger.error("start job error:{}".format(e))
         raise Exception("start job error:{}".format(e))
 
 
@@ -157,6 +160,7 @@ def rerun(request, jobpk):
         job.save()
         utility.logmsg(job.job_log.path, "{}".format(e))
         utility.save_log(job)
+        logger.error("start job error:{}".format(e))
         raise Exception("rerun job error:{}".format(e))
 
 
