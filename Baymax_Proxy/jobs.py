@@ -27,7 +27,6 @@ def check_node(node):
         requests.get('http://{}:{}/status'.format(node.host, node.port), timeout=2)
         node.status = "Done"
     except Exception as e:
-        node.public_ip = ""
         node.status = "Error"
         logger.info('Sync server error:{},ip:{},name:{}'.format(e, node.host, node.name))
     node.save()
