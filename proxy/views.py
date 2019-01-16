@@ -68,19 +68,19 @@ def getallnodes(request):
         nodes = p.node_set.all()
         nodelist = [
             {"title": node.name, "id": node.aws_instance_id, "ip": node.public_ip,
-             "icon": "positive"} if node.status in [
+             "icon": "green"} if node.status in [
                 "Done",
                 "Running"] else {
-                "title": node.name, "id": node.aws_instance_id, "ip": node.public_ip, "icon": "error"} for node in
+                "title": node.name, "id": node.aws_instance_id, "ip": node.public_ip, "icon": "red"} for node in
             nodes]
     else:
         nodes = Node.objects.all()
         nodelist = [
             {"title": node.name, "id": node.aws_instance_id, "ip": node.public_ip,
-             "icon": "positive"} if node.status in [
+             "icon": "green"} if node.status in [
                 "Done",
                 "Running"] else {
-                "title": node.name, "id": node.aws_instance_id, "ip": node.public_ip, "icon": "error"} for node in
+                "title": node.name, "id": node.aws_instance_id, "ip": node.public_ip, "icon": "red"} for node in
             nodes]
     return JsonResponse(nodelist, safe=False)
 
