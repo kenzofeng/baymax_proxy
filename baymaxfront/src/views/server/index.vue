@@ -14,7 +14,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(server,index) in servers" :key="server.id" :class="statuscss(server.icon)">
+        <tr v-for="(server,index) in servers" :key="server.id" :class="trcss(server.icon)">
           <td>{{index+1}}</td>
           <td :class="statuscss(server.icon)">{{server.title}}</td>
           <td>{{server.id}}</td>
@@ -53,6 +53,14 @@ export default {
     },
     statuscss (icon) {
       return icon
+    },
+    trcss(icon){
+      if (icon==='green'){
+        return 'positive'
+      }
+      else if (icon=='red'){
+        return 'negative'
+      }
     }
   }
 }
