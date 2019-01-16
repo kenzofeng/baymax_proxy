@@ -16,7 +16,7 @@
         <tr v-for="tp in projects" :key="tp.name">
           <td @click="toproject(tp.name)"><i class="clipboard list link icon" ></i>{{tp.name}}</td>
           <td>
-              <div class="ui aligned divided list">
+              <div class="ui aligned ordered divided list">
                 <div class="item" v-for="node in tp.nodes" :key="node" >
                 <i :class="iconcss(node)" class="server icon"></i>
                 <div class="content">

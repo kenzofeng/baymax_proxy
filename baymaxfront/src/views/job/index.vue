@@ -36,7 +36,13 @@
           <td>{{job.project}}</td>
           <td v-if="version">{{job.project_version}}</td>
           <td v-if="servers">
-            <div v-for="s in jobServers(job.servers)" :key="s">{{s}}</div>
+            <div class="ui aligned ordered divided list">
+              <div class="item" v-for="s in jobServers(job.servers)" :key="s">
+                <div class="content">
+                  <div class="header">{{s}}</div>
+                </div>
+              </div>
+            </div>
           </td>
           <td>
             <i class="icon" :class="statusclass(job.status)"></i>
