@@ -1,8 +1,6 @@
 import base64
 import json
-import os
 import zlib
-from concurrent.futures import wait
 
 from django.http import JsonResponse, FileResponse
 from django.shortcuts import render, HttpResponse
@@ -64,17 +62,35 @@ def project_getall(request):
 
 
 def getallnodes(request):
-    nodes = Node.objects.all()
-    nodelist = [
-        {"title": node.name, "id": node.aws_instance_id, "ip": node.public_ip, "icon": "blue"} if node.status in [
-            "Done",
-            "Running"] else {
-            "title": node.name, "id": node.aws_instance_id, "ip": node.public_ip, "icon": "grey"} for node in nodes]
+    if 'project' in request.GET:
+        project = request.GET['project']
+        p = Project.objects.get(name=project)
+        nodes = p.node_set.all()
+        nodelist = [
+            {"title": node.name, "id": node.aws_instance_id, "ip": node.public_ip,
+             "icon": "positive"} if node.status in [
+                "Done",
+                "Running"] else {
+                "title": node.name, "id": node.aws_instance_id, "ip": node.public_ip, "icon": "error"} for node in
+            nodes]
+    else:
+        nodes = Node.objects.all()
+        nodelist = [
+            {"title": node.name, "id": node.aws_instance_id, "ip": node.public_ip,
+             "icon": "positive"} if node.status in [
+                "Done",
+                "Running"] else {
+                "title": node.name, "id": node.aws_instance_id, "ip": node.public_ip, "icon": "error"} for node in
+            nodes]
     return JsonResponse(nodelist, safe=False)
 
 
 def getallnodes_by_project(request):
+    if 'project' in request.GET:
+        project = request.GET['project']
+
     nodes = Node.objects.all()
+
     nodelist = [
         {"title": node.name, "id": node.aws_instance_id, "ip": node.public_ip, "icon": "blue"} if node.status in [
             "Done",
