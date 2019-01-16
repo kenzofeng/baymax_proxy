@@ -5,7 +5,6 @@ from concurrent.futures import wait
 import requests
 from apscheduler.schedulers.background import BackgroundScheduler
 from django.conf import settings
-from requests.exceptions import ConnectTimeout
 
 from proxy.models import Node
 from robot_engine.pool import pool
