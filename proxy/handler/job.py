@@ -91,7 +91,7 @@ def copy_job_test(request, job, jobpk):
         result.job_test = job_test
         result.log_path = "{}/Test_{}_{}_{}.log".format(utility.gettoday(), m.name, utility.getnow(),
                                                         random.randint(1, 99999))
-        result.report = "{}/{}_{}_{}".format(utility.gettoday(), utility.getnow(), random.randint(1, 99999), m.test)
+        result.report = "{}/{}_{}_{}".format(utility.gettoday(), utility.getnow(), random.randint(1, 99999), m.name)
         utility.newlogger(job_test.name, result.log_path)
         result.save()
 
