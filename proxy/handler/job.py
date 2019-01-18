@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+import random
 from concurrent.futures import wait
 from concurrent.futures.thread import ThreadPoolExecutor
 
@@ -88,8 +89,9 @@ def copy_job_test(request, job, jobpk):
         job_test.save()
         result = Job_Test_Result()
         result.job_test = job_test
-        result.log_path = "%s/Test_%s_%s.log" % (utility.gettoday(), m.name, utility.getnow())
-        result.report = "%s/%s_%s" % (utility.gettoday(), utility.getnow(), m.name)
+        result.log_path = "{}/Test_{}_{}_{}.log".format(utility.gettoday(), m.name, utility.getnow(),
+                                                        random.randint(1, 99999))
+        result.report = "{}/{}_{}_{}".format(utility.gettoday(), utility.getnow(), random.randint(1, 99999), m.test)
         utility.newlogger(job_test.name, result.log_path)
         result.save()
 
@@ -112,8 +114,9 @@ def init_jot_test(job):
         job_test.save()
         result = Job_Test_Result()
         result.job_test = job_test
-        result.log_path = "%s/Test_%s_%s.log" % (utility.gettoday(), m.test, utility.getnow())
-        result.report = "%s/%s_%s" % (utility.gettoday(), utility.getnow(), m.test)
+        result.log_path = "{}/Test_{}_{}_{}.log".format(utility.gettoday(), m.test, utility.getnow(),
+                                                        random.randint(1, 99999))
+        result.report = "{}/{}_{}_{}".format(utility.gettoday(), utility.getnow(), random.randint(1, 99999), m.test)
         utility.newlogger(job_test.name, result.log_path)
         result.save()
 
