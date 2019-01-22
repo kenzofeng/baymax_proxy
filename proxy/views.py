@@ -44,6 +44,14 @@ def job_stop(request, project):
 
 
 @csrf_exempt
+def job_remove(request, jobpk):
+    job = Job.objects.get(pk=jobpk)
+    job.disable = True
+    job.save()
+    return JsonResponse({"status": "scuess"}, safe=False)
+
+
+@csrf_exempt
 def job_comments(request):
     try:
         data = json.loads(request.body)
@@ -232,12 +240,18 @@ def test_redfile(request, logid, redfile):
 
 
 def job_getall(request):
-    number = request.GET['number']
+    number = request.GET.get('number', '30')
     if 'project' in request.GET:
         project = request.GET['project']
-        jobs = Job.objects.filter(project=project).order_by('-pk')[:int(number)]
+        jobs = Job.objects.filter(project=project, disable=False).order_by('-pk')[:int(number)]
+    elif 'id' in request.GET:
+        id = request.GET['id'].split(',')
+        jobs = Job.objects.filter(pk__in=id, disable=False).order_by('-pk')
+    elif 'version' in request.GET:
+        version = request.GET['version']
+        jobs = Job.objects.filter(project_version__contains=version, disable=False).order_by('-pk')[:int(number)]
     else:
-        jobs = Job.objects.all().order_by('-pk')[:int(number)]
+        jobs = Job.objects.filter(disable=False).order_by('-pk')[:int(number)]
     job_s = JobSerializer.setup_eager_loading(jobs)
     return JsonResponse(JobSerializer(job_s, many=True).data, safe=False)
 
