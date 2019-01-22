@@ -21,6 +21,12 @@ export function stopjob(project) {
         method: 'get'
     })
 }
+export function rmjob(jobpk) {
+    return request({
+        url: '/api/job/' + jobpk + '/remove',
+        method: 'post'
+    })
+}
 
 export function rerunjob(jobpk, data) {
     return request({

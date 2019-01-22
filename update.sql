@@ -7,3 +7,4 @@ alter table proxy_job_test add column source_url varchar;
 alter table proxy_job_test add column source_type varchar;
 alter table proxy_job_test add column source_branch varchar;
 alter table proxy_job_test add column duration varchar;
+alter table proxy_job add column disable bool;
