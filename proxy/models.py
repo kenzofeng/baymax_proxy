@@ -65,6 +65,7 @@ class Job(models.Model):
     job_number = models.CharField(max_length=20, blank=True, null=True)
     email = models.CharField(max_length=100, blank=True, null=True)
     comments = models.TextField(blank=True, null=True)
+    disable = models.BooleanField(default=False)
 
     def __str__(self):
         return self.project
