@@ -20,7 +20,7 @@ import tenjin
 from django.conf import settings
 from django.utils import timezone
 from lxml import etree
-
+from proxy.models import Mail
 from proxy import env
 
 logger = logging.getLogger('django')
@@ -257,7 +257,9 @@ def set_email(test, host):
 
 def send_email(test, host):
     receiver = test.job.email.split(';')
-    receiver.append('daniel.liu@derbysoft.com')
+    mails = Mail.objects.all()
+    for mail in mails:
+        receiver.append(mail.name)
     if receiver != '':
         sender = env.SENDER
         subject = '%s_Regression_Test_%s' % (test.job.project, test.status)

@@ -108,3 +108,8 @@ class Job_Test_Distributed_Result(models.Model):
     log = models.TextField(blank=True, null=True)
     log_path = models.CharField(max_length=250)
     report = models.CharField(max_length=250, blank=True, null=True)
+
+
+class Mail(models.Model):
+    name = models.CharField(max_length=500)
+
