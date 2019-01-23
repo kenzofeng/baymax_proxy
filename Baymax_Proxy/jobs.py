@@ -1,36 +1,39 @@
 import logging
-from datetime import datetime
+import os
+from concurrent.futures import wait
 
 import requests
-from requests.exceptions import ConnectTimeout
 from apscheduler.schedulers.background import BackgroundScheduler
-from apscheduler.executors.pool import ThreadPoolExecutor
+from django.conf import settings
 
 from proxy.models import Node
-from robot_engine import utility
+from robot_engine.pool import pool
 
-scheduler = BackgroundScheduler(executors={'default': ThreadPoolExecutor(40)})
-
-scheduler.start()
 logger = logging.getLogger('django')
+scheduler = None
+if os.environ.get("scheduler_lock") == "1":
+    scheduler = BackgroundScheduler()
+    scheduler.start()
+    os.environ["scheduler_lock"] = os.environ.get("scheduler_lock") + "1"
+    logger.info('scheduler started')
 
 
-@scheduler.scheduled_job('date', run_date=datetime.now())
+def check_node(node):
+    if settings.HOST.lower() == 'private':
+        node.host = node.private_ip
+    elif settings.HOST.lower() == 'public':
+        node.host = node.public_ip
+    try:
+        requests.get('http://{}:{}/status'.format(node.host, node.port), timeout=2)
+        node.status = "Done"
+    except Exception as e:
+        node.status = "Error"
+        logger.info('Sync server error:{},ip:{},name:{}'.format(e, node.host, node.name))
+    node.save()
+
+
 @scheduler.scheduled_job('interval', minutes=5)
 def sync_server():
     nodes = Node.objects.all().exclude(status='Running')
-    for node in nodes:
-        public_ip, private_ip = utility.getip(node.aws_instance_id)
-        try:
-            if public_ip:
-                requests.get('http://{}:{}/status'.format(public_ip, node.port), timeout=10)
-                node.status = "Done"
-            else:
-                node.status = "Error"
-        except ConnectTimeout:
-            node.status = "Error"
-        except Exception as e:
-            node.status = "Error"
-            logger.error('Sync server error:{},ip:{},name:{}'.format(e, public_ip, node.name))
-        node.host = public_ip
-        node.save()
+    tasks = [pool.submit(check_node, node) for node in nodes]
+    wait(tasks)

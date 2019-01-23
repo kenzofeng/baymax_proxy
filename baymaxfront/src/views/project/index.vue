@@ -1,4 +1,8 @@
 <template>
+ <div class="dimmable">
+   <div class="ui inverted dimmer" :class="active">
+      <div class="ui loader"></div>
+    </div>
   <div class="ui internally celled grid">
     <div class="row">
       <div class="twelve wid column">
@@ -26,6 +30,7 @@
             <div slot="content" v-html="response"></div>
         </model>
   </div>
+  </div>
 </template>
 <script>
 import {getList, newproject, deleteproject} from '@/api/project'
@@ -37,6 +42,7 @@ export default {
   name: 'project',
   data () {
     return {
+      active:"active",
       items: [],
       deletem: 'delete',
       notify: 'indexnotify',
@@ -67,6 +73,9 @@ export default {
     fetchData () {
       getList(null).then(response => {
         this.items = response.data
+        this.active=""
+      }).catch(()=>{
+        this.active=""
       })
     },
     show () {

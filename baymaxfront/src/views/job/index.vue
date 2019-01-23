@@ -1,53 +1,82 @@
 <template>
-  <div>
-    <div class="ui form">
-      <div class="fields">
-        <div class="field">
-          <div class="ui checkbox">
-            <input v-model="version" type="checkbox" name="Version">
-            <label>Version</label>
-          </div>
-           <div class="ui checkbox">
-            <input v-model="servers" type="checkbox" name="Servers">
-            <label>Servers</label>
-          </div>
+  <div class="dimmable">
+    <div class="ui inverted dimmer" :class="active">
+      <div class="ui loader"></div>
+    </div>
+    <div class="ui grid">
+      <div class="two wide column">
+        <h5 class="ui header"></h5>
+        <div class="ui checkbox">
+          <input v-model="projectid" type="checkbox" name="ID">
+          <label>ID</label>
+        </div>
+        <div class="ui checkbox">
+          <input v-model="version" type="checkbox" name="Version">
+          <label>Version</label>
+        </div>
+        <div class="ui checkbox">
+          <input v-model="servers" type="checkbox" name="Servers">
+          <label>Servers</label>
+        </div>
+      </div>
+      <div class="four wide column">
+        <div class="ui fluid action input">
+          <input type="text" placeholder="Project Version" v-model="project_version">
+          <button class="ui icon button" @click="search_version">
+            <i class="search icon"></i>
+          </button>
         </div>
       </div>
     </div>
     <table class="ui selectable celled striped teal table">
       <thead>
         <tr>
+          <th v-if="projectid" class="one wide">ID</th>
           <th class="one wide">Project</th>
           <th v-if="version" class="one wide">Version</th>
           <th v-if="servers" class="one wide">Servers</th>
           <th class="one wide">Status</th>
           <th class="one wide">Start Date</th>
-          <th class="one wide">End Date</th>
-          <th class="seven wide">Test Automation</th>
+          <!-- <th class="one wide">End Date</th> -->
+          <th class="six wide">Test Automation</th>
           <!-- <th class="one wide">Comments</th> -->
-          <th class="one wide">Atction</th>
+          <th class="one wide">Action</th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="job in jobs" :class="lineclass(job.status)" :key="job.pk">
+          <td v-if="projectid">
+            {{job.pk}}
+            <a target="_blank" :href="project_log(job.pk)">
+              <i class="linkify icon"></i>
+            </a>
+          </td>
           <td>{{job.project}}</td>
           <td v-if="version">{{job.project_version}}</td>
           <td v-if="servers">
-            <div v-for="s in jobServers(job.servers)" :key="s">{{s}}</div>
+            <div class="ui aligned ordered divided list">
+              <div class="item" v-for="s in jobServers(job.servers)" :key="s">
+                <div class="content">
+                  <div class="header">{{s}}</div>
+                </div>
+              </div>
+            </div>
           </td>
           <td>
             <i class="icon" :class="statusclass(job.status)"></i>
             <span>{{job.status}}</span>
           </td>
           <td>{{job.start_time}}</td>
-          <td>{{job.end_time}}</td>
+          <!-- <td>{{job.end_time}}</td> -->
           <td>
             <table class="ui small very compact table">
               <thead>
                 <th class="two wide">Test</th>
                 <th class="one wide">Version</th>
+                <th class="one wide">Duration</th>
                 <th class="four wide">App Log</th>
                 <th class="six wide">Robot Parameter</th>
+                <th class="one wide">Count</th>
                 <th class="one wide">Status</th>
                 <th class="one wide">RunTime</th>
                 <th class="one wide">Report</th>
@@ -55,9 +84,17 @@
               <tbody>
                 <tr v-for="test in job.job_test_set" :key="test.id">
                   <td>{{test.name}}</td>
-                  <td>{{test.revision_number}}</td>
+                  <td>
+                    <span
+                      class="ui span"
+                      :data-tooltip="test.revision_number"
+                      data-position="right center"
+                    >{{showdata(test.revision_number)}}</span>
+                  </td>
+                  <td>{{test.duration}}</td>
                   <td>{{test.app}}</td>
                   <td>{{test.robot_parameter}}</td>
+                  <td>{{test.count}}</td>
                   <td :class="resultclass(test.status)">{{test.status}}</td>
                   <td>
                     <a target="_blank" :href="testlog(test.log)">
@@ -95,6 +132,13 @@
               <a class="ui icon button" target="_blank" :href="downloadxml(job.pk)">
                 <i class="download icon"></i>
               </a>
+              <button
+                class="ui icon button red"
+                :class="remove_buttonclass(job.status)"
+                @click="removeshow(job)"
+              >
+                <i class="trash alternate icon"></i>
+              </button>
             </div>
           </td>
         </tr>
@@ -103,6 +147,10 @@
     <model ref="stopmodelcomponent" @yes="stopproject" :name="stopm">
       <div slot="header">Stop Project:{{sproject}}</div>
       <div slot="content">Are you sure stop project?</div>
+    </model>
+     <model ref="removemodelcomponent" @yes="removeproject" :name="revmovem">
+      <div slot="header">Remove Project:{{rmproject}}</div>
+      <div slot="content">Are you sure remove project?</div>
     </model>
     <model ref="rerunmodelcomponent" @yes="rerunproject" :name="rerunm">
       <div slot="header">ReRun Project:{{rproject}}</div>
@@ -133,32 +181,40 @@
   </div>
 </template>
 <script>
-import { getall, stopjob, rerunjob, savecomment } from "@/api/job";
+import { getall, stopjob, rerunjob, savecomment ,rmjob} from "@/api/job";
 import model from "@/components/model";
 import writepopup from "@/components/writepopup";
+import Calendar from "@/components/calendar/calendar";
 export default {
   name: "job",
   components: {
     model,
-    writepopup
+    writepopup,
+    Calendar
   },
   data() {
     return {
+      active: "active",
       jobs: null,
       params: this.$route.query,
       interval_id: "",
       stopm: "stopm",
+      revmovem:"revmovem",
       rerunm: "rerunm",
       notify: "notifym",
       false: false,
       sproject: "",
       rproject: "",
+      rmproject:"",
+      rmjob:"",
       rjob: "",
       response: null,
       form: { job: { job_test_set: [] } },
       activejob: {},
       version: false,
-      servers:false
+      servers: false,
+      projectid: false,
+      project_version: ""
     };
   },
   created() {
@@ -174,9 +230,23 @@ export default {
     clearInterval(this.interval_id);
   },
   methods: {
+    search_version() {
+      this.$router.push({
+        path: "/job/index",
+        query: { number: 30, version: this.project_version }
+      });
+    },
     jobServers(data) {
-      let servers = data.split(":")
-      return servers
+      let servers = data.split(":");
+      return servers;
+    },
+    showdata(data) {
+      if (data != null) {
+        if (data.length > 8) {
+          return data.slice(0, 8) + "...";
+        }
+      }
+      return data;
     },
     editcomments(comments, pk) {
       this.$refs.writepopup.show(comments, pk);
@@ -203,18 +273,26 @@ export default {
     Interval() {
       this.interval_id = setInterval(this.fetchData, 5000);
     },
+    project_log(id) {
+      return "/job/index?id=" + id;
+    },
     testlog(id) {
-      return "result/test/log/" + id;
+      return "/result/test/log/" + id;
     },
     testreport(id) {
-      return "result/report/" + id;
+      return "/result/report/" + id;
     },
     downloadxml(id) {
-      return "result/report/" + id + "/download";
+      return "/result/report/" + id + "/download";
     },
     stopshow(item) {
       this.sproject = item;
       this.$refs.stopmodelcomponent.$emit("show");
+    },
+    removeshow(job){
+      this.rmproject = job.project;
+      this.rmjob = job.pk;
+      this.$refs.removemodelcomponent.$emit("show");
     },
     rerunshow(job) {
       this.rproject = job.project;
@@ -229,6 +307,14 @@ export default {
       });
       this.$refs.notifymodelcomponent.$emit("show");
     },
+    removeproject(){
+      this.response = '<i class="spinner loading icon"></i>';
+      rmjob(this.rmjob).then(response => {
+        this.response = response.data;
+      });
+      this.$refs.notifymodelcomponent.$emit("show");
+      this.fetchData()
+    },
     rerunproject() {
       this.response = '<i class="spinner loading icon"></i>';
       rerunjob(this.rjob, this.form.job).then(response => {
@@ -238,9 +324,14 @@ export default {
     },
     fetchData() {
       this.params = this.$route.query;
-      getall(this.params).then(response => {
-        this.jobs = response.data;
-      });
+      getall(this.params)
+        .then(response => {
+          this.jobs = response.data;
+          this.active = "";
+        })
+        .catch(() => {
+          this.active = "";
+        });
     },
     lineclass(i) {
       switch (i) {
@@ -278,6 +369,11 @@ export default {
     },
     buttonclass(i) {
       if (i !== "Running") {
+        return "disabled";
+      }
+    },
+    remove_buttonclass(i){
+      if (i == "Running") {
         return "disabled";
       }
     }

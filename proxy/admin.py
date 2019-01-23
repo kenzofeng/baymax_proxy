@@ -1,14 +1,10 @@
 from django.contrib import admin
 
-from .models import Svn, Project, Job, Job_Test, Node, Job_Log, Job_Test_Distributed_Result, Job_Test_Result
-
-
-class SvnAdmin(admin.ModelAdmin):
-    list_display = ['name']
+from .models import Project, Job, Job_Test, Node, Job_Log, Job_Test_Distributed_Result, Job_Test_Result, Test_Map
 
 
 class NodeAdmin(admin.ModelAdmin):
-    list_display = ['name', 'host', 'port', 'status']
+    list_display = ['name', 'aws_instance_id', 'public_ip', 'private_ip', 'port', 'status']
     actions = ['Set_Status_Done']
 
     def Set_Status_Done(self, request, queryset):
@@ -37,7 +33,10 @@ class Job_LogAdmin(admin.ModelAdmin):
     list_display = ['job']
 
 
-admin.site.register(Svn, SvnAdmin)
+class Test_Map_Admin(admin.ModelAdmin):
+    list_display = ['project', 'test', 'use', 'robot_parameter']
+
+
 admin.site.register(Project, ProjectAdmin)
 admin.site.register(Job, JobAdmin)
 admin.site.register(Job_Test, JobTestsAdmin)
@@ -45,3 +44,4 @@ admin.site.register(Node, NodeAdmin)
 admin.site.register(Job_Log, Job_LogAdmin)
 admin.site.register(Job_Test_Distributed_Result)
 admin.site.register(Job_Test_Result)
+admin.site.register(Test_Map, Test_Map_Admin)

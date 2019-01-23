@@ -1,8 +1,6 @@
 import base64
 import json
-import os
 import zlib
-from concurrent.futures import wait
 
 from django.http import JsonResponse, FileResponse
 from django.shortcuts import render, HttpResponse
@@ -46,6 +44,14 @@ def job_stop(request, project):
 
 
 @csrf_exempt
+def job_remove(request, jobpk):
+    job = Job.objects.get(pk=jobpk)
+    job.disable = True
+    job.save()
+    return JsonResponse({"status": "scuess"}, safe=False)
+
+
+@csrf_exempt
 def job_comments(request):
     try:
         data = json.loads(request.body)
@@ -64,20 +70,40 @@ def project_getall(request):
 
 
 def getallnodes(request):
-    nodes = Node.objects.all()
-    nodelist = [
-        {"title": node.name, "id": node.aws_instance_id, "ip": node.host, "icon": "blue"} if node.status in ["Done",
-                                                                                                             "Running"] else {
-            "title": node.name, "id": node.aws_instance_id, "ip": node.host, "icon": "grey"} for node in nodes]
+    if 'project' in request.GET:
+        project = request.GET['project']
+        p = Project.objects.get(name=project)
+        nodes = p.node_set.all()
+        nodelist = [
+            {"title": node.name, "id": node.aws_instance_id, "ip": node.public_ip,
+             "icon": "green"} if node.status in [
+                "Done",
+                "Running"] else {
+                "title": node.name, "id": node.aws_instance_id, "ip": node.public_ip, "icon": "red"} for node in
+            nodes]
+    else:
+        nodes = Node.objects.all()
+        nodelist = [
+            {"title": node.name, "id": node.aws_instance_id, "ip": node.public_ip,
+             "icon": "green"} if node.status in [
+                "Done",
+                "Running"] else {
+                "title": node.name, "id": node.aws_instance_id, "ip": node.public_ip, "icon": "red"} for node in
+            nodes]
     return JsonResponse(nodelist, safe=False)
 
 
 def getallnodes_by_project(request):
+    if 'project' in request.GET:
+        project = request.GET['project']
+
     nodes = Node.objects.all()
+
     nodelist = [
-        {"title": node.name, "id": node.aws_instance_id, "ip": node.host, "icon": "blue"} if node.status in ["Done",
-                                                                                                             "Running"] else {
-            "title": node.name, "id": node.aws_instance_id, "ip": node.host, "icon": "grey"} for node in nodes]
+        {"title": node.name, "id": node.aws_instance_id, "ip": node.public_ip, "icon": "blue"} if node.status in [
+            "Done",
+            "Running"] else {
+            "title": node.name, "id": node.aws_instance_id, "ip": node.public_ip, "icon": "grey"} for node in nodes]
     return JsonResponse(nodelist, safe=False)
 
 
@@ -130,9 +156,9 @@ def test_run_log(request, logid):
     log = job_test_result.log
     joblog = ''
     if log is not None:
-        log = str(zlib.decompress(base64.b64decode(log)))
+        log = zlib.decompress(base64.b64decode(log)).decode('utf-8')
         for l in log.split('\n'):
-            joblog = joblog + "<span>%s</span><br/>" % (l)
+            joblog = joblog + "<span>{}</span><br/>".format(l)
         return HttpResponse(joblog, content_type='text/html')
     else:
         try:
@@ -142,7 +168,7 @@ def test_run_log(request, logid):
                 fst = f.read()
                 f.close()
                 for l in fst.split('\n'):
-                    joblog = joblog + "<span>%s</span><br/>" % (l)
+                    joblog = joblog + "<span>{}</span><br/>".format(l)
             test_ds_all = job_test.job_test_distributed_result_set.all()
             tasks = [pool.submit(get_job, test_ds.host, test_ds.pk) for test_ds in test_ds_all]
             wait(tasks)
@@ -214,12 +240,18 @@ def test_redfile(request, logid, redfile):
 
 
 def job_getall(request):
-    number = request.GET['number']
+    number = request.GET.get('number', '30')
     if 'project' in request.GET:
         project = request.GET['project']
-        jobs = Job.objects.filter(project=project).order_by('-pk')[:int(number)]
+        jobs = Job.objects.filter(project=project, disable=False).order_by('-pk')[:int(number)]
+    elif 'id' in request.GET:
+        id = request.GET['id'].split(',')
+        jobs = Job.objects.filter(pk__in=id, disable=False).order_by('-pk')
+    elif 'version' in request.GET:
+        version = request.GET['version'].strip()
+        jobs = Job.objects.filter(project_version__contains=version, disable=False).order_by('-pk')[:int(number)]
     else:
-        jobs = Job.objects.all().order_by('-pk')[:int(number)]
+        jobs = Job.objects.filter(disable=False).order_by('-pk')[:int(number)]
     job_s = JobSerializer.setup_eager_loading(jobs)
     return JsonResponse(JobSerializer(job_s, many=True).data, safe=False)
 
@@ -228,3 +260,21 @@ def lab_getall(request):
     p = Project.objects.all()
     ps = ProjectSerializer.setup_eager_loading(p)
     return JsonResponse(ProjectSerializer(ps, many=True).data, safe=False)
+
+
+@csrf_exempt
+def register(request):
+    n = json.loads(request.body)
+    node = Node.objects.filter(name=n['name']).first()
+    if node:
+        node.aws_instance_id = n['instance_id']
+        node.public_ip = n['public_ip']
+        node.private_ip = n['private_ip']
+        node.status = "Done"
+        node.save()
+    else:
+        node = Node(name=n['name'], aws_instance_id=n['instance_id'], public_ip=n['public_ip'],
+                    private_ip=n['private_ip'],
+                    status="Done")
+        node.save()
+    return JsonResponse({'status': 'scuess'}, safe=False)

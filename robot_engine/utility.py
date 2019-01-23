@@ -51,14 +51,16 @@ def cat_version(host, version_paths):
     result_str = ""
     paths = version_paths.split(";")
     for path in paths:
+        new_paths = path.split(":")
+        cat_host, path = (host, new_paths[0]) if len(new_paths) == 1 else (new_paths[0], new_paths[1])
         result_str += (path + '\n')
         ssh = paramiko.SSHClient()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        ssh.connect(host, 22, upload, upload_pwd, timeout=10.0)
+        ssh.connect(cat_host, 22, upload, upload_pwd, timeout=10.0)
         stdin, stdout, stderr = ssh.exec_command("grep -E 'git.branch|git.commit.id=' {}".format(path))
         catstr = stdout.read()
         result_str += catstr.decode('utf-8')
-    ssh.close()
+        ssh.close()
     return result_str
 
 
@@ -238,15 +240,15 @@ def set_email(test, host):
     emailfile = email_success_file if test.status == 'PASS' else email_failed_file
     context = {
         "start_time": str(test.job.start_time),
-        "duration": strfdelta((test.end_time - test.start_time), '{hours}h{minutes}m{seconds}s'),
+        "duration": test.duration,
         "project": test.job.project,
         "project_version": test.job.project_version,
         "Automation": test.name,
-        'log': 'http://%s/job/result/test/log/%s' % (host, test.job_test_result.id),
+        'log': 'http://%s/result/test/log/%s' % (host, test.job_test_result.id),
         'test_version': test.revision_number,
         'test_count': test.count,
         'result': test.status,
-        'reportlink': 'http://%s/job/result/report/%s' % (host, test.id)}
+        'reportlink': 'http://%s/result/report/%s' % (host, test.id)}
     path = '\\'.join((emailfile.split('\\'))[:-1])
     engine = tenjin.Engine(path=[path], cache=tenjin.MemoryCacheStorage())
     emailstring = engine.render(emailfile, context)

@@ -116,7 +116,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 STATIC_URL = '/static/'
-
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "baymaxfront/dist/static"),
 ]
@@ -137,4 +137,8 @@ LOGGING = {
     },
 }
 
+# if host set private baymax_proxy will connect baymax_node use private ip
+HOST = 'private'
 DEVOPS = "http://35.160.71.185"
+
+os.environ["scheduler_lock"] = "1"

@@ -18,6 +18,8 @@ Django = "==2.1.4"
 Tenjin = "==1.1.1"
 APScheduler = "==3.5.3"
 gunicorn = "*"
+gitpython = "*"
+gevent = "*"
 
 [requires]
 python_version = "3.6"

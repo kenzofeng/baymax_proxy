@@ -1,5 +1,8 @@
 <template>
-  <div>
+  <div class="dimmable">
+    <div class="ui inverted dimmer" :class="active">
+      <div class="ui loader"></div>
+    </div>
     <table class="ui compact selectable celled striped teal table">
       <thead>
         <tr>
@@ -13,7 +16,7 @@
         <tr v-for="tp in projects" :key="tp.name">
           <td @click="toproject(tp.name)"><i class="clipboard list link icon" ></i>{{tp.name}}</td>
           <td>
-              <div class="ui aligned divided list">
+              <div class="ui aligned ordered divided list">
                 <div class="item" v-for="node in tp.nodes" :key="node" >
                 <i :class="iconcss(node)" class="server icon"></i>
                 <div class="content">
@@ -26,14 +29,18 @@
             <table class="ui small table very compact">
               <thead>
                 <th class="two wide">Test</th>
-                <th class="six wide">URL</th>
+                <th class="one wide">Type</th>
+                <th class="five wide">URL</th>
+                <th class="two wide">Branch</th>
                 <th class="two wide">App Log</th>
                 <th>Robot Parameter</th>
               </thead>
               <tbody>
                 <tr v-for="map in tp.maps" :key="map.test" v-if="map.use">
                   <td>{{map.test}}</td>
-                  <td>{{map.testurl}}</td>
+                  <td>{{map.source_type}}</td>
+                  <td>{{map.source_url}}</td>
+                  <td>{{map.source_branch}}</td>
                   <td>{{map.app}}</td>
                   <td>{{map.robot_parameter}}</td>
                 </tr>
@@ -77,6 +84,7 @@ export default {
   },
   data () {
     return {
+      active:"active",
       projects: [],
       run: 'run',
       job: 'job',
@@ -122,6 +130,9 @@ export default {
       labList(this.params).then(response => {
         this.projects = response.data
         this.filterproject()
+        this.active=""
+      }).catch(()=>{
+        this.active=""
       })
     },
     fetchNodes () {

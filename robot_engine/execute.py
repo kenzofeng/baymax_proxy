@@ -42,7 +42,7 @@ class Execute():
             open(download_zip, 'wb').write(r.content)
             utility.extract_zip(download_zip, os.path.join(env.tmp, test_ds.report))
         except Exception as e:
-            logger.error("test error:{}".format(e))
+            logger.error("host:{},test error:{}:".format(node.host, e))
         finally:
             node.status = "Done"
             node.save()
@@ -73,13 +73,6 @@ class Execute():
             utility.copytree(r, test_report)
         test_ds_reports = tuple([os.path.join(ds_report, env.output_xml) for ds_report in test_ds_reports])
         testresult.merge_report(test_report, *test_ds_reports)
-
-    def updatenodes(self, nodes):
-        for node in nodes:
-            instantce_id = node.aws_instance_id
-            public_ip, private_ip = utility.getip(instantce_id)
-            node.host = public_ip
-            node.save()
 
     def checknodestatus(self, nodes):
         newnodes = []
@@ -119,10 +112,13 @@ class Execute():
         if len(nodes) == 0:
             raise Exception("There is no node server to use")
         jobnodes = ':'.join([node.name for node in nodes])
-        while True:
-            if self.check_job_status(jobnodes):
-                break
-            time.sleep(1)
+        if jobnodes:
+            while True:
+                if self.check_job_status(jobnodes):
+                    break
+                time.sleep(1)
+        else:
+            return False
         # self.updatenodes(nodes)
         self.nodes = self.checknodestatus(nodes)
         self.job.servers = ":".join([n.name for n in self.nodes])
@@ -151,6 +147,7 @@ class Execute():
                 testcase.distribute_test_script(self.nodes, test)
                 self.send_test(test)
                 test.end_time = utility.gettime()
+                test.duration = utility.strfdelta((test.end_time - test.start_time), '{hours}h{minutes}m{seconds}s')
                 self.merge_test_report(test)
                 test.status = utility.get_result_fromxml(
                     os.path.join(env.report, test.job_test_result.report, env.output_xml))
@@ -160,7 +157,7 @@ class Execute():
             else:
                 test.status = 'Error'
                 test.save()
-                raise Exception("Project Servers Status is Error")
+                raise Exception("Project Servers Status is Error or Job Server is Empty")
         except Exception as e:
             logger.error("execute error:{}".format(e))
             test.status = 'Error'

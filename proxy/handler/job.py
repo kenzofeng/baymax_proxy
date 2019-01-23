@@ -1,5 +1,9 @@
 import json
+import logging
 import os
+import random
+from concurrent.futures import wait
+from concurrent.futures.thread import ThreadPoolExecutor
 
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -7,10 +11,9 @@ from proxy import env
 from proxy.models import Job, Project, Job_Log, Test_Map, Job_Test, Job_Test_Result
 from robot_engine import utility
 from robot_engine.execute import Execute
-from concurrent.futures.thread import ThreadPoolExecutor
-from concurrent.futures import wait
 
 pool = ThreadPoolExecutor(10)
+logger = logging.getLogger('django')
 
 
 class Myrequest:
@@ -78,14 +81,17 @@ def copy_job_test(request, job, jobpk):
         job_test.job = job
         job_test.status = 'Waiting'
         job_test.robot_parameter = getattr(request, m.name)['robot_parameter']
-        job_test.testurl = m.testurl
+        job_test.source_type = m.source_type
+        job_test.source_url = m.source_url
+        job_test.source_branch = m.source_branch
         job_test.name = m.name
         job_test.app = m.app
         job_test.save()
         result = Job_Test_Result()
         result.job_test = job_test
-        result.log_path = "%s/Test_%s_%s.log" % (utility.gettoday(), m.name, utility.getnow())
-        result.report = "%s/%s_%s" % (utility.gettoday(), utility.getnow(), m.name)
+        result.log_path = "{}/Test_{}_{}_{}.log".format(utility.gettoday(), m.name, utility.getnow(),
+                                                        random.randint(1, 99999))
+        result.report = "{}/{}_{}_{}".format(utility.gettoday(), utility.getnow(), random.randint(1, 99999), m.name)
         utility.newlogger(job_test.name, result.log_path)
         result.save()
 
@@ -100,14 +106,17 @@ def init_jot_test(job):
         job_test.job = job
         job_test.status = 'Waiting'
         job_test.robot_parameter = m.robot_parameter
-        job_test.testurl = m.testurl
+        job_test.source_type = m.source_type
+        job_test.source_url = m.source_url
+        job_test.source_branch = m.source_branch
         job_test.name = m.test
         job_test.app = m.app
         job_test.save()
         result = Job_Test_Result()
         result.job_test = job_test
-        result.log_path = "%s/Test_%s_%s.log" % (utility.gettoday(), m.test, utility.getnow())
-        result.report = "%s/%s_%s" % (utility.gettoday(), utility.getnow(), m.test)
+        result.log_path = "{}/Test_{}_{}_{}.log".format(utility.gettoday(), m.test, utility.getnow(),
+                                                        random.randint(1, 99999))
+        result.report = "{}/{}_{}_{}".format(utility.gettoday(), utility.getnow(), random.randint(1, 99999), m.test)
         utility.newlogger(job_test.name, result.log_path)
         result.save()
 
@@ -132,6 +141,7 @@ def start(request, project):
         job.save()
         utility.logmsg(job.job_log.path, "{}".format(e))
         utility.save_log(job)
+        logger.error("start job error:{}".format(e))
         raise Exception("start job error:{}".format(e))
 
 
@@ -153,6 +163,7 @@ def rerun(request, jobpk):
         job.save()
         utility.logmsg(job.job_log.path, "{}".format(e))
         utility.save_log(job)
+        logger.error("start job error:{}".format(e))
         raise Exception("rerun job error:{}".format(e))
 
 

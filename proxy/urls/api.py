@@ -5,7 +5,7 @@ from proxy import views
 
 urlpatterns = [
                   url(r'^project/getall$', views.project_getall),
-                  url(r'^node/list/$', views.getallnodes),
+                  url(r'^node/list$', views.getallnodes),
                   url(r'^project/getdetail$', views.project_getdetail),
                   url(r'^project/save$', views.project_save),
                   url(r'^project/new$', views.project_add),
@@ -14,7 +14,9 @@ urlpatterns = [
                   url(r'^job/getall$', views.job_getall),
                   url(r'^job/(?P<project>[\w-]*)/start', views.job_start),
                   url(r'^job/(?P<project>[\w-]*)/stop', views.job_stop),
+                  url(r'^job/(?P<jobpk>[\w-]*)/remove', views.job_remove),
                   url(r'^job/(?P<jobpk>[\w-]*)/rerun', views.job_rerun),
                   url(r'^job/comments/', views.job_comments),
                   url(r'^lab/getall$', views.lab_getall),
+                  url(r'^register/', views.register),
               ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

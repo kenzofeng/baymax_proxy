@@ -1,6 +1,6 @@
 from robot.api import TestSuiteBuilder
-from robot.run import RobotFramework
 from robot.conf import RobotSettings
+from robot.run import RobotFramework
 
 
 class TestRun(object):
@@ -24,10 +24,8 @@ class TestRun(object):
     def init_rb(self):
         try:
             rb = RobotFramework()
-            options, datasources = rb._parse_arguments(
-                list(filter(None, "{}".format(self.source).split(" ") if self.args == "" else "{} {}".format(self.args,
-                                                                                                             self.source).split(
-                    " "))))
+            options, datasources = rb.parse_arguments(list(filter(None, "{}".format(self.source).split(
+                " ") if self.args == "" else "{} {}".format(self.args, self.source).split(" "))))
             settings = RobotSettings(options)
             suite = TestSuiteBuilder(settings['SuiteNames'],
                                      settings['WarnOnSkipped'],

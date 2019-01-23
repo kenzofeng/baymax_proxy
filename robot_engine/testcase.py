@@ -2,7 +2,7 @@ import os
 
 import svn.local
 import svn.remote
-
+from git import Repo
 from proxy import env
 from proxy.models import Job_Test_Distributed_Result
 from . import testparameter, utility
@@ -47,24 +47,44 @@ def delete_distribute_test_report(test):
         utility.remove_file(reprot)
 
 
-def checkout_script(test):
+def svn_checkout(test, test_path):
     try:
-        utility.job_test_log(test.name, "checkout test automation from svn")
-        testpath = os.path.join(env.test, test.name)
-        if os.path.exists(testpath):
-            utility.remove_file(testpath)
-            utility.remove_file(testpath)
-            utility.remove_file(testpath)
-        os.mkdir(testpath)
         r = svn.remote.RemoteClient(test.testurl)
-        r.checkout(testpath)
+        r.checkout(test_path)
     except UnicodeDecodeError:
         pass
     except Exception as e:
-        raise Exception("Checkout Automation Script Error:%s" % e)
+        raise Exception("SVN Checkout Automation Script Error:{}".format(e))
     try:
-        l = svn.local.LocalClient(testpath)
+        l = svn.local.LocalClient(test_path)
         test.revision_number = l.info()['commit#revision']
         test.save()
     except Exception as e:
-        raise Exception("Get Svn Vision Automation Script Error:%s" % e)
+        raise Exception("SVN Get Automation Script revision Error:{}".format(e))
+
+
+def git_checkout(test, test_path):
+    try:
+        cloned_repo = Repo.clone_from(url=test.source_url, to_path=test_path)
+        cloned_repo.git.checkout(test.source_branch)
+        test.revision_number = Repo(test_path).head.commit
+        test.save()
+    except Exception as e:
+        raise Exception("Git Checkout Automation Script Error:{}".format(e))
+
+
+def checkout_script(test):
+    try:
+        test_path = os.path.join(env.test, test.name)
+        type = test.source_type
+        if os.path.exists(test_path):
+            utility.remove_file(test_path)
+            utility.remove_file(test_path)
+            utility.remove_file(test_path)
+        os.mkdir(test_path)
+        if type.lower() == 'svn':
+            svn_checkout(test, test_path)
+        if type.lower() == 'git':
+            git_checkout(test, test_path)
+    except Exception as e:
+        raise Exception("checkout_script Error:{}".format(e))
