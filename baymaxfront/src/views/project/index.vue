@@ -13,12 +13,13 @@
       </div>
     </div>
     <div class="row">
-      <div class="three wide column">
+      <div class="three wide column outbox">
         <list :items="items" @deleteproject="deleteshow"></list>
       </div>
-      <div class="thirteen wide column">
+      <div class="thirteen wide column outbox">
         <router-view></router-view>
       </div>
+    </div>
     </div>
     <actionmodel ref="actionmodelcomponent"  @yes="yes" ></actionmodel>
     <model ref="deletemodelcomponent" @yes="dproject" :name="deletem">
@@ -29,7 +30,6 @@
             <div slot="header">Status</div>
             <div slot="content" v-html="response"></div>
         </model>
-  </div>
   </div>
 </template>
 <script>
@@ -90,3 +90,9 @@ export default {
 }
 
 </script>
+<style scoped>
+.outbox{
+  height:800px!important;
+  overflow-y: auto;
+}
+</style>
