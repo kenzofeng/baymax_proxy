@@ -373,7 +373,7 @@ export default {
       }
     },
     remove_buttonclass(i) {
-      if (i == "Running") {
+      if (i == "Running" || i=="Waiting") {
         return "disabled";
       }
     }
