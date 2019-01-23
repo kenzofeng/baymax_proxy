@@ -45,13 +45,13 @@
       </thead>
       <tbody>
         <tr v-for="job in jobs" :class="lineclass(job.status)" :key="job.pk">
-          <td v-if="projectid">
-            {{job.pk}}
+          <td v-if="projectid">{{job.pk}}</td>
+          <td>
             <a target="_blank" :href="project_log(job.pk)">
               <i class="linkify icon"></i>
             </a>
+            {{job.project}}
           </td>
-          <td>{{job.project}}</td>
           <td v-if="version">{{job.project_version}}</td>
           <td v-if="servers">
             <div class="ui aligned ordered divided list">
@@ -148,7 +148,7 @@
       <div slot="header">Stop Project:{{sproject}}</div>
       <div slot="content">Are you sure stop project?</div>
     </model>
-     <model ref="removemodelcomponent" @yes="removeproject" :name="revmovem">
+    <model ref="removemodelcomponent" @yes="removeproject" :name="revmovem">
       <div slot="header">Remove Project:{{rmproject}}</div>
       <div slot="content">Are you sure remove project?</div>
     </model>
@@ -181,7 +181,7 @@
   </div>
 </template>
 <script>
-import { getall, stopjob, rerunjob, savecomment ,rmjob} from "@/api/job";
+import { getall, stopjob, rerunjob, savecomment, rmjob } from "@/api/job";
 import model from "@/components/model";
 import writepopup from "@/components/writepopup";
 import Calendar from "@/components/calendar/calendar";
@@ -199,14 +199,14 @@ export default {
       params: this.$route.query,
       interval_id: "",
       stopm: "stopm",
-      revmovem:"revmovem",
+      revmovem: "revmovem",
       rerunm: "rerunm",
       notify: "notifym",
       false: false,
       sproject: "",
       rproject: "",
-      rmproject:"",
-      rmjob:"",
+      rmproject: "",
+      rmjob: "",
       rjob: "",
       response: null,
       form: { job: { job_test_set: [] } },
@@ -289,7 +289,7 @@ export default {
       this.sproject = item;
       this.$refs.stopmodelcomponent.$emit("show");
     },
-    removeshow(job){
+    removeshow(job) {
       this.rmproject = job.project;
       this.rmjob = job.pk;
       this.$refs.removemodelcomponent.$emit("show");
@@ -307,13 +307,13 @@ export default {
       });
       this.$refs.notifymodelcomponent.$emit("show");
     },
-    removeproject(){
+    removeproject() {
       this.response = '<i class="spinner loading icon"></i>';
       rmjob(this.rmjob).then(response => {
         this.response = response.data;
       });
       this.$refs.notifymodelcomponent.$emit("show");
-      this.fetchData()
+      this.fetchData();
     },
     rerunproject() {
       this.response = '<i class="spinner loading icon"></i>';
@@ -372,7 +372,7 @@ export default {
         return "disabled";
       }
     },
-    remove_buttonclass(i){
+    remove_buttonclass(i) {
       if (i == "Running") {
         return "disabled";
       }
