@@ -25,7 +25,7 @@ class JobTestsAdmin(admin.ModelAdmin):
 
 
 class JobAdmin(admin.ModelAdmin):
-    list_display = ['pk', 'project', 'status', 'start_time', 'end_time']
+    list_display = ['pk', 'project', 'status', 'start_time', 'end_time', 'disable']
     inlines = [job_test_Inline]
 
 
