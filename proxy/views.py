@@ -248,7 +248,7 @@ def job_getall(request):
         id = request.GET['id'].split(',')
         jobs = Job.objects.filter(pk__in=id, disable=False).order_by('-pk')
     elif 'version' in request.GET:
-        version = request.GET['version']
+        version = request.GET['version'].strip()
         jobs = Job.objects.filter(project_version__contains=version, disable=False).order_by('-pk')[:int(number)]
     else:
         jobs = Job.objects.filter(disable=False).order_by('-pk')[:int(number)]
