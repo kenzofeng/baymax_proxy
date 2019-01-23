@@ -20,8 +20,9 @@ import tenjin
 from django.conf import settings
 from django.utils import timezone
 from lxml import etree
-from proxy.models import Mail
+
 from proxy import env
+from proxy.models import Mail
 
 logger = logging.getLogger('django')
 tenjin.set_template_encoding("utf-8")
