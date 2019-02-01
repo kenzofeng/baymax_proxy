@@ -1,9 +1,15 @@
 import pytz
 from rest_framework import serializers
 
-from .models import Project, Test_Map, Job, Job_Test, Node
+from .models import Project, Test_Map, Job, Job_Test, Node, Type
 
 sh = pytz.timezone('Asia/Shanghai')
+
+
+class TypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Type
+        fields = ('name',)
 
 
 class JobTestSerializer(serializers.ModelSerializer):
@@ -44,10 +50,14 @@ class JobSerializer(serializers.ModelSerializer):
 class ProjectSerializer(serializers.ModelSerializer):
     nodes = serializers.SerializerMethodField(read_only=False)
     maps = serializers.SerializerMethodField(read_only=False)
+    type = serializers.SerializerMethodField(read_only=False)
 
     class Meta:
         model = Project
-        fields = ('pk', 'name', 'email', 'version', 'nodes', 'maps')
+        fields = ('pk', 'name', 'email', 'type', 'version', 'nodes', 'maps')
+
+    def get_type(self, obj):
+        return obj.type.name if obj.type is not None else ""
 
     def get_nodes(self, obj):
         return [node.name for node in obj.node_set.all()]
@@ -56,13 +66,17 @@ class ProjectSerializer(serializers.ModelSerializer):
         return TestMapSerializer(Test_Map.objects.filter(project=obj.name), many=True).data
 
     def validate(self, attrs):
+        if self.initial_data['type'] =="":
+            raise serializers.ValidationError('Project Type is not Null')
         attrs['maps'] = self.initial_data['maps']
         attrs['nodes'] = self.initial_data['nodes']
+        attrs['type'] = self.initial_data['type']
         return attrs
 
     def update(self, instance, validated_data):
         instance.email = validated_data.get('email')
         instance.version = validated_data.get('version')
+        instance.type = Type.objects.get(name=validated_data.get('type'))
         maps = Test_Map.objects.filter(project=instance.pk)
         for m in maps:
             m.delete()

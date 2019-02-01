@@ -11,8 +11,8 @@ from robot_engine.pool import pool
 from robot_engine.utility import zipreport, get_job
 from . import env
 from .handler import job as job_handler
-from .models import Project, Job, Job_Test_Result, Job_Test, Test_Map
-from .serializers import ProjectSerializer, JobSerializer
+from .models import Project, Job, Job_Test_Result, Job_Test, Test_Map, Type
+from .serializers import ProjectSerializer, JobSerializer, TypeSerializer
 
 
 def job_start(request, project):
@@ -65,7 +65,7 @@ def job_comments(request):
 
 def project_getall(request):
     list_project = Project.objects.all()
-    list_project = [{"title": project.pk} for project in list_project]
+    list_project = [{"title": project.pk, 'type': getattr(project.type, 'name', "")} for project in list_project]
     return JsonResponse(list_project, safe=False)
 
 
@@ -93,18 +93,9 @@ def getallnodes(request):
     return JsonResponse(nodelist, safe=False)
 
 
-def getallnodes_by_project(request):
-    if 'project' in request.GET:
-        project = request.GET['project']
-
-    nodes = Node.objects.all()
-
-    nodelist = [
-        {"title": node.name, "id": node.aws_instance_id, "ip": node.public_ip, "icon": "blue"} if node.status in [
-            "Done",
-            "Running"] else {
-            "title": node.name, "id": node.aws_instance_id, "ip": node.public_ip, "icon": "grey"} for node in nodes]
-    return JsonResponse(nodelist, safe=False)
+def getalltypes(request):
+    t = Type.objects.all()
+    return JsonResponse(TypeSerializer(t, many=True).data, safe=False)
 
 
 def project_getdetail(request):

@@ -15,7 +15,8 @@ export default {
   props: {items: null, default: null},
   mounted () {
     $(this.$el).dropdown({
-      clearable: true
+      clearable: true,
+      placeholder:""
     })
   },
   watch: {

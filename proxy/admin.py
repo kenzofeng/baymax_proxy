@@ -1,6 +1,11 @@
 from django.contrib import admin
 
-from .models import Project, Job, Job_Test, Node, Job_Log, Job_Test_Distributed_Result, Job_Test_Result, Test_Map, Mail
+from .models import Project, Job, Job_Test, Node, Job_Log, Job_Test_Distributed_Result, Job_Test_Result, Test_Map, Mail, \
+    Type
+
+
+class TypeAdmin(admin.ModelAdmin):
+    list_display = ['name']
 
 
 class NodeAdmin(admin.ModelAdmin):
@@ -50,3 +55,4 @@ admin.site.register(Job_Test_Distributed_Result)
 admin.site.register(Job_Test_Result)
 admin.site.register(Test_Map, Test_Map_Admin)
 admin.site.register(Mail, MailAdmin)
+admin.site.register(Type, TypeAdmin)

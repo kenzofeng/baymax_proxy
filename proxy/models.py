@@ -15,10 +15,15 @@ Source_type = (
 )
 
 
+class Type(models.Model):
+    name = models.CharField(max_length=50, primary_key=True)
+
+
 class Project(models.Model):
     name = models.CharField(max_length=50, primary_key=True)
     email = models.CharField(max_length=250)
     version = models.CharField(max_length=500, blank=True, default="")
+    type = models.ForeignKey(Type, on_delete=models.SET_NULL, null=True)
 
     def __unicode__(self):
         return self.name
@@ -112,4 +117,3 @@ class Job_Test_Distributed_Result(models.Model):
 
 class Mail(models.Model):
     name = models.CharField(max_length=500)
-

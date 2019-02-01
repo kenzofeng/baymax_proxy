@@ -1,98 +1,140 @@
 <template>
- <div class="dimmable">
-   <div class="ui inverted dimmer" :class="active">
+  <div class="dimmable">
+    <div class="ui inverted dimmer" :class="active">
       <div class="ui loader"></div>
     </div>
-  <div class="ui internally celled grid">
-    <div class="row">
-      <div class="twelve wid column">
+    <div class="ui internally celled grid">
+      <div class="row">
+        <div class="twelve wid column">
           <button class="ui teal button" @click="show">
             <i class="clipboard list icon"></i>
             Project
           </button>
+          <select class="ui dropdown index" v-model="typesselected">
+            <option value></option>
+            <option v-for="type in types" :value="type.name" :key="type.name">{{type.name}}</option>
+          </select>
+          <div class="ui label">
+            <i class="clipboard list icon"></i>
+            {{this.items.length}}
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="three wide column outbox">
+          <list :items="items" @deleteproject="deleteshow"></list>
+        </div>
+        <div class="thirteen wide column outbox">
+          <router-view></router-view>
+        </div>
       </div>
     </div>
-    <div class="row">
-      <div class="three wide column outbox">
-        <list :items="items" @deleteproject="deleteshow"></list>
-      </div>
-      <div class="thirteen wide column outbox">
-        <router-view></router-view>
-      </div>
-    </div>
-    </div>
-    <actionmodel ref="actionmodelcomponent"  @yes="yes" ></actionmodel>
+    <actionmodel ref="actionmodelcomponent" @yes="yes"></actionmodel>
     <model ref="deletemodelcomponent" @yes="dproject" :name="deletem">
-            <div slot="header">Delete Project</div>
-            <div slot="content">Are you sure delete project?</div>
+      <div slot="header">Delete Project</div>
+      <div slot="content">Are you sure delete project?</div>
     </model>
     <model ref="notifymodelcomponent" :name="notify" :noshow="false">
-            <div slot="header">Status</div>
-            <div slot="content" v-html="response"></div>
-        </model>
+      <div slot="header">Status</div>
+      <div slot="content" v-html="response"></div>
+    </model>
   </div>
 </template>
 <script>
-import {getList, newproject, deleteproject} from '@/api/project'
-import multidrop from '@/components/multidropdown'
-import actionmodel from '@/components/actionmodel'
-import model from '@/components/model'
-import list from './list'
+import { getList, newproject, deleteproject, gettypes } from "@/api/project";
+import multidrop from "@/components/multidropdown";
+import actionmodel from "@/components/actionmodel";
+import model from "@/components/model";
+import list from "./list";
 export default {
-  name: 'project',
-  data () {
+  name: "project",
+  data() {
     return {
-      active:"active",
+      active: "active",
       items: [],
-      deletem: 'delete',
-      notify: 'indexnotify',
-      ditem: '',
+      copy_items: [],
+      deletem: "delete",
+      notify: "indexnotify",
+      ditem: "",
       response: null,
-      false: false
-    }
+      false: false,
+      types: [],
+      typesselected: ""
+    };
   },
   components: {
-    list, multidrop, actionmodel, model
+    list,
+    multidrop,
+    actionmodel,
+    model
   },
-  created () {
-    this.fetchData()
+  created() {
+    this.fetchData();
+  },
+  mounted() {
+    $(".ui.dropdown.index").dropdown({
+      clearable: true,
+      placeholder:""
+    });
+  },
+  watch: {
+    typesselected: function(value) {
+      this.filter_project(value);
+    }
   },
   methods: {
-    dproject () {
-      this.response = '<i class="spinner loading icon"></i>'
+    filter_project(value) {
+      this.items = [];
+      if (value == "") {
+        this.items = this.copy_items;
+      } else {
+        for (let i in this.copy_items) {
+          if (this.copy_items[i].type == value) {
+            this.items.push(this.copy_items[i]);
+          }
+        }
+      }
+    },
+    dproject() {
+      this.response = '<i class="spinner loading icon"></i>';
       deleteproject(this.ditem).then(response => {
-        this.response = response.data
-        this.fetchData()
-      })
-      this.$refs.notifymodelcomponent.$emit('show')
+        this.response = response.data;
+        this.fetchData();
+      });
+      this.$refs.notifymodelcomponent.$emit("show");
     },
-    deleteshow (item) {
-      this.ditem = item
-      this.$refs.deletemodelcomponent.$emit('show')
+    deleteshow(item) {
+      this.ditem = item;
+      this.$refs.deletemodelcomponent.$emit("show");
     },
-    fetchData () {
-      getList(null).then(response => {
-        this.items = response.data
-        this.active=""
-      }).catch(()=>{
-        this.active=""
-      })
+    fetchData() {
+      getList(null)
+        .then(response => {
+          this.items = response.data;
+          this.copy_items = response.data;
+          this.active = "";
+        })
+        .catch(() => {
+          this.active = "";
+        });
+      gettypes().then(reponse => {
+        this.types = reponse.data;
+      });
     },
-    show () {
-      this.$refs.actionmodelcomponent.$emit('show')
+    show() {
+      this.$refs.actionmodelcomponent.$emit("show");
     },
-    yes (val) {
+    yes(val) {
       newproject(val).then(response => {
-        this.fetchData()
-      })
+        this.fetchData();
+      });
     }
   }
-}
-
+};
 </script>
 <style scoped>
-.outbox{
-  height:800px!important;
+.outbox {
+  height: 800px !important;
   overflow-y: auto;
 }
 </style>

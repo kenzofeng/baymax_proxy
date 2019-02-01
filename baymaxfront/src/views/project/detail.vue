@@ -5,7 +5,7 @@
     </div>
     <div class="ui form">
       <h4 class="ui teal dividing header">Information</h4>
-      <div class="two fields">
+      <div class="three fields">
         <div class="required field">
           <label>Name:</label>
           <input type="text" name="name" v-model="item.name">
@@ -18,6 +18,13 @@
             placeholder="aaa@derbysoft.com;bbb@derbysoft.com"
             v-model="item.email"
           >
+        </div>
+        <div class="required field">
+          <label>Type:</label>
+          <select class="ui dropdown detail" v-model="item.type">
+            <option value></option>
+            <option v-for="type in types" :value="type.name" :key="type.name">{{type.name}}</option>
+          </select>
         </div>
       </div>
       <div class="field">
@@ -66,7 +73,7 @@
   </div>
 </template>
 <script>
-import { getdetail, saveproject } from "@/api/project";
+import { getdetail, saveproject, gettypes } from "@/api/project";
 import { nodeList } from "@/api/node";
 import testauto from "./testauto";
 import multidrop from "@/components/multidropdown";
@@ -75,14 +82,18 @@ export default {
   name: "detail",
   data() {
     return {
-      active:"active",
+      active: "active",
       item: { name: "", email: "", version: "", nodes: [], maps: [] },
       nodes: [],
       savem: "save",
       notify: "notify",
       response: null,
-      false: false
+      false: false,
+      types: []
     };
+  },
+  mounted() {
+    $(".ui.dropdown.detail").dropdown({placeholder:""});
   },
   components: { testauto, multidrop, model },
   created() {
@@ -109,7 +120,7 @@ export default {
       });
     },
     fetchData() {
-      this.active="active"
+      this.active = "active";
       getdetail({ tid: this.$route.params.name })
         .then(response => {
           this.item = response.data;
@@ -118,6 +129,9 @@ export default {
         .catch(() => {
           this.active = "";
         });
+      gettypes().then(reponse => {
+        this.types = reponse.data;
+      });
     },
     fetchNodes() {
       nodeList(null).then(response => {
