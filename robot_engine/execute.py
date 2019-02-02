@@ -6,7 +6,7 @@ from concurrent.futures import wait
 import requests
 
 from proxy import env
-from proxy.models import Project, Job
+from proxy.models import Project, Job, Node
 from . import testcase, testresult, utility
 from .pool import pool
 
@@ -111,7 +111,10 @@ class Execute():
         nodes = self.project.node_set.all()
         if len(nodes) == 0:
             raise Exception("There is no node server to use")
-        jobnodes = ':'.join([node.name for node in nodes])
+        names = [node.name for node in nodes]
+        jobnodes = ':'.join(names)
+        self.job.status = 'Waiting Last Job Done'
+        self.job.save()
         if jobnodes:
             while True:
                 if self.check_job_status(jobnodes):
@@ -121,10 +124,12 @@ class Execute():
             return False
         self.nodes = self.checknodestatus(nodes)
         self.job.servers = ":".join([n.name for n in self.nodes])
+        self.job.status = 'Waiting Job Server Done'
         self.job.save()
         while True:
-            p = Project.objects.get(name=self.job.project)
-            nodes = p.node_set.all()
+            nodes = Node.objects.filter(name__in=names)
+            # p = Project.objects.get(name=self.job.project)
+            # nodes = p.node_set.all()
             status = any([node.status == 'Error' for node in nodes])
             if status:
                 return False

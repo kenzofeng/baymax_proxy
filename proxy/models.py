@@ -5,6 +5,8 @@ Run_Status = (
     ('Done', 'Done'),
     ('Error', 'Error'),
     ('Waiting', 'Waiting'),
+    ('Waiting Last Job Done', 'Waiting Last Job Done'),
+    ('Waiting Job Server Done', 'Waiting Job Server Done'),
     ('FAIL', 'FAIL'),
     ('PASS', 'PASS'),
 )
