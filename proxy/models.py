@@ -65,7 +65,7 @@ class Test_Map(models.Model):
 class Job(models.Model):
     project = models.CharField(max_length=50)
     project_version = models.TextField(default="")
-    servers = models.CharField(max_length=100)
+    servers = models.CharField(max_length=500)
     status = models.CharField(max_length=20, choices=Run_Status)
     start_time = models.DateTimeField(blank=True, null=True)
     end_time = models.DateTimeField(blank=True, null=True)
