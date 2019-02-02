@@ -58,7 +58,10 @@ def init_job(project):
 def copy_job(job_pk):
     job = Job.objects.get(pk=job_pk)
     job.pk = None
+    project = Project.objects.get(name=job.project)
+    nodes = project.node_set.all()
     job.save()
+    job.servers = ':'.join([node.name for node in nodes])
     job.status = 'Waiting'
     job.project_version = ""
     job.start_time = utility.gettime()
