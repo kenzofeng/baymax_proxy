@@ -212,9 +212,11 @@ def test_xml(request, jobid):
 def test_cache(request, logid, cid):
     test = Job_Test.objects.get(pk=logid)
     path = os.path.join(env.report, test.job_test_result.report, 'cache', cid)
-    f = open(path)
-    return HttpResponse(f.read(), content_type='text')
-
+    if os.path.exists(path):
+        f = open(path)
+        return HttpResponse(f.read(), content_type='text')
+    else:
+        return HttpResponse("Cache File has been deleted", content_type='text')
 
 def test_compare(request, logid, cid):
     test = Job_Test.objects.get(pk=logid)
