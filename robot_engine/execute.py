@@ -113,7 +113,7 @@ class Execute():
             raise Exception("There is no node server to use")
         names = [node.name for node in nodes]
         jobnodes = ':'.join(names)
-        self.job.status = 'Waiting Last Job Done'
+        self.job.status = 'Waiting Job'
         self.job.save()
         if jobnodes:
             while True:
@@ -124,7 +124,7 @@ class Execute():
             return False
         self.nodes = self.checknodestatus(nodes)
         self.job.servers = ":".join([n.name for n in self.nodes])
-        self.job.status = 'Waiting Job Server Done'
+        self.job.status = 'Waiting Server'
         self.job.save()
         while True:
             nodes = Node.objects.filter(name__in=names)

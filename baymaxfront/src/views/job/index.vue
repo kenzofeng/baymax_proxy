@@ -354,6 +354,10 @@ export default {
           return "spinner loading";
         case "Waiting":
           return "sync loading";
+        case "Waiting Job":
+          return "sync loading";
+        case "Waiting Server":
+          return "sync loading";
       }
     },
     resultclass(i) {
