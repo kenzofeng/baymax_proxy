@@ -35,9 +35,9 @@ def job_rerun(request, jobpk):
 
 
 @csrf_exempt
-def job_stop(request, project):
+def job_stop(request, project,jobId):
     try:
-        rs = job_handler.stop(project)
+        rs = job_handler.stop(project,jobId)
         return JsonResponse({"status": rs}, safe=False)
     except Exception as e:
         return HttpResponse(e)

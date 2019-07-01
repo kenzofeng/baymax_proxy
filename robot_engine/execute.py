@@ -62,7 +62,7 @@ class Execute():
             test_ds.save()
             # self.request_test(test_ds,node)
             request_tasks.append(pool.submit(self.request_test, test_ds, node))
-        wait(request_tasks)
+        wait(request_tasks, timeout=3600)
 
     def merge_test_report(self, test):
         test_report = os.path.join(env.report, test.job_test_result.report)
@@ -156,7 +156,6 @@ class Execute():
                 test.status = utility.get_result_fromxml(
                     os.path.join(env.report, test.job_test_result.report, env.output_xml))
                 test.save()
-
                 pool.submit(utility.send_email, test, self.ip)
             else:
                 test.status = 'Error'

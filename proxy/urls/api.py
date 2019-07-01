@@ -14,7 +14,7 @@ urlpatterns = [
                   url(r'^job/log/(?P<logid>\d+)/$', views.test_run_log),
                   url(r'^job/getall$', views.job_getall),
                   url(r'^job/(?P<project>[\w-]*)/start', views.job_start),
-                  url(r'^job/(?P<project>[\w-]*)/stop', views.job_stop),
+                  url(r'^job/(?P<project>[\w-]*)/stop/(?P<jobId>\d+)', views.job_stop),
                   url(r'^job/(?P<jobpk>[\w-]*)/remove', views.job_remove),
                   url(r'^job/(?P<jobpk>[\w-]*)/rerun', views.job_rerun),
                   url(r'^job/comments/', views.job_comments),

@@ -32,12 +32,19 @@ class Myrequest:
                     setattr(self, test['name'], {'robot_parameter': test['robot_parameter']})
 
 
-def stop(project):
+def stop(project,jobId):
     try:
         p = Project.objects.get(name=project)
         nodes = p.node_set.all()
         tasks = [pool.submit(utility.stop_job, node.host) for node in nodes]
         wait(tasks)
+        job =Job.objects.get(pk=jobId)
+        job_tests= job.job_test_set.all()
+        for job_test in job_tests:
+            job_test.status='Error'
+            job_test.save()
+        job.status='Error'
+        job.save()
     except Exception as e:
         raise Exception(e)
 

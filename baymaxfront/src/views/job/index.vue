@@ -122,7 +122,7 @@
               <button
                 class="ui icon button red"
                 :class="buttonclass(job.status)"
-                @click="stopshow(job.project)"
+                @click="stopshow(job)"
               >
                 <i class="stop icon"></i>
               </button>
@@ -145,7 +145,7 @@
       </tbody>
     </table>
     <model ref="stopmodelcomponent" @yes="stopproject" :name="stopm">
-      <div slot="header">Stop Project:{{sproject}}</div>
+      <div slot="header">Stop Project:{{sproject.project}}</div>
       <div slot="content">Are you sure stop project?</div>
     </model>
     <model ref="removemodelcomponent" @yes="removeproject" :name="revmovem">
@@ -286,6 +286,7 @@ export default {
       return "/result/report/" + id + "/download";
     },
     stopshow(item) {
+      console.log(item)
       this.sproject = item;
       this.$refs.stopmodelcomponent.$emit("show");
     },
@@ -302,7 +303,7 @@ export default {
     },
     stopproject() {
       this.response = '<i class="spinner loading icon"></i>';
-      stopjob(this.sproject).then(response => {
+      stopjob(this.sproject.project,this.sproject.pk).then(response => {
         this.response = response.data;
       });
       this.$refs.notifymodelcomponent.$emit("show");
