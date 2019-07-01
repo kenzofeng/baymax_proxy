@@ -308,7 +308,7 @@ def zipreport(*sourcefile):
 
 
 def extract_zip(source, target):
-    f = zipfile.ZipFile(source, 'r')
+    f = zipfile.ZipFile(source, 'r', allowZip64=True)
     for ff in f.namelist():
         f.extract(ff, target)
 
