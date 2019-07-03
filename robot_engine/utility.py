@@ -356,10 +356,12 @@ def copytree(src, dst, symlinks=False):
             errors.extend(err.args[0])
     try:
         shutil.copystat(src, dst)
-    except WindowsError:
-        pass
-    except OSError as why:
-        errors.extend((src, dst, str(why)))
+    except WindowsError as e:
+        logger.error("copytree WindowsError:{}".format(e))
+        errors.extend((src, dst, str(e)))
+    except OSError as e:
+        logger.error("copytree OSError :{}".format(e))
+        errors.extend((src, dst, str(e)))
     if errors:
         raise Exception(errors)
 
