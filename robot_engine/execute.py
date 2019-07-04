@@ -62,15 +62,18 @@ class Execute():
             test_ds.save()
             # self.request_test(test_ds,node)
             request_tasks.append(pool.submit(self.request_test, test_ds, node))
-        wait(request_tasks, timeout=3600)
+        wait(request_tasks, timeout=5400)
 
     def merge_test_report(self, test):
+        logger.info("merge_test_report Start:{}".format(str(test)))
         test_report = os.path.join(env.report, test.job_test_result.report)
         test_ds_reports = [os.path.join(env.tmp, test_ds.report) for test_ds in
                            test.job_test_distributed_result_set.all() if
                            os.path.exists(os.path.join(env.tmp, test_ds.report))]
         for r in test_ds_reports:
+            logger.info("copytree Start:{}".format(test_report))
             utility.copytree(r, test_report)
+        logger.info("copytree End:{}".format(test_report))
         test_ds_reports = tuple([os.path.join(ds_report, env.output_xml) for ds_report in test_ds_reports])
         testresult.merge_report(test_report, *test_ds_reports)
 
@@ -152,8 +155,8 @@ class Execute():
                 self.send_test(test)
                 test.end_time = utility.gettime()
                 test.duration = utility.strfdelta((test.end_time - test.start_time), '{hours}h{minutes}m{seconds}s')
-                test.save()
                 self.merge_test_report(test)
+                test.save()
                 test.status = utility.get_result_fromxml(
                     os.path.join(env.report, test.job_test_result.report, env.output_xml))
                 test.save()

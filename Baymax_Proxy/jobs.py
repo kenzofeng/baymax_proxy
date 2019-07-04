@@ -15,7 +15,7 @@ if os.environ.get("scheduler_lock") == "1":
     scheduler = BackgroundScheduler()
     scheduler.start()
     os.environ["scheduler_lock"] = os.environ.get("scheduler_lock") + "1"
-    logger.info('scheduler started')
+    logger.debug('scheduler started')
 
 
 def check_node(node):
@@ -28,7 +28,7 @@ def check_node(node):
         node.status = "Done"
     except Exception as e:
         node.status = "Error"
-        logger.info('Sync server error:{},ip:{},name:{}'.format(e, node.host, node.name))
+        logger.debug('Sync server error:{},ip:{},name:{}'.format(e, node.host, node.name))
     node.save()
 
 

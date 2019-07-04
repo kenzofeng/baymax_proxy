@@ -42,6 +42,10 @@ class Test_Map_Admin(admin.ModelAdmin):
     list_display = ['project', 'test', 'use', 'robot_parameter']
 
 
+class JobTestResultAdmin(admin.ModelAdmin):
+    list_display = ['report']
+
+
 class MailAdmin(admin.ModelAdmin):
     list_display = ['name']
 
@@ -52,7 +56,7 @@ admin.site.register(Job_Test, JobTestsAdmin)
 admin.site.register(Node, NodeAdmin)
 admin.site.register(Job_Log, Job_LogAdmin)
 admin.site.register(Job_Test_Distributed_Result)
-admin.site.register(Job_Test_Result)
+admin.site.register(Job_Test_Result, JobTestResultAdmin)
 admin.site.register(Test_Map, Test_Map_Admin)
 admin.site.register(Mail, MailAdmin)
 admin.site.register(Type, TypeAdmin)
