@@ -35,9 +35,9 @@ def job_rerun(request, jobpk):
 
 
 @csrf_exempt
-def job_stop(request, project,jobId):
+def job_stop(request, project, jobId):
     try:
-        rs = job_handler.stop(project,jobId)
+        rs = job_handler.stop(project, jobId)
         return JsonResponse({"status": rs}, safe=False)
     except Exception as e:
         return HttpResponse(e)
@@ -46,8 +46,7 @@ def job_stop(request, project,jobId):
 @csrf_exempt
 def job_remove(request, jobpk):
     job = Job.objects.get(pk=jobpk)
-    job.disable = True
-    job.save()
+    job.delete()
     return JsonResponse({"status": "scuess"}, safe=False)
 
 
@@ -217,6 +216,7 @@ def test_cache(request, logid, cid):
         return HttpResponse(f.read(), content_type='text')
     else:
         return HttpResponse("Cache File has been deleted", content_type='text')
+
 
 def test_compare(request, logid, cid):
     test = Job_Test.objects.get(pk=logid)
