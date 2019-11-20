@@ -62,7 +62,10 @@ class Execute():
             test_ds.save()
             # self.request_test(test_ds,node)
             request_tasks.append(pool.submit(self.request_test, test_ds, node))
-        wait(request_tasks, timeout=5400)
+        wait(request_tasks, timeout=10800)
+        for node in self.nodes:
+            node.status = "Done"
+            node.save()
 
     def merge_test_report(self, test):
         logger.info("merge_test_report Start:{}".format(str(test)))
