@@ -8,7 +8,7 @@ import requests
 from proxy import env
 from proxy.models import Project, Job, Node
 from . import testcase, testresult, utility
-from .pool import pool
+from .pool import subPool, emailPool
 
 logger = logging.getLogger('django')
 
@@ -27,7 +27,7 @@ class Execute():
     def do_job(self):
         status = self.check_use_node_server()
         job_tests = self.job.job_test_set.all()
-        pool.submit(self.get_project_version)
+        self.get_project_version()
         for test in job_tests:
             self.execute(test, status)
 
@@ -61,7 +61,7 @@ class Execute():
             test_ds.host = "{}:{}".format(node.host, node.port)
             test_ds.save()
             # self.request_test(test_ds,node)
-            request_tasks.append(pool.submit(self.request_test, test_ds, node))
+            request_tasks.append(subPool.submit(self.request_test, test_ds, node))
         wait(request_tasks, timeout=10800)
         for node in self.nodes:
             node.status = "Done"
@@ -82,7 +82,7 @@ class Execute():
 
     def checknodestatus(self, nodes):
         newnodes = []
-        tasks = [pool.submit(self.requeststatus, node.host, node.port) for node in nodes]
+        tasks = [subPool.submit(self.requeststatus, node.host, node.port) for node in nodes]
         wait(tasks)
         for t in tasks:
             h, s = t.result()
@@ -163,7 +163,7 @@ class Execute():
                 test.status = utility.get_result_fromxml(
                     os.path.join(env.report, test.job_test_result.report, env.output_xml))
                 test.save()
-                pool.submit(utility.send_email, test, self.ip)
+                emailPool.submit(utility.send_email, test, self.ip)
             else:
                 test.status = 'Error'
                 test.save()
