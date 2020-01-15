@@ -50,19 +50,25 @@ def stop_job(host):
 
 def cat_version(host, version_paths):
     result_str = ""
-    paths = version_paths.split(";")
-    for path in paths:
-        new_paths = path.split(":")
-        cat_host, path = (host, new_paths[0]) if len(new_paths) == 1 else (new_paths[0], new_paths[1])
-        result_str += (path + '\n')
-        ssh = paramiko.SSHClient()
-        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        ssh.connect(cat_host, 22, upload, upload_pwd, timeout=10.0)
-        stdin, stdout, stderr = ssh.exec_command("grep -E 'git.branch|git.commit.id=' {}".format(path))
-        catstr = stdout.read()
-        result_str += catstr.decode('utf-8')
-        ssh.close()
-    return result_str
+    if version_paths != "":
+        paths = version_paths.split(";")
+        try:
+            for path in paths:
+                new_paths = path.split(":")
+                cat_host, path = (host, new_paths[0]) if len(new_paths) == 1 else (new_paths[0], new_paths[1])
+                result_str += (path + '\n')
+                ssh = paramiko.SSHClient()
+                ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+                ssh.connect(cat_host, 22, upload, upload_pwd, timeout=10.0)
+                stdin, stdout, stderr = ssh.exec_command("grep -E 'git.branch|git.commit.id=' {}".format(path))
+                catstr = stdout.read()
+                result_str += catstr.decode('utf-8')
+                ssh.close()
+            return result_str
+        except Exception:
+            return result_str
+    else:
+        return result_str
 
 
 def getip(instance_id):
