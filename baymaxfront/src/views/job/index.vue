@@ -181,207 +181,205 @@
   </div>
 </template>
 <script>
-import { getall, stopjob, rerunjob, savecomment, rmjob } from "@/api/job";
-import model from "@/components/model";
-import writepopup from "@/components/writepopup";
-import Calendar from "@/components/calendar/calendar";
+import { getall, stopjob, rerunjob, savecomment, rmjob } from '@/api/job'
+import model from '@/components/model'
+import writepopup from '@/components/writepopup'
 export default {
-  name: "job",
+  name: 'job',
   components: {
     model,
-    writepopup,
-    Calendar
+    writepopup
   },
-  data() {
+  data () {
     return {
-      active: "active",
+      active: 'active',
       jobs: null,
       params: this.$route.query,
-      interval_id: "",
-      stopm: "stopm",
-      revmovem: "revmovem",
-      rerunm: "rerunm",
-      notify: "notifym",
+      interval_id: '',
+      stopm: 'stopm',
+      revmovem: 'revmovem',
+      rerunm: 'rerunm',
+      notify: 'notifym',
       false: false,
-      sproject: "",
-      rproject: "",
-      rmproject: "",
-      rmjob: "",
-      rjob: "",
+      sproject: '',
+      rproject: '',
+      rmproject: '',
+      rmjob: '',
+      rjob: '',
       response: null,
       form: { job: { job_test_set: [] } },
       activejob: {},
       version: false,
       servers: false,
       projectid: false,
-      project_version: ""
-    };
+      project_version: ''
+    }
   },
-  created() {
-    this.fetchData();
+  created () {
+    this.fetchData()
   },
   watch: {
-    $route: ["fetchData"]
+    $route: ['fetchData']
   },
-  mounted() {
-    this.Interval();
+  mounted () {
+    this.Interval()
   },
-  beforeDestroy() {
-    clearInterval(this.interval_id);
+  beforeDestroy () {
+    clearInterval(this.interval_id)
   },
   methods: {
-    search_version() {
+    search_version () {
       this.$router.push({
-        path: "/job/index",
+        path: '/job/index',
         query: { number: 30, version: this.project_version }
-      });
+      })
     },
-    jobServers(data) {
-      let servers = data.split(":");
-      return servers;
+    jobServers (data) {
+      let servers = data.split(':')
+      return servers
     },
-    showdata(data) {
+    showdata (data) {
       if (data != null) {
         if (data.length > 8) {
-          return data.slice(0, 8) + "...";
+          return data.slice(0, 8) + '...'
         }
       }
-      return data;
+      return data
     },
-    editcomments(comments, pk) {
-      this.$refs.writepopup.show(comments, pk);
+    editcomments (comments, pk) {
+      this.$refs.writepopup.show(comments, pk)
     },
-    savecomments(comments, pk) {
-      savecomment({ id: pk, comments: comments });
+    savecomments (comments, pk) {
+      savecomment({ id: pk, comments: comments })
       for (let job of this.jobs) {
         if (job.pk === pk) {
-          job.comments = comments;
+          job.comments = comments
         }
       }
     },
-    onCopy(e) {
-      alert("You just copied: " + e.text);
+    onCopy (e) {
+      alert('You just copied: ' + e.text)
     },
-    toproject(item) {
+    toproject (item) {
       this.$router.push({
-        name: "toproject",
+        name: 'toproject',
         params: {
           name: item
         }
-      });
+      })
     },
-    Interval() {
-      this.interval_id = setInterval(this.fetchData, 5000);
+    Interval () {
+      this.interval_id = setInterval(this.fetchData, 5000)
     },
-    project_log(id) {
-      return "/job/index?id=" + id;
+    project_log (id) {
+      return '/job/index?id=' + id
     },
-    testlog(id) {
-      return "/result/test/log/" + id;
+    testlog (id) {
+      return '/result/test/log/' + id
     },
-    testreport(id) {
-      return "/result/report/" + id;
+    testreport (id) {
+      return '/result/report/' + id
     },
-    downloadxml(id) {
-      return "/result/report/" + id + "/download";
+    downloadxml (id) {
+      return '/result/report/' + id + '/download'
     },
-    stopshow(item) {
+    stopshow (item) {
       console.log(item)
-      this.sproject = item;
-      this.$refs.stopmodelcomponent.$emit("show");
+      this.sproject = item
+      this.$refs.stopmodelcomponent.$emit('show')
     },
-    removeshow(job) {
-      this.rmproject = job.project;
-      this.rmjob = job.pk;
-      this.$refs.removemodelcomponent.$emit("show");
+    removeshow (job) {
+      this.rmproject = job.project
+      this.rmjob = job.pk
+      this.$refs.removemodelcomponent.$emit('show')
     },
-    rerunshow(job) {
-      this.rproject = job.project;
-      this.rjob = job.pk;
-      this.form.job = job;
-      this.$refs.rerunmodelcomponent.$emit("show");
+    rerunshow (job) {
+      this.rproject = job.project
+      this.rjob = job.pk
+      this.form.job = job
+      this.$refs.rerunmodelcomponent.$emit('show')
     },
-    stopproject() {
-      this.response = '<i class="spinner loading icon"></i>';
-      stopjob(this.sproject.project,this.sproject.pk).then(response => {
-        this.response = response.data;
-      });
-      this.$refs.notifymodelcomponent.$emit("show");
+    stopproject () {
+      this.response = '<i class="spinner loading icon"></i>'
+      stopjob(this.sproject.project, this.sproject.pk).then(response => {
+        this.response = response.data
+      })
+      this.$refs.notifymodelcomponent.$emit('show')
     },
-    removeproject() {
-      this.response = '<i class="spinner loading icon"></i>';
+    removeproject () {
+      this.response = '<i class="spinner loading icon"></i>'
       rmjob(this.rmjob).then(response => {
-        this.response = response.data;
-      });
-      this.$refs.notifymodelcomponent.$emit("show");
-      this.fetchData();
+        this.response = response.data
+      })
+      this.$refs.notifymodelcomponent.$emit('show')
+      this.fetchData()
     },
-    rerunproject() {
-      this.response = '<i class="spinner loading icon"></i>';
+    rerunproject () {
+      this.response = '<i class="spinner loading icon"></i>'
       rerunjob(this.rjob, this.form.job).then(response => {
-        this.response = response.data;
-      });
-      this.$refs.notifymodelcomponent.$emit("show");
+        this.response = response.data
+      })
+      this.$refs.notifymodelcomponent.$emit('show')
     },
-    fetchData() {
-      this.params = this.$route.query;
+    fetchData () {
+      this.params = this.$route.query
       getall(this.params)
         .then(response => {
-          this.jobs = response.data;
-          this.active = "";
+          this.jobs = response.data
+          this.active = ''
         })
         .catch(() => {
-          this.active = "";
-        });
+          this.active = ''
+        })
     },
-    lineclass(i) {
+    lineclass (i) {
       switch (i) {
-        case "Done":
-          return "positive";
-        case "Error":
-          return "error";
-        case "Running":
-        case "Waiting":
-          return "warning";
+        case 'Done':
+          return 'positive'
+        case 'Error':
+          return 'error'
+        case 'Running':
+        case 'Waiting':
+          return 'warning'
       }
     },
-    statusclass(i) {
+    statusclass (i) {
       switch (i) {
-        case "Done":
-          return "green checkmark";
-        case "Error":
-          return "red close";
-        case "Running":
-          return "spinner loading";
-        case "Waiting":
-          return "sync loading";
-        case "Waiting Job":
-          return "sync loading";
-        case "Waiting Server":
-          return "sync loading";
+        case 'Done':
+          return 'green checkmark'
+        case 'Error':
+          return 'red close'
+        case 'Running':
+          return 'spinner loading'
+        case 'Waiting':
+          return 'sync loading'
+        case 'Waiting Job':
+          return 'sync loading'
+        case 'Waiting Server':
+          return 'sync loading'
       }
     },
-    resultclass(i) {
+    resultclass (i) {
       switch (i) {
-        case "PASS":
-          return "positive";
-        case "Running":
-          return "warning";
-        case "FAIL":
-        case "Error":
-          return "error";
+        case 'PASS':
+          return 'positive'
+        case 'Running':
+          return 'warning'
+        case 'FAIL':
+        case 'Error':
+          return 'error'
       }
     },
-    buttonclass(i) {
-      if (i !== "Running") {
-        return "disabled";
+    buttonclass (i) {
+      if (i !== 'Running') {
+        return 'disabled'
       }
     },
-    remove_buttonclass(i) {
-      if (i == "Running" || i=="Waiting") {
-        return "disabled";
+    remove_buttonclass (i) {
+      if (i == 'Running' || i == 'Waiting') {
+        return 'disabled'
       }
     }
   }
-};
+}
 </script>

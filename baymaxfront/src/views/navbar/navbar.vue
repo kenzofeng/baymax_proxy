@@ -7,87 +7,68 @@
           <drop :items="selectitems" @changeselected="changeselected"></drop>
         </div>
       </div>
-      <a class="item" target="_blank" href="http://10.200.106.2:8080/">
-        <i class="large jenkins icon"></i>
-      </a>
-      <a
-        class="item"
-        target="_blank"
-        href="http://35.160.71.185/aws?account=sandbox-test&region=us-west-2&search=Function"
-      >
-        <i class="large cloud icon"></i>
-      </a>
-      <a class="item" target="_blank" href="http://52.34.81.222">
-        <i class="large gitlab icon"></i>
-      </a>
-      <a class="item" target="_blank" href="http://54.218.22.41/">
-        <i class="large wrench icon"></i>
-      </a>
-      <a class="item" target="_blank" href="https://warrior.testrail.io/index.php?/dashboard">
-        <i class="large industry icon"></i>
-      </a>
     </div>
   </div>
 </template>
 
 <script>
-import navitem from "./navitem";
-import drop from "@/components/dropdown";
-import { getList } from "@/api/project";
+import navitem from './navitem'
+import drop from '@/components/dropdown'
+import { getList } from '@/api/project'
 export default {
-  name: "navbar",
-  data() {
+  name: 'navbar',
+  data () {
     return {
       selectitems: []
-    };
+    }
   },
-  created() {
-    this.fetchData();
+  created () {
+    this.fetchData()
   },
   components: { navitem, drop },
   computed: {
-    routes() {
-      return this.$router.options.routes;
+    routes () {
+      return this.$router.options.routes
     }
   },
   methods: {
-    fetchData() {
+    fetchData () {
       getList(null).then(response => {
-        this.selectitems = response.data;
-      });
+        this.selectitems = response.data
+      })
     },
-    changeselected(project) {
-      let p = this.$route.fullPath.split("/")[1];
-      this.$store.dispatch("setProjectName", project);
-      if (project !== "") {
-        if (p === "project") {
-          this.$router.push({ name: "toproject", params: { name: project } });
-        } else if (p === "lab") {
+    changeselected (project) {
+      let p = this.$route.fullPath.split('/')[1]
+      this.$store.dispatch('setProjectName', project)
+      if (project !== '') {
+        if (p === 'project') {
+          this.$router.push({ name: 'toproject', params: { name: project } })
+        } else if (p === 'lab') {
           this.$router.push({
-            name: "labtoproject",
+            name: 'labtoproject',
             params: { name: project }
-          });
-        } else if (p === "job") {
+          })
+        } else if (p === 'job') {
           this.$router.push({
-            path: "/job/index",
+            path: '/job/index',
             query: { number: 30, project: project }
-          });
-        } else if (p === "server") {
+          })
+        } else if (p === 'server') {
           this.$router.push({
-            path: "/server/index",
+            path: '/server/index',
             query: { project: project }
-          });
+          })
         }
       } else {
-        if (p === "lab") {
-          this.$router.push({ path: "/lab/index" });
-        } else if (p === "job") {
-          this.$router.push({ path: "/job/index", query: { number: 30 } });
-        }else if (p === "server") {
-          this.$router.push({ path: "/server/index", query: { number: 30 } });
+        if (p === 'lab') {
+          this.$router.push({ path: '/lab/index' })
+        } else if (p === 'job') {
+          this.$router.push({ path: '/job/index', query: { number: 30 } })
+        } else if (p === 'server') {
+          this.$router.push({ path: '/server/index', query: { number: 30 } })
         }
       }
     }
   }
-};
+}
 </script>
