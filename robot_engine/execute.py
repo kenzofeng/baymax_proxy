@@ -48,7 +48,8 @@ class Execute():
             node.save()
 
     def get_project_version(self):
-        version = utility.cat_version(self.nodes[0].host, self.project.version)
+        # version = utility.cat_version(self.nodes[0].host, self.project.version)
+        version = utility.cat_version_post(self.nodes[0].host, self.nodes[0].port, self.project.version)
         self.job.project_version = version
         self.job.save()
 

@@ -48,6 +48,13 @@ def stop_job(host):
     ssh.close()
 
 
+def cat_version_post(host, port, version_paths):
+    res = ""
+    r = requests.post("http://{}:{}/version".format(host, port), json={"path": version_paths}, timeout=10)
+    res += r.content.decode('utf-8')
+    return res
+
+
 def cat_version(host, version_paths):
     result_str = ""
     if version_paths != "":
