@@ -7,19 +7,24 @@ from django.shortcuts import render, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 
 from Baymax_Proxy.jobs import *
-from robot_engine.pool import pool
-from robot_engine.utility import zipreport, get_job
+# from robot_engine.pool import pool
+from robot_engine.utility import zipreport, get_job, remove_dir
 from . import env
 from .handler import job as job_handler
 from .models import Project, Job, Job_Test_Result, Job_Test, Test_Map, Type
 from .serializers import ProjectSerializer, JobSerializer, TypeSerializer
+import datetime
 
 
 def job_start(request, project):
     myrequest = job_handler.Myrequest(request)
-    pool.submit(job_handler.start, myrequest, project)
-    # scheduler.add_job(job_handler.start, 'date', run_date=datetime.datetime.now() + datetime.timedelta(seconds=1),
-    #                   args=[myrequest, project])
+    # pool.submit(job_handler.start, myrequest, project)
+    # job = threading.Thread(target=job_handler.start,args=(myrequest,project))
+    # job.setDaemon(True)
+    # job.start()
+
+    scheduler.add_job(job_handler.start, 'date', run_date=datetime.datetime.now() + datetime.timedelta(seconds=1),
+                      args=[myrequest, project])
     # rs = job_handler.start(myrequest, project)
     return JsonResponse({"status": "Job added successfully"}, safe=False)
 
@@ -27,9 +32,12 @@ def job_start(request, project):
 @csrf_exempt
 def job_rerun(request, jobpk):
     myrequest = job_handler.Myrequest(request)
-    pool.submit(job_handler.rerun, myrequest, jobpk)
-    # scheduler.add_job(job_handler.rerun, 'date', run_date=datetime.datetime.now() + datetime.timedelta(seconds=1),
-    #                   args=[myrequest, jobpk])
+    # pool.submit(job_handler.rerun, myrequest, jobpk)
+    # job = threading.Thread(target=job_handler.rerun,args=(myrequest,jobpk))
+    # job.setDaemon(True)
+    # job.start()
+    scheduler.add_job(job_handler.rerun, 'date', run_date=datetime.datetime.now() + datetime.timedelta(seconds=1),
+                      args=[myrequest, jobpk])
     # rs = job_handler.rerun(myrequest, jobpk)
     return JsonResponse({"status": "Job added successfully"}, safe=False)
 
@@ -46,6 +54,9 @@ def job_stop(request, project, jobId):
 @csrf_exempt
 def job_remove(request, jobpk):
     job = Job.objects.get(pk=jobpk)
+    job_tests = job.job_test_set.all()
+    for test in job_tests:
+        remove_dir(test.job_test_result.report)
     job.delete()
     return JsonResponse({"status": "scuess"}, safe=False)
 

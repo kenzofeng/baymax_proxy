@@ -1,14 +1,13 @@
 import logging
 import os
+import threading
 import time
-from concurrent.futures import wait
 
 import requests
 
 from proxy import env
 from proxy.models import Project, Job, Node
 from . import testcase, testresult, utility
-from .pool import subPool, emailPool
 
 logger = logging.getLogger('django')
 
@@ -27,7 +26,10 @@ class Execute():
     def do_job(self):
         status = self.check_use_node_server()
         job_tests = self.job.job_test_set.all()
-        subPool.submit(self.get_project_version)
+        # subPool.submit(self.get_project_version)
+        gv = threading.Thread(target=self.get_project_version)
+        gv.setDaemon(True)
+        gv.start()
         for test in job_tests:
             self.execute(test, status)
 
@@ -35,6 +37,7 @@ class Execute():
         try:
             r = requests.post(
                 "http://{}:{}/{}/{}/start".format(node.host, node.port, test_ds.job_test.name, test_ds.pk),
+                timeout=float(10800),
                 data={"filename": "%s_%s.zip" % (test_ds.job_test.name, test_ds.pk), "app": test_ds.job_test.app},
                 files={
                     "script": open(os.path.join(env.tmp, "%s.zip" % test_ds.script), 'rb')})
@@ -62,8 +65,12 @@ class Execute():
             test_ds.host = "{}:{}".format(node.host, node.port)
             test_ds.save()
             # self.request_test(test_ds,node)
-            request_tasks.append(subPool.submit(self.request_test, test_ds, node))
-        wait(request_tasks, timeout=10800)
+            rt = threading.Thread(target=self.request_test, args=(test_ds, node))
+            rt.setDaemon(True)
+            rt.start()
+            request_tasks.append(rt)
+        for rt in request_tasks:
+            rt.join(timeout=10800)
         for node in self.nodes:
             node.status = "Done"
             node.save()
@@ -83,15 +90,19 @@ class Execute():
 
     def checknodestatus(self, nodes):
         newnodes = []
-        tasks = [subPool.submit(self.requeststatus, node.host, node.port) for node in nodes]
-        wait(tasks)
-        for t in tasks:
-            h, s = t.result()
+        for node in nodes:
+            h, s = self.requeststatus(node.host, node.port)
             if s:
-                for node in nodes:
-                    if node.host == h:
-                        newnodes.append(node)
-                        break
+                newnodes.append(node)
+        # tasks = [subPool.submit(self.requeststatus, node.host, node.port) for node in nodes]
+        # wait(tasks)
+        # for t in tasks:
+        #     h, s = t.result()
+        #     if s:
+        #         for node in nodes:
+        #             if node.host == h:
+        #                 newnodes.append(node)
+        #                 break
         return newnodes
 
     def requeststatus(self, host, port):
@@ -130,7 +141,7 @@ class Execute():
         else:
             return False
         self.nodes = self.checknodestatus(nodes)
-        self.job.servers = ":".join([n.name for n in self.nodes])
+        self.job.servers = ":".join([n.name for n in nodes])
         self.job.status = 'Waiting Server'
         self.job.save()
         while True:
@@ -164,7 +175,10 @@ class Execute():
                 test.status = utility.get_result_fromxml(
                     os.path.join(env.report, test.job_test_result.report, env.output_xml))
                 test.save()
-                emailPool.submit(utility.send_email, test, self.ip)
+                em = threading.Thread(target=utility.send_email, args=(test, self.ip))
+                em.setDaemon(True)
+                em.start()
+                # emailPool.submit(utility.send_email, test, self.ip)
             else:
                 test.status = 'Error'
                 test.save()

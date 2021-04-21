@@ -184,13 +184,11 @@
 import { getall, stopjob, rerunjob, savecomment, rmjob } from "@/api/job";
 import model from "@/components/model";
 import writepopup from "@/components/writepopup";
-import Calendar from "@/components/calendar/calendar";
 export default {
   name: "job",
   components: {
     model,
-    writepopup,
-    Calendar
+    writepopup
   },
   data() {
     return {
