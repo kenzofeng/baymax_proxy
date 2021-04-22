@@ -1,0 +1,97 @@
+kind: StatefulSet
+apiVersion: apps/v1
+metadata:
+  name: baymax-server
+  namespace: test
+  labels:
+    baymax: server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      baymax: server
+  template:
+      metadata:
+        labels:
+          baymax: server
+      spec:
+        containers:
+          - name: server
+            image: 'image-center.dbaws.net/qa/baymax_proxy:1.0'
+            imagePullPolicy: Always
+            ports:
+              - name: web
+                containerPort: 8000
+                protocol: TCP
+            volumeMounts:
+              - name: db-volume
+                mountPath: /usr/local/data
+              - name: result-volume
+                mountPath: /usr/local/application/project
+  volumeClaimTemplates:
+    - kind: PersistentVolumeClaim
+      apiVersion: v1
+      metadata:
+        name: db-volume
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 5Gi
+        volumeMode: Filesystem
+    - kind: PersistentVolumeClaim
+      apiVersion: v1
+      metadata:
+        name: result-volume
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 10Gi
+        volumeMode: Filesystem
+  serviceName: default
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: baymax-server
+  namespace: test
+  labels:
+    derbysoft.com/app.name: baymax-server
+spec:
+  ports:
+    - name: web
+      protocol: TCP
+      port: 80
+      targetPort: 8000
+  selector:
+    baymax: server
+  type: ClusterIP
+---
+kind: Ingress
+apiVersion: extensions/v1beta1
+metadata:
+  name: baymax
+  namespace: test
+  labels:
+    derbysoft.com/app.name: baymax
+  annotations:
+    alb.ingress.kubernetes.io/backend-protocol: HTTP
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80}]'
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/tags: 'Environment=SANDBOX-K8S,Group=STONE,derbysoft.com/app/baymax-server=1'
+    alb.ingress.kubernetes.io/target-group-attributes: deregistration_delay.timeout_seconds=30
+    alb.ingress.kubernetes.io/target-type: ip
+    kubernetes.io/ingress.class: alb
+spec:
+  rules:
+    - host: "*.elb.amazonaws.com"
+      http:
+        paths:
+          - path: /*
+            pathType: ImplementationSpecific
+            backend:
+              serviceName: baymax-server
+              servicePort: 80
